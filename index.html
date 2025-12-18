@@ -1,0 +1,1907 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1B262B">
+  <meta name="color-scheme" content="light">
+  <title>Humaneed · Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* Calm canvas (Humaneed x Kidsneed principles) */
+      --bg-canvas:#F3F0E8;
+      --bg-card:#FFFFFF;
+      --bg-muted:#E9E4DA;
+
+      /* Ink */
+      --ink-primary:#141414;
+      --ink-secondary:#5C5853;
+      --ink-light:#8B847A;
+
+      /* Mental accents (calm-sexy) */
+      --accent-core:#1B262B;    /* deep ink/petrol */
+      --accent-calm:#2F6F73;    /* teal calm */
+      --accent-soft:#B9A6C9;    /* soft lilac */
+      --accent-warm:#D7B6A6;    /* nude highlight (sparingly) */
+
+      /* Status */
+      --critical:#B54A45;
+      --warning:#B8842B;
+      --stable:#2C7A62;
+
+      /* Tier colors (kept as semantic) */
+      --c-foundation:#2C7A62;
+      --c-safety:#2F6F73;
+      --c-connect:#6D63B6;
+      --c-esteem:#B8842B;
+      --c-self:#9A5C9F;
+      --c-trans:#8B847A;
+      --c-epi:#2F6F73;
+      --c-mental:#6D63B6;
+
+      --font-primary:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+
+      --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;
+      --r-sm:10px;--r-md:14px;--r-lg:18px;--r-xl:26px;
+
+      --shadow-soft: 0 12px 34px rgba(20,20,20,.10);
+      --shadow-subtle: 0 2px 10px rgba(20,20,20,.08);
+
+      --line:rgba(20,20,20,0.10);
+      --line-strong:rgba(20,20,20,0.16);
+      --line-accent:rgba(47,111,115,0.22);
+
+      --ease-out:cubic-bezier(0.16,1,0.3,1);
+      --duration-fast:150ms;--duration-base:260ms;
+
+      --app-max-w:520px;
+
+      /* compat alias (no content removed) */
+      --void:var(--bg-canvas);
+      --void-elevated:var(--bg-muted);
+      --void-surface:var(--bg-card);
+      --void-card:var(--bg-card);
+      --void-hover:rgba(20,20,20,0.03);
+
+      --silver:var(--ink-secondary);
+      --silver-soft:var(--ink-secondary);
+      --silver-muted:var(--ink-light);
+      --silver-faint:rgba(20,20,20,0.18);
+
+      --accent:var(--accent-core);
+      --accent-soft-rgba:rgba(185,166,201,0.18);
+      --danger:var(--critical);
+    }
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden}
+    body{
+      font-family:var(--font-primary);
+      font-weight:500;
+      font-size:14px;
+      line-height:1.55;
+      color:var(--ink-secondary);
+      background:var(--bg-canvas);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    *:focus-visible{ outline:2px solid var(--accent-calm); outline-offset:2px; }
+
+    #app-frame{
+      width:100%;
+      height:100%;
+      max-width:var(--app-max-w);
+      margin:0 auto;
+      background:var(--bg-canvas);
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+
+    @media(min-width:560px){
+      body{
+        padding:var(--s-6);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:
+          radial-gradient(980px 360px at 30% 0%, rgba(47,111,115,.10), transparent 62%),
+          radial-gradient(900px 340px at 85% 10%, rgba(185,166,201,.10), transparent 60%),
+          var(--bg-canvas);
+      }
+      #app-frame{
+        height:min(100%,900px);
+        border-radius:var(--r-xl);
+        border:1px solid var(--line);
+        box-shadow:var(--shadow-soft);
+        background:
+          radial-gradient(980px 360px at 30% 0%, rgba(47,111,115,.08), transparent 62%),
+          radial-gradient(900px 340px at 85% 10%, rgba(185,166,201,.08), transparent 60%),
+          var(--bg-canvas);
+      }
+    }
+
+    header{
+      padding:max(var(--s-4),env(safe-area-inset-top)) var(--s-5) var(--s-4);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:var(--s-4);
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+      backdrop-filter:saturate(1.05) blur(10px);
+      flex-shrink:0;
+    }
+    .brand-title{
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      color:var(--ink-primary);
+    }
+    .brand-subtitle{
+      font-size:10px;
+      letter-spacing:0.25em;
+      text-transform:uppercase;
+      color:var(--ink-light);
+      margin-top:2px;
+    }
+
+    .top-actions{display:flex;gap:var(--s-3)}
+    .pill{
+      min-height:36px;
+      padding:var(--s-2) var(--s-3);
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(233,228,218,.9), rgba(255,255,255,.55));
+      display:inline-flex;
+      align-items:center;
+      gap:var(--s-2);
+      cursor:pointer;
+      transition:all var(--duration-fast) var(--ease-out);
+      font-family:inherit;
+      color:var(--ink-secondary);
+      box-shadow:var(--shadow-subtle);
+    }
+    .pill:hover{border-color:var(--line-strong); transform:translateY(-1px)}
+    .pill .icon{
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      color:var(--ink-secondary);
+    }
+
+    .tabs-nav{
+      display:flex;
+      gap:var(--s-1);
+      padding:var(--s-3) var(--s-5);
+      background:rgba(255,255,255,.60);
+      border-bottom:1px solid var(--line);
+      flex-shrink:0;
+      backdrop-filter:blur(10px);
+    }
+    .tab-btn{
+      flex:1;
+      min-height:40px;
+      border:1px solid transparent;
+      border-radius:999px;
+      background:transparent;
+      font-family:inherit;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-light);
+      cursor:pointer;
+      transition:all var(--duration-fast) var(--ease-out);
+    }
+    .tab-btn:hover{color:var(--ink-secondary); background:rgba(20,20,20,0.03)}
+    .tab-btn.active{
+      color:var(--ink-primary);
+      background:var(--bg-card);
+      border-color:var(--line);
+      box-shadow:var(--shadow-subtle);
+    }
+
+    .viewport{
+      flex:1;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding:var(--s-5);
+      background:
+        radial-gradient(980px 360px at 30% 0%, rgba(47,111,115,.10), transparent 62%),
+        radial-gradient(900px 340px at 85% 10%, rgba(185,166,201,.10), transparent 60%),
+        var(--bg-canvas);
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+    }
+    .viewport::-webkit-scrollbar{width:6px}
+    .viewport::-webkit-scrollbar-track{background:transparent}
+    .viewport::-webkit-scrollbar-thumb{background:rgba(20,20,20,0.18);border-radius:99px}
+
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    .card{
+      background:var(--bg-card);
+      border:1px solid var(--line);
+      border-radius:var(--r-xl);
+      overflow:hidden;
+      margin-bottom:var(--s-4);
+      box-shadow:var(--shadow-subtle);
+    }
+    .card-head{
+      padding:var(--s-4) var(--s-4) var(--s-3);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:var(--s-3);
+      border-bottom:1px solid rgba(20,20,20,0.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.72));
+    }
+    .card-head h2{
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-primary);
+      margin:0;
+    }
+    .card-head .hint{
+      margin-top:var(--s-1);
+      font-size:11px;
+      color:var(--ink-light);
+      line-height:1.45;
+    }
+    .card-body{padding:var(--s-4)}
+
+    .badge{
+      padding:7px 11px;
+      border-radius:999px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      background:rgba(185,166,201,0.18);
+      color:var(--accent-core);
+      border:1px solid rgba(20,20,20,0.10);
+      white-space:nowrap;
+    }
+    .badge.critical{background:rgba(181,74,69,0.12);color:var(--critical);border-color:rgba(181,74,69,0.22)}
+    .badge.warning{background:rgba(184,132,43,0.12);color:var(--warning);border-color:rgba(184,132,43,0.22)}
+    .badge.stable{background:rgba(44,122,98,0.12);color:var(--stable);border-color:rgba(44,122,98,0.22)}
+    .badge[data-tier="foundation"]{background:rgba(44,122,98,0.12);color:var(--c-foundation)}
+    .badge[data-tier="safety"]{background:rgba(47,111,115,0.12);color:var(--c-safety)}
+    .badge[data-tier="connect"]{background:rgba(109,99,182,0.12);color:var(--c-connect)}
+    .badge[data-tier="esteem"]{background:rgba(184,132,43,0.12);color:var(--c-esteem)}
+    .badge[data-tier="self"]{background:rgba(154,92,159,0.12);color:var(--c-self)}
+
+    .score-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:var(--s-4);
+      padding:var(--s-4);
+      border-radius:var(--r-lg);
+      border:1px solid rgba(20,20,20,0.10);
+      background:
+        radial-gradient(740px 220px at 15% 0%, rgba(47,111,115,.12), transparent 60%),
+        radial-gradient(640px 220px at 95% 0%, rgba(185,166,201,.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+    }
+    .score-row .num{
+      font-size:46px;
+      font-weight:700;
+      letter-spacing:-2px;
+      color:var(--ink-primary);
+    }
+    .score-row .title{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-primary);
+    }
+    .score-row .desc{
+      font-size:11px;
+      color:var(--ink-secondary);
+      margin-top:var(--s-1);
+      line-height:1.45;
+    }
+
+    .rings{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3);margin-top:var(--s-4)}
+    @media(max-width:380px){.rings{grid-template-columns:repeat(2,1fr)}}
+    .ring{
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+      border:1px solid rgba(20,20,20,0.10);
+      border-radius:var(--r-lg);
+      padding:var(--s-3);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:var(--s-2);
+      box-shadow:var(--shadow-subtle);
+    }
+    .ring svg{width:72px;height:72px}
+    .ring .prog{transition:stroke-dasharray var(--duration-base) var(--ease-out)}
+    .ring[data-type="epi"] .prog{stroke:var(--c-epi)}
+    .ring[data-type="maslow"] .prog{stroke:var(--c-esteem)}
+    .ring[data-type="mental"] .prog{stroke:var(--c-mental)}
+    .ring .label{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-primary);
+    }
+    .ring .small{font-size:10px;color:var(--ink-light);text-align:center}
+
+    .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-3);margin-top:var(--s-4)}
+    .quick-btn{
+      padding:var(--s-3);
+      border-radius:var(--r-lg);
+      border:1px solid rgba(20,20,20,0.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+      cursor:pointer;
+      text-align:left;
+      position:relative;
+      overflow:hidden;
+      transition:all var(--duration-fast) var(--ease-out);
+      box-shadow:var(--shadow-subtle);
+      color:inherit;
+    }
+    .quick-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:rgba(20,20,20,0.12)}
+    .quick-btn[data-q="basics"]::before{background:var(--c-foundation)}
+    .quick-btn[data-q="safety"]::before{background:var(--c-safety)}
+    .quick-btn[data-q="connect"]::before{background:var(--c-connect)}
+    .quick-btn[data-q="breath"]::before{background:var(--c-epi)}
+    .quick-btn:hover{border-color:rgba(20,20,20,0.16);transform:translateY(-1px)}
+    .quick-btn .t{font-size:12px;font-weight:800;color:var(--ink-primary)}
+    .quick-btn .s{margin-top:var(--s-1);font-size:10px;color:var(--ink-light)}
+
+    .list{display:grid;gap:var(--s-2)}
+    .item{
+      background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.76));
+      border:1px solid rgba(20,20,20,0.10);
+      border-radius:var(--r-lg);
+      padding:var(--s-3);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:var(--s-3);
+      position:relative;
+      padding-left:calc(var(--s-4) + 6px);
+      transition:all var(--duration-fast) var(--ease-out);
+      box-shadow:var(--shadow-subtle);
+    }
+    .item::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:12px;
+      bottom:12px;
+      width:5px;
+      border-radius:999px;
+      background:rgba(20,20,20,0.14);
+    }
+    .item[data-tier="foundation"]::before{background:var(--c-foundation)}
+    .item[data-tier="safety"]::before{background:var(--c-safety)}
+    .item[data-tier="connect"]::before{background:var(--c-connect)}
+    .item[data-tier="esteem"]::before{background:var(--c-esteem)}
+    .item[data-tier="self"]::before{background:var(--c-self)}
+    .item[data-tier="epi"]::before{background:var(--c-epi)}
+    .item[data-tier="mental"]::before{background:var(--c-mental)}
+    .item.priority{border-color:rgba(184,132,43,0.35);background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(215,182,166,.20))}
+    .item.priority::after{
+      content:"!";
+      position:absolute;
+      right:var(--s-3);
+      top:var(--s-2);
+      font-size:10px;
+      font-weight:800;
+      color:var(--warning);
+    }
+    .item:hover{border-color:rgba(20,20,20,0.16)}
+    .item .left{display:flex;gap:var(--s-3);align-items:center;flex:1;min-width:0}
+    .item .emoji{font-size:14px;flex-shrink:0;color:var(--accent-core)}
+    .item .txt{font-size:12px;font-weight:700;color:var(--ink-primary)}
+    .item .sub{font-size:10px;color:var(--ink-light);margin-top:2px}
+    .item.done{opacity:0.60}
+    .item.done .txt{text-decoration:line-through}
+
+    .item-actions{display:flex;gap:var(--s-2);flex-shrink:0}
+    .mini-btn{
+      min-width:34px;
+      min-height:34px;
+      border:1px solid rgba(20,20,20,0.12);
+      border-radius:999px;
+      background:rgba(255,255,255,0.60);
+      color:var(--ink-secondary);
+      font-family:inherit;
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+      transition:all var(--duration-fast) var(--ease-out);
+    }
+    .mini-btn:hover{border-color:rgba(20,20,20,0.18);background:#fff;transform:translateY(-1px)}
+
+    .btn{
+      min-height:46px;
+      padding:var(--s-3) var(--s-4);
+      border-radius:999px;
+      border:1px solid rgba(20,20,20,0.12);
+      background:rgba(255,255,255,0.78);
+      color:var(--ink-primary);
+      font-family:inherit;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:var(--s-2);
+      transition:all var(--duration-base) var(--ease-out);
+      box-shadow:var(--shadow-subtle);
+    }
+    .btn:hover{background:#fff;transform:translateY(-1px)}
+    .btn.primary{
+      background: linear-gradient(180deg, var(--accent-calm), #275C5F);
+      color:#fff;
+      border:none;
+      box-shadow: 0 10px 26px rgba(47,111,115,.22);
+    }
+    .btn.ghost{
+      background:transparent;
+      border-color:rgba(20,20,20,0.12);
+      box-shadow:none;
+      color:var(--ink-secondary);
+    }
+    .btn.secondary{
+      background:rgba(185,166,201,0.18);
+      border-color:rgba(185,166,201,0.40);
+      color:var(--accent-core);
+    }
+    .row{display:flex;gap:var(--s-3);flex-wrap:wrap;margin-top:var(--s-4)}
+    .row .btn{flex:1}
+
+    .field{
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.76));
+      border:1px solid rgba(20,20,20,0.10);
+      border-radius:var(--r-lg);
+      padding:var(--s-3);
+      box-shadow:var(--shadow-subtle);
+    }
+    .field+.field{margin-top:var(--s-3)}
+    .field label{
+      display:block;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      color:var(--ink-light);
+      margin-bottom:var(--s-2);
+    }
+    .field input,.field textarea,.field select{
+      width:100%;
+      border:1px solid rgba(20,20,20,0.12);
+      border-radius:var(--r-md);
+      padding:var(--s-3);
+      font-family:inherit;
+      font-size:14px;
+      background:#fff;
+      color:var(--ink-primary);
+      outline:none;
+    }
+    .field input:focus,.field textarea:focus,.field select:focus{
+      border-color:rgba(47,111,115,0.55);
+      box-shadow:0 0 0 3px rgba(47,111,115,0.14);
+    }
+    .field textarea{min-height:86px;resize:vertical}
+    .field-hint{font-size:10px;color:rgba(92,88,83,0.72);margin-top:var(--s-1);font-style:italic}
+
+    .chips{display:flex;flex-wrap:wrap;gap:var(--s-2);margin-top:var(--s-2)}
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:var(--s-2);
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(20,20,20,0.10);
+      background:rgba(255,255,255,0.75);
+      cursor:pointer;
+      user-select:none;
+      font-size:11px;
+      font-weight:700;
+      color:var(--ink-secondary);
+      transition:all var(--duration-fast) var(--ease-out);
+      box-shadow:var(--shadow-subtle);
+    }
+    .chip .dot{width:8px;height:8px;border-radius:999px;background:rgba(20,20,20,0.20)}
+    .chip[data-on="1"]{
+      border-color:rgba(47,111,115,0.45);
+      background:rgba(47,111,115,0.10);
+      color:var(--ink-primary);
+    }
+    .chip[data-on="1"] .dot{background:var(--accent-calm)}
+    .chip-bad{border-color:rgba(181,74,69,0.25)}
+    .chip-bad[data-on="1"]{
+      border-color:rgba(181,74,69,0.40);
+      background:rgba(181,74,69,0.10);
+      color:var(--critical);
+    }
+    .chip-bad[data-on="1"] .dot{background:var(--critical)}
+
+    .chip-section{margin-top:var(--s-4)}
+    .chip-section .hint{
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-light);
+      margin-bottom:var(--s-2);
+    }
+
+    .section-title{
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--accent-core);
+      margin:var(--s-5) 0 var(--s-3);
+      padding-bottom:var(--s-2);
+      border-bottom:1px solid rgba(20,20,20,0.10);
+    }
+    .section-title:first-child{margin-top:0}
+    .section-title.tier-safety{color:var(--c-safety)}
+    .section-title.tier-connect{color:var(--c-connect)}
+    .section-title.tier-esteem{color:var(--c-esteem)}
+
+    .maslow-explain,.mental-explain{
+      font-size:11px;
+      color:var(--ink-secondary);
+      margin-bottom:var(--s-3);
+      line-height:1.5;
+      padding:var(--s-3) var(--s-3);
+      background:rgba(255,255,255,0.72);
+      border-radius:var(--r-lg);
+      border-left:4px solid rgba(20,20,20,0.10);
+    }
+    .maslow-explain{border-left-color:rgba(109,99,182,0.50)}
+    .mental-explain{border-left-color:rgba(47,111,115,0.50)}
+
+    .pyr{display:grid;gap:var(--s-2)}
+    .pyr-row{
+      background:rgba(255,255,255,0.78);
+      border:1px solid rgba(20,20,20,0.10);
+      border-radius:var(--r-lg);
+      padding:var(--s-3);
+      display:flex;
+      justify-content:space-between;
+      gap:var(--s-3);
+      align-items:center;
+      box-shadow:var(--shadow-subtle);
+    }
+    .pyr-row.bottleneck{border-color:rgba(184,132,43,0.35);background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(215,182,166,.18))}
+    .pyr-row strong{font-size:12px;font-weight:800;color:var(--ink-primary)}
+    .pyr-row span{font-size:10px;color:var(--ink-light)}
+    .bar{
+      width:110px;height:9px;border-radius:999px;
+      background:rgba(20,20,20,0.06);
+      overflow:hidden;
+      border:1px solid rgba(20,20,20,0.10)
+    }
+    .bar>i{display:block;height:100%;width:0%;border-radius:999px;transition:width var(--duration-base) var(--ease-out)}
+    .pyr-row[data-tier="foundation"] .bar>i{background:var(--c-foundation)}
+    .pyr-row[data-tier="safety"] .bar>i{background:var(--c-safety)}
+    .pyr-row[data-tier="connect"] .bar>i{background:var(--c-connect)}
+    .pyr-row[data-tier="esteem"] .bar>i{background:var(--c-esteem)}
+    .pyr-row[data-tier="self"] .bar>i{background:var(--c-self)}
+    .pyr-row[data-tier="trans"] .bar>i{background:var(--c-trans)}
+
+    .insight-box{
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.72));
+      border:1px solid rgba(47,111,115,0.22);
+      border-radius:var(--r-xl);
+      padding:var(--s-4);
+      margin-top:var(--s-4);
+      box-shadow:var(--shadow-subtle);
+    }
+    .insight-box .label{
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--accent-core);
+      margin-bottom:var(--s-2)
+    }
+    .insight-box .text{font-size:13px;color:var(--ink-primary);line-height:1.5}
+
+    .chart-box{
+      height:140px;
+      border:1px solid rgba(20,20,20,0.10);
+      border-radius:var(--r-xl);
+      padding:var(--s-3);
+      background:rgba(255,255,255,0.78);
+      box-shadow:var(--shadow-subtle);
+    }
+    .kpi-row{display:flex;gap:var(--s-2);margin-top:var(--s-3);flex-wrap:wrap}
+
+    .overlay{
+      position:absolute;inset:0;
+      background:rgba(20,20,20,0.48);
+      backdrop-filter:blur(12px);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:var(--s-4);
+      z-index:100;
+    }
+    .overlay.open{display:flex}
+    .sheet{
+      width:100%;
+      max-width:var(--app-max-w);
+      max-height:85vh;
+      overflow-y:auto;
+      border-radius:var(--r-xl) var(--r-xl) 0 0;
+      border:1px solid rgba(20,20,20,0.10);
+      border-bottom:none;
+      background:var(--bg-card);
+      box-shadow:var(--shadow-soft);
+      padding:var(--s-6);
+    }
+    .sheet h2{
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--ink-primary);
+      margin:0 0 var(--s-2);
+    }
+    .sheet p{font-size:12px;color:var(--ink-secondary);margin:0 0 var(--s-4);line-height:1.55}
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:80px;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(255,255,255,0.92);
+      border:1px solid rgba(47,111,115,0.22);
+      color:var(--ink-primary);
+      padding:var(--s-3) var(--s-4);
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      z-index:200;
+      opacity:0;
+      pointer-events:none;
+      transition:all var(--duration-base) var(--ease-out);
+      box-shadow:var(--shadow-soft);
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    .hint{font-size:11px;color:var(--ink-light);line-height:1.5}
+
+    .weight-bar{display:flex;height:7px;border-radius:999px;overflow:hidden;margin-top:var(--s-2);background:rgba(20,20,20,0.06);border:1px solid rgba(20,20,20,0.10)}
+    .weight-bar>div{height:100%}
+    .weight-bar .w-epi{background:var(--c-epi)}
+    .weight-bar .w-maslow{background:var(--c-esteem)}
+    .weight-bar .w-mental{background:var(--c-mental)}
+  </style>
+</head>
+<body>
+<div id="app-frame">
+  <header>
+    <div class="brand">
+      <div class="brand-title">Humaneed</div>
+      <div class="brand-subtitle" id="subline">Unified Coach</div>
+    </div>
+    <div class="top-actions">
+      <button class="pill" id="btnProfile"><span class="icon">Profil</span></button>
+      <button class="pill" id="btnExport"><span class="icon">Export</span></button>
+    </div>
+  </header>
+
+  <nav class="tabs-nav" role="tablist">
+    <button class="tab-btn active" data-tab="today">Heute</button>
+    <button class="tab-btn" data-tab="log">Log</button>
+    <button class="tab-btn" data-tab="coach">Coach</button>
+    <button class="tab-btn" data-tab="insights">Insights</button>
+  </nav>
+
+  <main class="viewport" id="main">
+    <div class="tab-content active" id="tab-today">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Unified Score</h2>
+            <div class="hint">Bio x Maslow x Mental - dynamisch gewichtet</div>
+          </div>
+          <div class="badge" id="badgeState">-</div>
+        </div>
+        <div class="card-body">
+          <div class="score-row">
+            <div>
+              <div class="title">Balance</div>
+              <div class="desc" id="scoreDesc">Engpass wird priorisiert</div>
+            </div>
+            <div class="num" id="scoreNum">-</div>
+          </div>
+
+          <div class="weight-bar">
+            <div class="w-epi" id="wBarEpi" style="width:25%"></div>
+            <div class="w-maslow" id="wBarMaslow" style="width:45%"></div>
+            <div class="w-mental" id="wBarMental" style="width:30%"></div>
+          </div>
+
+          <div class="rings">
+            <div class="ring" data-type="epi">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="16" fill="none" stroke="rgba(20,20,20,0.10)" stroke-width="4"></circle>
+                <circle class="prog" cx="21" cy="21" r="16" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 21 21)"></circle>
+                <text x="21" y="24" text-anchor="middle" font-size="9" font-weight="800" fill="#141414" class="pct">-</text>
+              </svg>
+              <div class="label">Bio</div>
+              <div class="small" id="small-epi">Schlaf/Recovery</div>
+            </div>
+
+            <div class="ring" data-type="maslow">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="16" fill="none" stroke="rgba(20,20,20,0.10)" stroke-width="4"></circle>
+                <circle class="prog" cx="21" cy="21" r="16" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 21 21)"></circle>
+                <text x="21" y="24" text-anchor="middle" font-size="9" font-weight="800" fill="#141414" class="pct">-</text>
+              </svg>
+              <div class="label">Maslow</div>
+              <div class="small" id="small-maslow">Beduerfnisse</div>
+            </div>
+
+            <div class="ring" data-type="mental">
+              <svg viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="16" fill="none" stroke="rgba(20,20,20,0.10)" stroke-width="4"></circle>
+                <circle class="prog" cx="21" cy="21" r="16" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 100" transform="rotate(-90 21 21)"></circle>
+                <text x="21" y="24" text-anchor="middle" font-size="9" font-weight="800" fill="#141414" class="pct">-</text>
+              </svg>
+              <div class="label">Mental</div>
+              <div class="small" id="small-mental">Selbstwirksamkeit</div>
+            </div>
+          </div>
+
+          <div class="insight-box">
+            <div class="label" id="insightLabel">Engpass</div>
+            <div class="text" id="insightText">-</div>
+          </div>
+
+          <div class="quick-grid">
+            <button class="quick-btn" id="qBasics" data-q="basics"><div class="t">Bio loggen</div><div class="s">Schlaf - Recovery - Entzuendung</div></button>
+            <button class="quick-btn" id="qSafety" data-q="safety"><div class="t">Safety-Check</div><div class="s">Ordnung - Plan - Grenzen</div></button>
+            <button class="quick-btn" id="qConnect" data-q="connect"><div class="t">Connection</div><div class="s">1 echter Kontakt</div></button>
+            <button class="quick-btn" id="qBreath" data-q="breath"><div class="t">2-Min Downshift</div><div class="s">Nervensystem - Recovery</div></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Smart Impulse</h2>
+            <div class="hint">Priorisiert nach Engpass-Analyse</div>
+          </div>
+          <div class="badge" id="questBadge">Heute</div>
+        </div>
+        <div class="card-body">
+          <div class="list" id="todayList"></div>
+          <div class="row">
+            <button class="btn ghost" id="btnPlan">Neu generieren</button>
+            <button class="btn ghost" id="btnClear">Leeren</button>
+            <button class="btn secondary" id="btnMarkAll">Alles fertig</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-log">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Biomarker</h2>
+            <div class="hint">Koerperliche Grundlage - epigenetische Signale</div>
+          </div>
+          <div class="badge" id="dateBadge2">-</div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Schlaf & Erholung</div>
+          <div class="field">
+            <label>Schlafdauer letzte Nacht</label>
+            <select id="inSleepH">
+              <option value="">- Waehlen -</option>
+              <option value="3">Unter 4h - Kaum geschlafen</option>
+              <option value="4">4-5h - Viel zu wenig</option>
+              <option value="5">5-6h - Zu wenig</option>
+              <option value="6">6-7h - Knapp ausreichend</option>
+              <option value="7">7-8h - Gut</option>
+              <option value="8">8-9h - Sehr gut</option>
+              <option value="9">9h+ - Extra lang</option>
+            </select>
+            <div class="field-hint">Optimal: 7-9h. Unter 6h akkumuliert Schlafschuld.</div>
+          </div>
+
+          <div class="field">
+            <label>Schlafqualitaet - Wie fuehlt sich das Aufwachen an?</label>
+            <select id="inSleepQ">
+              <option value="">- Waehlen -</option>
+              <option value="1">Zerschlagen - Wie nicht geschlafen</option>
+              <option value="2">Muede - Komme schwer hoch</option>
+              <option value="3">OK - Neutral, weder gut noch schlecht</option>
+              <option value="4">Erholt - Klar im Kopf</option>
+              <option value="5">Energiegeladen - Bereit fuer den Tag</option>
+            </select>
+            <div class="field-hint">Qualitaet zaehlt mehr als Quantitaet.</div>
+          </div>
+
+          <div class="field">
+            <label>Aktuelles Energie-Level</label>
+            <select id="inRecovery">
+              <option value="">- Waehlen -</option>
+              <option value="15">Am Limit - Koerper braucht Pause</option>
+              <option value="30">Erschoepft - Funktioniere gerade so</option>
+              <option value="45">Muede - Geht, aber anstrengend</option>
+              <option value="60">Okay - Normale Energie</option>
+              <option value="75">Gut - Habe Reserven</option>
+              <option value="90">Stark - Volle Kraft</option>
+            </select>
+            <div class="field-hint">Hoer auf deinen Koerper, nicht auf deinen Kopf.</div>
+          </div>
+
+          <div class="section-title">Bewegung & Aktivitaet</div>
+          <div class="field">
+            <label>Bewegung heute</label>
+            <select id="inSteps">
+              <option value="">- Waehlen -</option>
+              <option value="0">Keine - Hauptsaechlich gesessen</option>
+              <option value="2000">Wenig - Kurze Wege, Alltag</option>
+              <option value="5000">Etwas - 20-30 Min auf den Beinen</option>
+              <option value="8000">Moderat - Laengerer Spaziergang</option>
+              <option value="12000">Viel - Aktiver Tag, viel gelaufen</option>
+              <option value="15000">Sehr viel - Wanderung oder aehnlich</option>
+            </select>
+            <div class="field-hint">Jede Bewegung zaehlt. 30 Min taeglich ist das Minimum.</div>
+          </div>
+
+          <div class="field">
+            <label>Gezieltes Training</label>
+            <select id="inTrainMin">
+              <option value="">- Waehlen -</option>
+              <option value="0">Kein Training heute</option>
+              <option value="15">Kurz - 10-20 Min (Stretching, kurzes Workout)</option>
+              <option value="30">Mittel - 30 Min (Joggen, Fitness)</option>
+              <option value="45">Gut - 45 Min (Krafttraining, Sport)</option>
+              <option value="60">Lang - 60+ Min (Intensive Session)</option>
+            </select>
+            <div class="field-hint">2-3x pro Woche Kraft + regelmaessig Ausdauer.</div>
+          </div>
+
+          <div class="section-title">Ernaehrung</div>
+          <div class="chip-section">
+            <div class="hint">Was hast du heute gut gemacht?</div>
+            <div class="chips" id="foodChips"></div>
+          </div>
+
+          <div class="section-title">Entzuendungs-Trigger</div>
+          <div class="chip-section">
+            <div class="hint">Was belastet den Koerper? (Ehrlichkeit hilft)</div>
+            <div class="chips" id="inflammationChips"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Maslow-Ebenen</h2>
+            <div class="hint">Psychologische Beduerfnisse von unten nach oben</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="section-title tier-safety">Sicherheit & Stabilitaet</div>
+          <div class="maslow-explain">Ordnung, Vorhersehbarkeit, Kontrolle ueber dein Umfeld. Ohne Sicherheit ist alles andere schwer.</div>
+          <div class="chip-section"><div class="chips" id="safetyChips"></div></div>
+
+          <div class="section-title tier-connect">Zugehoerigkeit & Verbindung</div>
+          <div class="maslow-explain">Echte Kontakte, Naehe, Teil von etwas sein. Menschen sind soziale Wesen.</div>
+          <div class="chip-section"><div class="chips" id="connectChips"></div></div>
+
+          <div class="section-title tier-esteem">Selbstwert & Kompetenz</div>
+          <div class="maslow-explain">Etwas koennen, etwas beitragen, sich selbst achten. Wachstum durch Handeln.</div>
+          <div class="chip-section"><div class="chips" id="growthChips"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Mental-Layer</h2>
+            <div class="hint">Deine innere Haltung - der Multiplikator fuer alles</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="section-title">Selbstwirksamkeit</div>
+          <div class="mental-explain">Glaubst du, dass dein Handeln einen Unterschied macht? Diese Ueberzeugung bestimmt, ob du ueberhaupt anfaengst.</div>
+          <div class="field">
+            <label>Mein Handeln bewirkt etwas</label>
+            <select id="inEfficacy">
+              <option value="">- Waehlen -</option>
+              <option value="15">Stimmt nicht - Egal was ich tue</option>
+              <option value="30">Kaum - Zweifle stark daran</option>
+              <option value="50">Teils - Manchmal schon</option>
+              <option value="70">Meistens - Ich kann Dinge beeinflussen</option>
+              <option value="85">Absolut - Mein Handeln macht den Unterschied</option>
+            </select>
+          </div>
+
+          <div class="section-title">Kontrollueberzeugung (Locus of Control)</div>
+          <div class="mental-explain">Wer steuert dein Leben? Du oder die Umstaende? Internaler Locus = mehr Handlungskraft.</div>
+          <div class="field">
+            <label>Ich habe Einfluss auf mein Leben</label>
+            <select id="inLocus">
+              <option value="">- Waehlen -</option>
+              <option value="15">Nein - Alles passiert mir</option>
+              <option value="30">Wenig - Fuehle mich oft ohnmaechtig</option>
+              <option value="50">Teils - Manches kann ich beeinflussen</option>
+              <option value="70">Ja - Ich gestalte aktiv</option>
+              <option value="85">Voll - Ich bin der Autor meines Lebens</option>
+            </select>
+          </div>
+
+          <div class="section-title">Mentale Signale heute</div>
+          <div class="mental-explain">Kleine Momente die dein Selbstbild staerken oder schwaechen.</div>
+          <div class="chip-section"><div class="chips" id="mentalChips"></div></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="btnSave">Speichern</button>
+        <button class="btn ghost" id="btnResetDay">Heute zuruecksetzen</button>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-coach">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Unified Coach</h2>
+            <div class="hint">Algorithmus: Bio x Maslow x Mental</div>
+          </div>
+          <div class="badge" id="coachBadge">-</div>
+        </div>
+        <div class="card-body">
+          <div class="score-row" style="margin-bottom:var(--s-4)">
+            <div>
+              <div class="title" id="coachFocus">-</div>
+              <div class="desc" id="coachMini">-</div>
+            </div>
+            <div class="num" style="font-size:32px" id="coachScore">-</div>
+          </div>
+
+          <div class="list" id="coachPlan"></div>
+
+          <div class="insight-box">
+            <div class="label">Warum diese Impulse?</div>
+            <div class="text" id="coachWhy">-</div>
+          </div>
+
+          <div class="row">
+            <button class="btn" id="btnRegen">Neu generieren</button>
+            <button class="btn secondary" id="btnBreath">Downshift</button>
+            <button class="btn ghost" id="btnAddToToday">Zu Heute</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Beduerfnis-Pyramide</h2>
+            <div class="hint">Deficit-Cascade: unten wackelt = oben schwaecher</div>
+          </div>
+          <div class="badge" id="pyrBadge">-</div>
+        </div>
+        <div class="card-body"><div class="pyr" id="pyr"></div></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-insights">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>7-Tage Trend</h2>
+            <div class="hint">Unified Score Verlauf</div>
+          </div>
+          <div class="badge" id="weekBadge">-</div>
+        </div>
+        <div class="card-body">
+          <div class="chart-box" id="chartBox"></div>
+          <div class="kpi-row">
+            <div class="badge" id="kpiAvg">Avg -</div>
+            <div class="badge" id="kpiLever">Hebel -</div>
+            <div class="badge" id="kpiStreak">Streak -</div>
+          </div>
+          <div class="row">
+            <button class="btn ghost" id="btnImport">Import</button>
+            <button class="btn ghost" id="btnClearAll">Alles loeschen</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Journal</h2>
+            <div class="hint">Reflexion</div>
+          </div>
+          <div class="badge">Daily</div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label>Notiz</label>
+            <textarea id="journalText" placeholder="Was hat genaehrt? Was hat abgezogen?"></textarea>
+          </div>
+          <div class="row">
+            <button class="btn primary" id="btnSaveJournal">Speichern</button>
+            <button class="btn ghost" id="btnExportAll">Export</button>
+          </div>
+          <div class="list" id="journalList" style="margin-top:var(--s-4)"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="overlay" id="modalOverlay">
+    <div class="sheet">
+      <h2 id="mTitle">-</h2>
+      <p id="mText">-</p>
+      <div id="mBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">OK</div>
+</div>
+
+<script>
+(function(){
+  var $=function(s,el){return(el||document).querySelector(s)};
+  var $$=function(s,el){return Array.from((el||document).querySelectorAll(s))};
+  var todayISO=function(){return new Date().toISOString().slice(0,10)};
+  var STORE_KEY="humaneed_unified_v5";
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ARCHETYPEN - Vorbilder fuer bessere Impulse
+  // ═══════════════════════════════════════════════════════════════════════════
+  var ARCHETYPES={
+    stoiker:{id:"stoiker",name:"Stoiker",emoji:"S",desc:"Gelassenheit durch Vernunft",
+      impulses:{
+        epiHigh:[
+          {e:"M",t:"Memento Mori: Was ist heute wirklich wichtig?",tag:"Perspektive",how:"Schliesse die Augen. Stell dir vor, heute waere dein letzter Tag. Was wuerdest du tun? Was wuerdest du lassen? Schreibe 1 Sache auf, die du heute unbedingt tun willst - und tue sie zuerst."},
+          {e:"D",t:"Dichotomie: Was kannst du kontrollieren? Fokus darauf.",tag:"Klarheit",how:"Nimm ein Blatt. Ziehe eine Linie in der Mitte. Links: Was du kontrollieren kannst (deine Gedanken, Handlungen, Reaktionen). Rechts: Was du nicht kontrollieren kannst (andere Menschen, Wetter, Vergangenheit). Streiche rechts durch. Fokus nur auf links."}
+        ],
+        epiLow:[
+          {e:"R",t:"5 tiefe Atemzuege. Dann die Situation neu bewerten.",tag:"Ruhe",how:"Atme 4 Sekunden ein durch die Nase. Halte 4 Sekunden. Atme 6 Sekunden aus durch den Mund. Wiederhole 5x. Dann frage dich: Ist das wirklich so schlimm? Was kann ich JETZT tun?"},
+          {e:"A",t:"Amor Fati: Akzeptiere was ist. Dann handle.",tag:"Akzeptanz",how:"Sage laut oder innerlich: Das ist jetzt so. Ich akzeptiere es. Nicht gutheissen - akzeptieren. Akzeptanz ist keine Resignation, sondern der erste Schritt zum Handeln. Was ist der kleinste naechste Schritt?"}
+        ],
+        safety:[
+          {e:"O",t:"Aeussere Ordnung = innere Klarheit. 10 Min aufraumen.",tag:"Ordnung",how:"Waehle EINE Flaeche: Schreibtisch, Nachttisch, oder eine Schublade. Stelle einen Timer auf 10 Min. Nimm jeden Gegenstand in die Hand: Behalten, Wegwerfen, oder Verstauen. Keine Ausnahmen. Die Flaeche muss am Ende leer oder nur mit Essentiellem bestueckt sein."}
+        ],
+        connect:[
+          {e:"D",t:"Danke jemandem heute - konkret, ehrlich.",tag:"Dank",how:"Denke an eine Person die dir geholfen hat (egal wie klein). Schreibe ihr eine Nachricht oder rufe an. Sage konkret wofuer du dankst: Danke dass du X getan hast. Das hat mir geholfen weil Y. Keine Floskeln - echt und spezifisch."}
+        ],
+        esteem:[
+          {e:"V",t:"Ein kleines Versprechen an dich - und halte es.",tag:"Integritaet",how:"Waehle etwas Kleines das du heute tun wirst. Zum Beispiel: Ich werde um 22 Uhr das Handy weglegen. Schreibe es auf. Halte es ein - egal was passiert. Selbstvertrauen entsteht durch eingehaltene Versprechen an dich selbst."},
+          {e:"U",t:"Eine kleine Unbequemlichkeit: kalte Dusche, frueh auf.",tag:"Disziplin",how:"Waehle EINE freiwillige Unbequemlichkeit heute: 30 Sekunden kaltes Wasser am Ende der Dusche, 30 Min frueher aufstehen, oder auf Zucker verzichten. Es geht nicht um die Sache selbst - es geht darum zu beweisen, dass du staerker bist als dein Komfort."}
+        ],
+        self:[
+          {e:"J",t:"Abends: Was war gut? Was koennte besser?",tag:"Reflexion",how:"Nimm dir 5 Min vor dem Schlafen. Schreibe auf: 1) Was lief heute gut? (mindestens 1 Sache) 2) Was haette ich besser machen koennen? 3) Was nehme ich mir fuer morgen vor? Keine Selbstkritik - nur ehrliche Reflexion."}
+        ]
+      }},
+    athlet:{id:"athlet",name:"Athlet",emoji:"A",desc:"Koerper als Fundament",
+      impulses:{
+        epiHigh:[
+          {e:"L",t:"30-45 Min Zone 2 Cardio. Grundlagenausdauer.",tag:"Cardio",how:"Zone 2 = du kannst dich noch unterhalten, aber es ist anstrengend. Puls ca. 120-140. Gehen, Joggen, Radfahren, Schwimmen - egal was. 30-45 Min am Stueck. Das baut deine aerobe Basis und ist die Grundlage fuer alles andere."},
+          {e:"K",t:"Krafttraining: Grunduebung, 3x5 sauber.",tag:"Kraft",how:"Waehle EINE Grunduebung: Kniebeugen, Kreuzheben, Bankdruecken, Klimmzuege, oder Schulterdrücken. Mache 3 Saetze mit je 5 Wiederholungen. Gewicht so, dass die letzte Wiederholung schwer aber sauber ist. Qualitaet vor Quantitaet."}
+        ],
+        epiLow:[
+          {e:"W",t:"20 Min Spaziergang. Nicht verhandelbar.",tag:"Basis",how:"Steh auf, zieh Schuhe an, geh raus. 20 Min gehen - nicht schnell, nicht langsam. Kein Handy, keine Musik optional. Das ist das Minimum das dein Koerper jeden Tag braucht. Mach es zur nicht-verhandelbaren Routine."},
+          {e:"A",t:"5 Min Bodyweight: Liegestuetze, Squats, Plank.",tag:"Aktivierung",how:"10 Liegestuetze (oder Knie-Liegestuetze), 15 Kniebeugen, 30 Sek Plank. Wiederhole 2x. Das dauert 5 Min und aktiviert deinen ganzen Koerper. Perfekt fuer Tage an denen du keine Energie hast - danach hast du mehr."}
+        ],
+        safety:[
+          {e:"P",t:"Sporttasche fuer morgen packen.",tag:"Vorbereitung",how:"Lege alles was du morgen fuer Sport brauchst JETZT bereit: Schuhe, Kleidung, Wasserflasche, Handtuch. Stell die Tasche an die Tuer oder ins Auto. Die groesste Huerde ist nicht das Training - es ist die Vorbereitung. Eliminiere die Huerde."}
+        ],
+        connect:[
+          {e:"T",t:"Trainingspartner finden oder gemeinsam trainieren.",tag:"Team",how:"Schreibe JETZT einer Person: Hast du Lust diese Woche zusammen zu trainieren? Oder: Melde dich bei einem Kurs/Gruppe an. Gemeinsam trainieren macht accountable und macht mehr Spass. Du brauchst keinen Experten - nur jemanden der auftaucht."}
+        ],
+        esteem:[
+          {e:"P",t:"Einen Personal Record setzen - egal wie klein.",tag:"Fortschritt",how:"PR = Personal Record. Das kann sein: 1 Liegestuetz mehr als letztes Mal, 100m weiter gelaufen, 5kg mehr Gewicht, 10 Sek laenger Plank gehalten. Schreibe es auf. Fortschritt motiviert - auch kleine Fortschritte."},
+          {e:"C",t:"Eine Uebung die du vermeidest - heute machen.",tag:"Challenge",how:"Du weisst welche Uebung du hasst oder vermeidest. Genau die machst du heute. Nicht viel - nur 1 Satz oder 5 Min. Das Vermeiden kostet mehr Energie als das Tun. Danach fuehlt es sich besser an."}
+        ],
+        self:[
+          {e:"Z",t:"5 Min: Beste Version deines Koerpers visualisieren.",tag:"Vision",how:"Setze dich hin, schliesse die Augen. Stelle dir vor wie du in 1 Jahr aussiehst und dich fuehlst wenn du konsequent trainierst. Wie fuehlt sich dein Koerper an? Wie bewegst du dich? Wie stehst du da? Diese Vision zieht dich vorwaerts."}
+        ]
+      }},
+    polymath:{id:"polymath",name:"Polymath",emoji:"P",desc:"Lernen als Lebensweise",
+      impulses:{
+        epiHigh:[
+          {e:"D",t:"45 Min Deep Dive in ein Thema das dich fasziniert.",tag:"Fokus",how:"Waehle EIN Thema das dich wirklich interessiert. Stelle einen Timer auf 45 Min. Kein Handy, keine Ablenkung. Lies, schaue Videos, mache Notizen. Nach 45 Min: Schreibe in 3 Saetzen auf was du gelernt hast."},
+          {e:"T",t:"Erklaere jemandem etwas das du gelernt hast.",tag:"Lehren",how:"Die Feynman-Methode: Erklaere ein Konzept so einfach dass ein 12-Jaehriger es versteht. Wenn du es nicht einfach erklaeren kannst, hast du es nicht verstanden. Finde jemanden und erklaere - oder schreibe es auf als wuerdest du es erklaeren."}
+        ],
+        epiLow:[
+          {e:"M",t:"10 Min Podcast/Artikel zu etwas Neuem.",tag:"Input",how:"Waehle etwas AUSSERHALB deines normalen Bereichs. Wenn du Tech machst, hoere etwas ueber Geschichte. Wenn du Kunst machst, lerne ueber Wissenschaft. 10 Min reichen um einen neuen Gedanken zu pflanzen."},
+          {e:"N",t:"1 Idee aufschreiben die dir heute kam.",tag:"Capture",how:"Nimm dein Handy oder ein Notizbuch. Schreibe EINE Idee auf die dir heute kam - egal wie klein oder wirr. Ideen die nicht aufgeschrieben werden verschwinden. Baue eine Sammlung auf. Verbindungen entstehen spaeter."}
+        ],
+        safety:[
+          {e:"S",t:"Wissensmanagement: Notizen ordnen.",tag:"System",how:"Nimm 15 Min um deine Notizen zu organisieren. Nutze Ordner, Tags, oder ein System wie Zettelkasten. Das Ziel: Jede Notiz an einem Ort wo du sie wiederfindest. Wissen das du nicht findest ist nutzlos."}
+        ],
+        connect:[
+          {e:"D",t:"Tiefes Gespraech ueber ein Thema - nicht Small Talk.",tag:"Austausch",how:"Frage jemanden: Was beschaeftigt dich gerade? Oder: Was hast du zuletzt gelernt das dich ueberrascht hat? Hoere wirklich zu. Stelle Nachfragen. Tiefe Gespraeche sind selten aber wertvoll."}
+        ],
+        esteem:[
+          {e:"P",t:"Projekt starten das dein Wissen anwendet.",tag:"Output",how:"Wissen ohne Anwendung ist Unterhaltung. Waehle EINE Sache die du weisst und wende sie an: Schreibe einen Artikel, baue etwas, lehr jemanden. Start klein - 30 Min fuer den ersten Schritt."},
+          {e:"S",t:"500 Worte schreiben ueber etwas das du verstehen willst.",tag:"Schreiben",how:"Schreiben ist Denken auf Papier. Waehle ein Thema das du besser verstehen willst. Schreibe 500 Worte darueber - ohne zu recherchieren. Wo du haengen bleibst, weisst du wo die Luecken sind."}
+        ],
+        self:[
+          {e:"E",t:"Experimentiere mit einer neuen Methode/Technik.",tag:"Innovation",how:"Probiere heute EINE neue Methode: Eine neue App zum Lernen, eine neue Technik zum Lesen (z.B. SQ3R), oder eine neue Art Notizen zu machen. Bewerte nach 1 Woche ob es funktioniert."}
+        ]
+      }},
+    minimalist:{id:"minimalist",name:"Minimalist",emoji:"M",desc:"Weniger ist mehr",
+      impulses:{
+        epiHigh:[
+          {e:"E",t:"5 Dinge loswerden die du nicht brauchst.",tag:"Ausmisten",how:"Geh durch einen Bereich: Schublade, Schrank, oder Tasche. Finde 5 Dinge die du in den letzten 6 Monaten nicht benutzt hast. Weg damit: Muell, Spende, oder Verkauf. Jedes Ding das du besitzt kostet mentale Energie."},
+          {e:"D",t:"2h Digital Detox. Vollstaendig.",tag:"Klarheit",how:"Stelle dein Handy auf Flugmodus. Schliesse alle Browser-Tabs. 2 Stunden NICHTS Digitales. Lies ein physisches Buch, geh spazieren, denke nach. Bemerke wie sich dein Geist nach 30 Min beruhigt."}
+        ],
+        epiLow:[
+          {e:"S",t:"10 Min Stille. Kein Input. Nur sein.",tag:"Pause",how:"Setze dich hin. Kein Handy, keine Musik, kein Buch. Nur du und die Stille. 10 Min. Dein Geist wird laut werden - das ist normal. Beobachte nur. Tue nichts. Das ist schwerer als es klingt."},
+          {e:"N",t:"Zu einer unwichtigen Sache heute Nein sagen.",tag:"Grenzen",how:"Identifiziere EINE Anfrage, Einladung, oder Aufgabe die nicht wichtig ist. Sage Nein. Freundlich aber klar. Jedes Ja zu etwas Unwichtigem ist ein Nein zu etwas Wichtigem."}
+        ],
+        safety:[
+          {e:"A",t:"Eine wiederkehrende Entscheidung automatisieren.",tag:"System",how:"Welche Entscheidung triffst du immer wieder? Was du anziehst, was du fruehstueckst, wann du trainierst? Lege es EINMAL fest und halte dich daran. Entscheidungsmuedigkeit ist real - eliminiere unnoetige Entscheidungen."}
+        ],
+        connect:[
+          {e:"T",t:"1 Gespraech, aber vollstaendig praesent.",tag:"Tiefe",how:"Beim naechsten Gespraech: Handy weg, Blickkontakt halten, wirklich zuhoeren. Nicht an die Antwort denken waehrend der andere spricht. Frage nach. Ein tiefes Gespraech ist mehr wert als zehn oberflaechliche."}
+        ],
+        esteem:[
+          {e:"E",t:"Was ist die EINE wichtige Sache heute?",tag:"Fokus",how:"Schreibe alle deine Aufgaben auf. Streiche alle bis auf EINE durch. Diese eine Sache - wenn du nur sie schaffst - macht den Tag erfolgreich. Tue sie zuerst. Alles andere ist optional."},
+          {e:"F",t:"Eine Sache zu 100% fertig machen.",tag:"Vollendung",how:"Waehle eine halbfertige Aufgabe. Bringe sie KOMPLETT zu Ende. Nicht 90% - 100%. Abgeschlossen. Haken dran. Halbfertige Dinge belasten das Gehirn. Abgeschlossene Dinge befreien."}
+        ],
+        self:[
+          {e:"Z",t:"Alle Ziele auf 1 reduzieren. Was ist es?",tag:"Essenz",how:"Schreibe alle deine aktuellen Ziele auf. Jetzt streiche alle bis auf eines durch. Welches Ziel wuerdest du waehlen wenn du nur eines haben koenntest? Das ist dein Fokus. Alles andere ist Ablenkung."}
+        ]
+      }},
+    kuenstler:{id:"kuenstler",name:"Kuenstler",emoji:"K",desc:"Erschaffen als Ausdruck",
+      impulses:{
+        epiHigh:[
+          {e:"F",t:"60 Min kreative Arbeit ohne Unterbrechung.",tag:"Flow",how:"Waehle dein Medium: Schreiben, Malen, Musik, Code, Design - egal was. Timer auf 60 Min. Handy weg. Tue nichts anderes. Die ersten 15 Min sind schwer - push durch. Der Flow kommt nach 20-30 Min."},
+          {e:"S",t:"20 Ideen in 10 Min - Quantitaet vor Qualitaet.",tag:"Brainstorm",how:"Nimm Papier und Stift. Timer auf 10 Min. Schreibe 20 Ideen auf zu einem Thema/Problem. Nicht nachdenken, nicht bewerten - einfach schreiben. Die ersten 10 sind offensichtlich, die naechsten 10 sind interessant."}
+        ],
+        epiLow:[
+          {e:"M",t:"Morning Pages: 3 Seiten Bewusstseinsstrom.",tag:"Ausdruck",how:"Direkt nach dem Aufwachen: 3 Seiten handschriftlich schreiben. Kein Thema, kein Ziel. Schreibe was dir in den Kopf kommt. Egal wie banal oder wirr. Das raeumt den Kopf auf und macht Platz fuer Kreativitaet."},
+          {e:"S",t:"Ohne Ziel kreativ sein. Kein Ergebnis noetig.",tag:"Spielen",how:"Nimm dein kreatives Werkzeug. Mache etwas OHNE Ziel. Kritzel, improvisiere, experimentiere. Es muss nicht gut sein. Es muss nicht fertig werden. Erlaube dir zu spielen wie ein Kind. Das ist wo Kreativitaet geboren wird."}
+        ],
+        safety:[
+          {e:"R",t:"Feste Kreativzeit einrichten. Taeglich.",tag:"Ritual",how:"Blocke 30-60 Min im Kalender. Gleiche Zeit jeden Tag. Das ist deine Kreativzeit - nicht verhandelbar. Inspiration ist unzuverlaessig, Routine nicht. Profis warten nicht auf Inspiration."}
+        ],
+        connect:[
+          {e:"T",t:"Ein Werk zeigen - verletzlich, aber wichtig.",tag:"Teilen",how:"Waehle etwas das du erschaffen hast. Zeige es einer Person oder veroeffentliche es. Ja, es fuehlt sich verletzlich an. Ja, es ist notwendig. Kunst die niemand sieht ist unvollstaendig. Feedback ist Nahrung."}
+        ],
+        esteem:[
+          {e:"S",t:"Etwas veroeffentlichen, auch wenn nicht perfekt.",tag:"Ship it",how:"Fertig ist besser als perfekt. Waehle etwas an dem du arbeitest. Setze eine Deadline: Heute. Veroeffentliche es. Perfektionismus ist Angst in Verkleidung. Die Welt braucht deine Arbeit, nicht deine Perfektion."},
+          {e:"P",t:"1 Werk zur Sammlung hinzufuegen.",tag:"Portfolio",how:"Dokumentiere was du erschaffst. Foto, Screenshot, Datei - egal wie. Fuege es zu einer Sammlung hinzu. Ueber Zeit siehst du deinen Fortschritt. Das ist motivierender als jedes Kompliment."}
+        ],
+        self:[
+          {e:"M",t:"Woran arbeitest du das wirklich zaehlt?",tag:"Meisterwerk",how:"Frage dich: Wenn ich nur noch EIN Projekt machen koennte, welches waere es? Das ist dein Meisterwerk. Vielleicht arbeitest du schon daran. Vielleicht musst du es starten. Alles andere ist Aufwaermen."}
+        ]
+      }},
+    unternehmer:{id:"unternehmer",name:"Unternehmer",emoji:"U",desc:"Wert schaffen und skalieren",
+      impulses:{
+        epiHigh:[
+          {e:"D",t:"90 Min Deep Work an der wichtigsten Sache.",tag:"Fokus",how:"Identifiziere die EINE Aufgabe die den groessten Impact hat. Blocke 90 Min. Handy aus, Email zu, Tuer zu. Arbeite NUR daran. 90 Min fokussierte Arbeit schlaegt 8h fragmentierte Arbeit."},
+          {e:"S",t:"30 Min Wochenplanung. Was bewegt die Nadel?",tag:"Strategie",how:"Schreibe auf: Was sind die 3 wichtigsten Ergebnisse diese Woche? Nicht Aufgaben - Ergebnisse. Dann: Welche Aufgaben fuehren direkt dazu? Streiche alles andere. Busy sein ist nicht produktiv sein."}
+        ],
+        epiLow:[
+          {e:"Q",t:"1 Quick Win sofort erledigen.",tag:"Momentum",how:"Waehle eine Aufgabe die unter 10 Min dauert und schon laenger auf deiner Liste steht. Erledige sie JETZT. Nicht planen, nicht optimieren - tun. Momentum kommt von Bewegung, nicht von Planung."},
+          {e:"D",t:"Was kannst du delegieren oder eliminieren?",tag:"Leverage",how:"Liste alle Aufgaben der letzten Woche auf. Frage bei jeder: Muss ICH das tun? Wenn nein: Delegiere (an Person oder Tool) oder eliminiere. Deine Zeit ist begrenzt - nutze sie fuer High-Impact Arbeit."}
+        ],
+        safety:[
+          {e:"S",t:"1 Prozess dokumentieren oder verbessern.",tag:"System",how:"Waehle etwas das du regelmaessig tust. Schreibe die Schritte auf. Frage: Kann ein Schritt eliminiert, automatisiert, oder vereinfacht werden? Gute Systeme befreien Zeit fuer wichtige Arbeit."}
+        ],
+        connect:[
+          {e:"K",t:"Mit einem Kunden/Nutzer sprechen. Zuhoeren.",tag:"Feedback",how:"Rufe einen Kunden an oder schreibe ihm. Frage: Was funktioniert gut? Was frustriert dich? Hoere zu ohne zu verteidigen. Das ist unbequem aber Gold wert. Annahmen sind gefaehrlich."},
+          {e:"T",t:"Jemanden im Team anerkennen.",tag:"Fuehrung",how:"Wer hat gute Arbeit geleistet? Sage es ihm/ihr - konkret. Nicht Gut gemacht sondern Du hast X getan und das hat Y bewirkt. Anerkennung kostet nichts und bedeutet viel."}
+        ],
+        esteem:[
+          {e:"M",t:"Kleinen Erfolg feiern. Verdient.",tag:"Anerkennung",how:"Was hast du diese Woche erreicht? Schreibe es auf. Nimm dir 5 Min um es zu wuerdigen. Unternehmer springen oft sofort zum naechsten Problem. Das fuehrt zu Burnout. Feiere Fortschritt."},
+          {e:"R",t:"Review: Was funktioniert? Anpassen.",tag:"Iteration",how:"Nimm 15 Min fuer ehrliches Review: Was laeuft gut? (Mehr davon) Was laeuft schlecht? (Aendern oder stoppen) Was fehlt? (Starten) Schreibe 1 konkrete Aenderung auf die du diese Woche umsetzt."}
+        ],
+        self:[
+          {e:"V",t:"Warum machst du das? Aufschreiben.",tag:"Purpose",how:"Schreibe in 3 Saetzen auf: Warum existiert dein Unternehmen/Projekt? Nicht was du tust, sondern WARUM. Wenn du es nicht in 3 Saetzen sagen kannst, weisst du es nicht klar genug. Klarheit hier treibt alles andere."}
+        ]
+      }},
+    moensch:{id:"moensch",name:"Moench",emoji:"O",desc:"Stille und Praesenz",
+      impulses:{
+        epiHigh:[
+          {e:"M",t:"20 Min Meditation. Atem beobachten.",tag:"Praxis",how:"Setze dich aufrecht hin. Timer auf 20 Min. Schliesse die Augen. Beobachte deinen Atem - wie er kommt und geht. Wenn Gedanken kommen (sie werden), bemerke sie und kehre zum Atem zurueck. Immer wieder. Das ist die ganze Praxis."},
+          {e:"G",t:"15 Min Gehmeditation. Jeden Schritt spueren.",tag:"Bewegung",how:"Gehe sehr langsam. Spuere wie dein Fuss den Boden beruehrt: Ferse, Sohle, Zehen. Dann das Abheben. Dann der naechste Fuss. Nur das. Wenn Gedanken kommen, zurueck zu den Fuessen. Praesenz in Bewegung."}
+        ],
+        epiLow:[
+          {e:"A",t:"5 Min bewusst atmen. 4-7-8 Rhythmus.",tag:"Atem",how:"4 Sekunden einatmen durch die Nase. 7 Sekunden Luft anhalten. 8 Sekunden langsam ausatmen durch den Mund. Wiederhole 4-5 Mal. Das aktiviert den Parasympathikus und beruhigt das Nervensystem sofort."},
+          {e:"D",t:"3 Dinge fuer die du dankbar bist. Fuehlen.",tag:"Dankbarkeit",how:"Nicht nur auflisten - FUEHLEN. Denke an 3 Dinge (Menschen, Momente, Umstaende). Bei jedem: Schliesse die Augen, erinnere dich konkret, spuere die Dankbarkeit im Koerper. Das aendert deine Neurochemie."}
+        ],
+        safety:[
+          {e:"R",t:"Morgen- oder Abendritual etablieren.",tag:"Ritual",how:"Waehle 3 Dinge die du jeden Morgen ODER jeden Abend tust. Immer gleich, immer in der gleichen Reihenfolge. Zum Beispiel: Wasser trinken, 5 Min Meditation, Tagesplan schreiben. Rituale geben dem Tag Struktur und Bedeutung."}
+        ],
+        connect:[
+          {e:"M",t:"Jemandem bewusst Gutes wuenschen.",tag:"Mitgefuehl",how:"Denke an eine Person - Familie, Freund, oder Fremder. Wuensche ihr innerlich: Moege sie gluecklich sein. Moege sie gesund sein. Moege sie frei von Leid sein. Spuere das Gefuehl. Das ist Metta-Meditation."},
+          {e:"Z",t:"Vollstaendig praesent sein beim Zuhoeren.",tag:"Praesenz",how:"Beim naechsten Gespraech: Hoere NUR zu. Plane nicht deine Antwort. Urteile nicht. Sei vollstaendig da. Wenn du merkst dass du abdriftest, komm zurueck. Echtes Zuhoeren ist ein Geschenk."}
+        ],
+        esteem:[
+          {e:"D",t:"Etwas fuer jemanden tun ohne Erwartung.",tag:"Dienst",how:"Tue heute eine Sache fuer jemand anderen. Klein ist okay: Tuer aufhalten, Kaffee bringen, aufmerksam zuhoeren. OHNE etwas zu erwarten. Nicht mal ein Danke. Selbstloser Dienst ist seine eigene Belohnung."}
+        ],
+        self:[
+          {e:"R",t:"1h allein in Stille. Kein Input.",tag:"Retreat",how:"Finde 1 Stunde wo du komplett allein bist. Kein Handy, kein Buch, keine Musik. Nur du und die Stille. Gehe spazieren, sitze, oder liege. Beobachte was hochkommt. Das ist Mini-Retreat. Essentiell fuer innere Klarheit."}
+        ]
+      }},
+    biohacker:{id:"biohacker",name:"Biohacker",emoji:"B",desc:"Optimieren durch Daten",
+      impulses:{
+        epiHigh:[
+          {e:"C",t:"2 Min kalte Dusche. Hormesis.",tag:"Cold",how:"Am Ende deiner Dusche: Drehe auf kalt. Starte mit 30 Sekunden, steigere auf 2 Min. Atme tief und ruhig. Der Schock aktiviert Noradrenalin, verbessert Durchblutung, und trainiert Stressresistenz. Hormesis = kleiner Stress macht staerker."},
+          {e:"S",t:"10 Min Morgensonne direkt nach Aufstehen.",tag:"Licht",how:"Innerhalb der ersten 30 Min nach Aufwachen: Geh raus oder ans Fenster. Schaue in Richtung Sonne (nicht direkt rein). 10 Min reichen. Das setzt deinen circadianen Rhythmus und stoppt Melatonin-Produktion. Besser als Kaffee."},
+          {e:"F",t:"16h Fasten. Autophagie.",tag:"Fasten",how:"Letzte Mahlzeit um 20 Uhr, naechste um 12 Uhr mittags. 16 Stunden nur Wasser, schwarzer Kaffee, oder Tee. Das aktiviert Autophagie (Zellreinigung) und verbessert Insulinsensitivitaet. Start mit 14h wenn 16h zu viel."}
+        ],
+        epiLow:[
+          {e:"T",t:"HRV/Schlaf/Schritte checken. Was sagen die Daten?",tag:"Tracking",how:"Schau auf deine Daten von heute/gestern. HRV unter Durchschnitt? Mehr Recovery noetig. Schlechter Schlaf? Frueh ins Bett. Wenig Schritte? Spaziergang einbauen. Daten luegen nicht - dein Gefuehl manchmal schon."},
+          {e:"B",t:"Box Breathing 4-4-4-4, 10 Runden.",tag:"Atem",how:"4 Sekunden einatmen. 4 Sekunden halten. 4 Sekunden ausatmen. 4 Sekunden halten. Wiederhole 10 Mal. Das balanciert Sympathikus und Parasympathikus. Navy SEALs nutzen das fuer Stressmanagement."},
+          {e:"H",t:"500ml Wasser mit Elektrolyten.",tag:"Hydration",how:"Fuege zu 500ml Wasser: Eine Prise Salz und einen Spritzer Zitrone. Oder nutze ein Elektrolytpulver. Trinke es in den ersten 30 Min nach Aufwachen. Dein Koerper ist dehydriert nach dem Schlaf. Das ist das einfachste Biohack."}
+        ],
+        safety:[
+          {e:"R",t:"Schlafhygiene: Temp runter, dunkel, feste Zeit.",tag:"Protokoll",how:"Schlafzimmer auf 18-19 Grad kuehlen. Alle Lichtquellen blockieren (Verdunklungsvorhaenge, Tape ueber LEDs). Jeden Tag gleiche Schlafenszeit +/- 30 Min. Diese 3 Dinge haben mehr Impact auf Schlaf als jedes Supplement."}
+        ],
+        connect:[
+          {e:"O",t:"20 Sek Umarmung. Oxytocin.",tag:"Hormone",how:"Umarme jemanden fuer mindestens 20 Sekunden. Das ist laenger als es sich anfuehlt - zaehle mit. Nach 20 Sek schuettet der Koerper Oxytocin aus: Bindungshormon, Stressreduktion, Wohlbefinden. Funktioniert auch bei Haustieren."}
+        ],
+        esteem:[
+          {e:"E",t:"Neues Protokoll 7 Tage testen.",tag:"Experiment",how:"Waehle EINE Variable zum Testen: Kein Koffein nach 14 Uhr, 10 Min Meditation morgens, oder Blutzucker tracken. Mache es 7 Tage konsequent. Dokumentiere wie du dich fuehlst. N=1 Experimente sind kraftvoll."},
+          {e:"D",t:"Ergebnisse dokumentieren.",tag:"Daten",how:"Was auch immer du testest: Schreibe es auf. Datum, was du getan hast, wie du dich gefuehlt hast, objektive Daten wenn verfuegbar. Ohne Dokumentation weisst du nicht was funktioniert. Daten > Erinnerung."}
+        ],
+        self:[
+          {e:"L",t:"Was ist der groesste Hebel fuer Langlebigkeit?",tag:"Longevity",how:"Die Wissenschaft sagt: Schlaf, Bewegung, Ernaehrung, soziale Verbindung, Stressmanagement. Welcher dieser Bereiche ist bei dir am schwaechsten? Das ist dein groesster Hebel. Fokus dort, nicht auf exotische Supplements."}
+        ]
+      }}
+  };
+  var ARCHETYPE_LIST=["stoiker","athlet","polymath","minimalist","kuenstler","unternehmer","moensch","biohacker"];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // UNIFIED SCORING ALGORITHM
+  // ═══════════════════════════════════════════════════════════════════════════
+  var UnifiedScoring={
+    config:{
+      weights:{epigenetic:0.25,maslow:0.45,mental:0.30},
+      thresholds:{bioEmergency:{sleepDebt:14,inflammation:70},maslowDeficit:50,mentalCrisis:30},
+      maslowTiers:[
+        {key:"physiology",name:"Physiologie",weight:0.30,threshold:70},
+        {key:"safety",name:"Sicherheit",weight:0.22,threshold:65},
+        {key:"belonging",name:"Zugehoerigkeit",weight:0.18,threshold:60},
+        {key:"esteem",name:"Selbstwert",weight:0.16,threshold:55},
+        {key:"selfActualization",name:"Selbstverwirklichung",weight:0.10,threshold:50},
+        {key:"transcendence",name:"Transzendenz",weight:0.04,threshold:40}
+      ]
+    },
+    compute:function(state){
+      var epiScore=this.computeEpigeneticScore(state.biomarkers);
+      var maslowResult=this.computeMaslowScore(state.needs);
+      var mentalScore=this.computeMentalScore(state.mental);
+      var dynWeights=this.computeDynamicWeights(state,epiScore);
+      var mentalMultiplier=this.computeMentalMultiplier(state.mental);
+      var bioFeedback=this.computeBiologicalFeedback(state.biomarkers);
+      var unified=epiScore*dynWeights.epigenetic+maslowResult.score*dynWeights.maslow*mentalMultiplier+(mentalScore+bioFeedback)*dynWeights.mental;
+      unified=Math.max(0,Math.min(100,unified));
+      var bottleneck=this.identifyBottleneck(state,epiScore,maslowResult,mentalScore);
+      var recommendation=this.generateRecommendation(bottleneck,state);
+      var plan=this.generatePlan(bottleneck,state,epiScore,maslowResult,mentalScore,state.archetype||"stoiker");
+      return{total:unified,components:{epigenetic:epiScore,maslow:maslowResult.score,mental:Math.max(0,mentalScore+bioFeedback)},weights:dynWeights,maslowTiers:maslowResult.tiers,bottleneck:bottleneck,recommendation:recommendation,plan:plan,multipliers:{mental:mentalMultiplier,bioFeedback:bioFeedback}};
+    },
+    computeEpigeneticScore:function(bio){
+      var sleepScore=Math.max(0,100-(bio.sleepDebt/20)*100);
+      var inflammationScore=Math.max(0,100-bio.inflammation);
+      var recoveryScore=bio.recovery;
+      var bondingScore=bio.bonding;
+      var score=sleepScore*0.35+inflammationScore*0.25+recoveryScore*0.25+bondingScore*0.15;
+      return Math.max(0,Math.min(100,score));
+    },
+    computeMaslowScore:function(needs){
+      var tiers=[],totalScore=0,totalWeight=0,deficitMult=1;
+      for(var i=0;i<this.config.maslowTiers.length;i++){
+        var tier=this.config.maslowTiers[i];
+        var value=needs[tier.key]||0;
+        var isDeficit=value<tier.threshold;
+        var effWeight=tier.weight*deficitMult;
+        tiers.push({key:tier.key,name:tier.name,value:value,isDeficit:isDeficit,effectiveWeight:effWeight,threshold:tier.threshold});
+        totalScore+=value*effWeight;
+        totalWeight+=effWeight;
+        if(value<50)deficitMult*=0.8;
+      }
+      var score=totalWeight>0?totalScore/totalWeight:0;
+      return{score:Math.max(0,Math.min(100,score)),tiers:tiers};
+    },
+    computeMentalScore:function(mental){
+      var score=mental.locus*0.30+mental.intention*0.20+mental.efficacy*0.30+mental.narrative*0.20;
+      return Math.max(0,Math.min(100,score));
+    },
+    computeDynamicWeights:function(state,epiScore){
+      var base={epigenetic:0.25,maslow:0.45,mental:0.30};
+      if(state.biomarkers.sleepDebt>14||state.biomarkers.inflammation>70){
+        base={epigenetic:0.45,maslow:0.35,mental:0.20};
+      }else if(epiScore>75){
+        base={epigenetic:0.20,maslow:0.45,mental:0.35};
+      }
+      var sum=base.epigenetic+base.maslow+base.mental;
+      return{epigenetic:base.epigenetic/sum,maslow:base.maslow/sum,mental:base.mental/sum};
+    },
+    computeMentalMultiplier:function(mental){
+      var avgMental=(mental.locus+mental.efficacy)/2;
+      return 0.8+(avgMental/100)*0.4;
+    },
+    computeBiologicalFeedback:function(bio){
+      var penalty=0;
+      if(bio.sleepDebt>10)penalty-=(bio.sleepDebt-10)*2;
+      if(bio.inflammation>60)penalty-=(bio.inflammation-60)*0.3;
+      if(bio.recovery<40)penalty-=(40-bio.recovery)*0.2;
+      return penalty;
+    },
+    identifyBottleneck:function(state,epiScore,maslowResult,mentalScore){
+      var scores=[{key:"epigenetic",name:"Biologische Ebene",score:epiScore},{key:"maslow",name:"Beduerfnis-Ebene",score:maslowResult.score},{key:"mental",name:"Mentale Ebene",score:mentalScore}];
+      var mainBottleneck=scores[0];
+      for(var i=1;i<scores.length;i++){if(scores[i].score<mainBottleneck.score)mainBottleneck=scores[i]}
+      var subBottleneck=null;
+      if(mainBottleneck.key==="maslow"){
+        var lowest=maslowResult.tiers[0];
+        for(var j=1;j<maslowResult.tiers.length;j++){if(maslowResult.tiers[j].value<lowest.value)lowest=maslowResult.tiers[j]}
+        subBottleneck=lowest;
+      }
+      if(mainBottleneck.key==="epigenetic"){
+        var markers=[{key:"sleepDebt",name:"Schlafschuld",value:100-(state.biomarkers.sleepDebt/20)*100},{key:"inflammation",name:"Entzuendung",value:100-state.biomarkers.inflammation},{key:"recovery",name:"Recovery",value:state.biomarkers.recovery},{key:"bonding",name:"Soziale Bindung",value:state.biomarkers.bonding}];
+        var lowestM=markers[0];
+        for(var k=1;k<markers.length;k++){if(markers[k].value<lowestM.value)lowestM=markers[k]}
+        subBottleneck=lowestM;
+      }
+      return{main:mainBottleneck,sub:subBottleneck};
+    },
+    generateRecommendation:function(bottleneck,state){
+      var recs={
+        epigenetic:{sleepDebt:"Schlaf priorisieren: 45-60 Min frueher runterfahren, Blaulicht reduzieren.",inflammation:"Entzuendung senken: Anti-entzuendliche Ernaehrung, Bewegung, Stress reduzieren.",recovery:"Recovery staerken: Atemuebungen, moderate Bewegung, Pausen einbauen.",bonding:"Soziale Bindung: Ein echter Kontakt taeglich."},
+        maslow:{physiology:"Basis stabilisieren: Schlaf, Bewegung, Ernaehrung - eine Sache verbessern.",safety:"Sicherheit schaffen: 10 Min Ordnung, einen Plan machen, eine Grenze setzen.",belonging:"Zugehoerigkeit staerken: Echten Kontakt suchen, Dank aussprechen.",esteem:"Selbstwert aufbauen: Ein kleines Versprechen an dich halten.",selfActualization:"Selbstverwirklichung: 15 Min Deep Work fuer etwas Sinnvolles.",transcendence:"Beitrag leisten: Jemandem helfen ohne Erwartung."},
+        mental:"Mentale Arbeit: Selbstwirksamkeit durch kleine Erfolge aufbauen."
+      };
+      if(bottleneck.main.key==="mental")return recs.mental;
+      if(bottleneck.sub&&recs[bottleneck.main.key]&&recs[bottleneck.main.key][bottleneck.sub.key])return recs[bottleneck.main.key][bottleneck.sub.key];
+      return"Balance halten: Kleine Schritte auf allen Ebenen.";
+    },
+    generatePlan:function(bottleneck,algoState,epiScore,maslowResult,mentalScore,archetype){
+      var plan=[];
+      var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2)};
+      var add=function(emoji,text,tag,tier,priority,how){plan.push({id:uid(),emoji:emoji,text:text,tag:tag,tier:tier,priority:priority||false,done:false,how:how||""})};
+      // Hole Archetyp-Impulse
+      var arch=ARCHETYPES[archetype]||ARCHETYPES.stoiker;
+      var imp=arch.impulses;
+      var pick=function(arr){return arr&&arr.length?arr[Math.floor(Math.random()*arr.length)]:null};
+      // Bio-Anker basierend auf Energie-Level
+      if(epiScore<50&&imp.epiLow&&imp.epiLow.length){
+        var i=pick(imp.epiLow);
+        add(i.e,i.t,i.tag,"epi",true,i.how);
+      }else if(imp.epiHigh&&imp.epiHigh.length){
+        var i=pick(imp.epiHigh);
+        add(i.e,i.t,i.tag,"epi",false,i.how);
+      }else{
+        add("B","1 Basis-Anker: Wasser + 10 Min gehen.","Bio","epi",false,"Trinke 1 grosses Glas Wasser (300-500ml). Dann geh 10 Min raus - egal wohin. Das aktiviert deinen Koerper und Geist. Nicht verhandelbar.");
+      }
+      // Fokus basierend auf Engpass + Archetyp
+      var focusKey=null;
+      if(bottleneck.main.key==="maslow"&&bottleneck.sub){
+        var subMap={physiology:"epiLow",safety:"safety",belonging:"connect",esteem:"esteem",selfActualization:"self",transcendence:"self"};
+        focusKey=subMap[bottleneck.sub.key]||"safety";
+      }else if(bottleneck.main.key==="epigenetic"){
+        focusKey=epiScore<50?"epiLow":"epiHigh";
+      }else{
+        focusKey="esteem"; // Mental -> Selbstwirksamkeit
+      }
+      // Hole passende Impulse vom Archetyp
+      var focusImp=imp[focusKey]||imp.esteem||[];
+      if(focusImp.length){
+        var i1=pick(focusImp);
+        add(i1.e,i1.t,i1.tag,focusKey==="connect"?"connect":focusKey==="safety"?"safety":"esteem",true,i1.how);
+        // Zweiter Impuls wenn vorhanden
+        var remaining=focusImp.filter(function(x){return x.t!==i1.t});
+        if(remaining.length){var i2=pick(remaining);add(i2.e,i2.t,i2.tag,focusKey==="connect"?"connect":focusKey==="safety"?"safety":"esteem",false,i2.how)}
+      }
+      // Bruecken-Aktion
+      if(mentalScore<50&&imp.esteem&&imp.esteem.length){
+        var i=pick(imp.esteem);add(i.e,i.t,i.tag,"mental",false,i.how);
+      }else if(maslowResult.tiers[1]&&maslowResult.tiers[1].value<60&&imp.safety&&imp.safety.length){
+        var i=pick(imp.safety);add(i.e,i.t,i.tag,"safety",false,i.how);
+      }else if(imp.connect&&imp.connect.length){
+        var i=pick(imp.connect);add(i.e,i.t,i.tag,"connect",false,i.how);
+      }
+      return plan;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════════════════════════════════════
+  var defaultState={
+    profile:{goal:"Balance",timeBudgetMin:20,archetype:"stoiker"},
+    logs:{},
+    todayTasks:{},
+    journal:[]
+  };
+  var FOOD_FLAGS=[
+    {k:"veg",label:"Gemuese/Obst gegessen",type:"good"},
+    {k:"protein",label:"Proteinquelle (Fleisch/Fisch/Eier/Huelsen)",type:"good"},
+    {k:"omega3",label:"Omega-3 (Fisch/Nuesse/Samen)",type:"good"},
+    {k:"water",label:"Genug Wasser (2L+)",type:"good"},
+    {k:"wholefood",label:"Echte Lebensmittel (nicht verarbeitet)",type:"good"}
+  ];
+  var INFLAMMATION_FLAGS=[
+    {k:"ultra",label:"Fertiggerichte/Fast Food",type:"bad"},
+    {k:"sugar",label:"Viel Zucker/Suesses",type:"bad"},
+    {k:"alcohol",label:"Alkohol getrunken",type:"bad"},
+    {k:"stress",label:"Starker Stress heute",type:"bad"},
+    {k:"noSleep",label:"Schlafmangel (unter 6h)",type:"bad"},
+    {k:"sick",label:"Krank/angeschlagen",type:"bad"}
+  ];
+  var SAFETY_FLAGS=[
+    {k:"tidy",label:"Aufgeraeumt/Ordnung geschaffen",type:"good"},
+    {k:"plan",label:"Tag/Woche geplant",type:"good"},
+    {k:"boundary",label:"Nein gesagt/Grenze gesetzt",type:"good"},
+    {k:"digital",label:"Bildschirmfreie Zeit genommen",type:"good"},
+    {k:"finance",label:"Finanzen im Blick",type:"good"},
+    {k:"chaos",label:"Chaos/Unordnung",type:"bad"},
+    {k:"reactive",label:"Nur reagiert statt agiert",type:"bad"}
+  ];
+  var CONNECT_FLAGS=[
+    {k:"contact",label:"Echtes Gespraech gefuehrt",type:"good"},
+    {k:"thanks",label:"Jemandem gedankt",type:"good"},
+    {k:"help",label:"Jemandem geholfen",type:"good"},
+    {k:"quality",label:"Quality Time mit Nahestehenden",type:"good"},
+    {k:"conflict",label:"Konflikt/Streit",type:"bad"},
+    {k:"lonely",label:"Einsam gefuehlt",type:"bad"},
+    {k:"isolated",label:"Niemanden gesehen",type:"bad"}
+  ];
+  var GROWTH_FLAGS=[
+    {k:"rep",label:"Etwas geuebt/gelernt",type:"good"},
+    {k:"deep",label:"Fokussiert gearbeitet (Deep Work)",type:"good"},
+    {k:"create",label:"Etwas erschaffen/produziert",type:"good"},
+    {k:"value",label:"Wert fuer andere geschaffen",type:"good"},
+    {k:"finish",label:"Etwas fertiggestellt",type:"good"},
+    {k:"overwhelm",label:"Ueberfordert gefuehlt",type:"bad"},
+    {k:"procrastinate",label:"Wichtiges aufgeschoben",type:"bad"}
+  ];
+  var MENTAL_FLAGS=[
+    {k:"efficacyUp",label:"Erfolgserlebnis gehabt",type:"good"},
+    {k:"locusUp",label:"Einfluss/Kontrolle gespuert",type:"good"},
+    {k:"clarity",label:"Klarheit gewonnen",type:"good"},
+    {k:"proud",label:"Stolz auf mich",type:"good"},
+    {k:"flow",label:"Im Flow gewesen",type:"good"},
+    {k:"doubt",label:"An mir gezweifelt",type:"bad"},
+    {k:"helpless",label:"Hilflos/ohnmaechtig gefuehlt",type:"bad"},
+    {k:"anxious",label:"Aengstlich/besorgt",type:"bad"},
+    {k:"stuck",label:"Festgefahren/blockiert",type:"bad"}
+  ];
+  var state=load();
+  function load(){try{var raw=localStorage.getItem(STORE_KEY);if(!raw)return JSON.parse(JSON.stringify(defaultState));return mergeDeep(JSON.parse(JSON.stringify(defaultState)),JSON.parse(raw))}catch(e){return JSON.parse(JSON.stringify(defaultState))}}
+  function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
+  function mergeDeep(a,b){for(var k in b){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k]))a[k]=mergeDeep(a[k]||{},b[k]);else a[k]=b[k]}return a}
+  function getLog(date){
+    date=date||todayISO();
+    if(!state.logs[date])state.logs[date]={
+      sleepH:null,sleepQ:null,recovery:50,steps:null,trainMin:null,efficacy:50,locus:50,
+      foodFlags:{},inflammationFlags:{},safetyFlags:{},connectFlags:{},growthFlags:{},mentalFlags:{}
+    };
+    return state.logs[date];
+  }
+  function getTasks(date){date=date||todayISO();if(!state.todayTasks[date])state.todayTasks[date]=[];return state.todayTasks[date]}
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // COMPUTE STATE FOR ALGORITHM
+  // ═══════════════════════════════════════════════════════════════════════════
+  function buildAlgoState(date){
+    var log=getLog(date);
+    var sleepDebt=0;
+    if(log.sleepH!=null&&log.sleepH<7)sleepDebt=Math.round((7-log.sleepH)*3);
+    if(log.sleepQ!=null&&log.sleepQ<3)sleepDebt+=5;
+    var inflammation=0;
+    var infFlags=log.inflammationFlags||{};
+    if(infFlags.ultra)inflammation+=20;if(infFlags.sugar)inflammation+=15;if(infFlags.alcohol)inflammation+=20;if(infFlags.stress)inflammation+=15;if(infFlags.noSleep)inflammation+=10;
+    var recovery=log.recovery||50;
+    var bonding=50;
+    var conFlags=log.connectFlags||{};
+    if(conFlags.contact)bonding+=20;if(conFlags.thanks)bonding+=10;if(conFlags.help)bonding+=10;if(conFlags.conflict)bonding-=20;
+    bonding=Math.max(0,Math.min(100,bonding));
+    // Maslow needs from flags
+    var physiology=50;
+    var foodFlags=log.foodFlags||{};
+    if(foodFlags.veg)physiology+=12;if(foodFlags.protein)physiology+=12;if(foodFlags.omega3)physiology+=8;if(foodFlags.water)physiology+=8;
+    if(log.steps&&log.steps>5000)physiology+=10;if(log.trainMin&&log.trainMin>15)physiology+=8;
+    physiology=Math.max(0,Math.min(100,physiology));
+    var safety=50;
+    var safFlags=log.safetyFlags||{};
+    if(safFlags.tidy)safety+=15;if(safFlags.plan)safety+=15;if(safFlags.boundary)safety+=10;if(safFlags.digital)safety+=10;
+    safety=Math.max(0,Math.min(100,safety));
+    var belonging=bonding;
+    var esteem=50;
+    var groFlags=log.growthFlags||{};
+    if(groFlags.rep)esteem+=15;if(groFlags.deep)esteem+=10;if(groFlags.create)esteem+=10;if(groFlags.value)esteem+=10;if(groFlags.overwhelm)esteem-=15;
+    esteem=Math.max(0,Math.min(100,esteem));
+    var selfAct=40;
+    if(groFlags.deep)selfAct+=20;if(groFlags.create)selfAct+=20;if(groFlags.value)selfAct+=10;
+    selfAct=Math.max(0,Math.min(100,selfAct));
+    var trans=30;
+    if(groFlags.value)trans+=25;if(conFlags.help)trans+=20;
+    trans=Math.max(0,Math.min(100,trans));
+    // Mental layer
+    var efficacy=log.efficacy||50;
+    var locus=log.locus||50;
+    var menFlags=log.mentalFlags||{};
+    if(menFlags.efficacyUp)efficacy+=15;if(menFlags.locusUp)locus+=15;if(menFlags.clarity){efficacy+=5;locus+=5}
+    if(menFlags.doubt)efficacy-=15;if(menFlags.helpless){efficacy-=10;locus-=20}
+    efficacy=Math.max(0,Math.min(100,efficacy));
+    locus=Math.max(0,Math.min(100,locus));
+    var intention=Math.round((efficacy+locus)/2);
+    var narrative=Math.round((efficacy*0.6+locus*0.4));
+    return{
+      biomarkers:{sleepDebt:sleepDebt,inflammation:inflammation,recovery:recovery,bonding:bonding},
+      needs:{physiology:physiology,safety:safety,belonging:belonging,esteem:esteem,selfActualization:selfAct,transcendence:trans},
+      mental:{locus:locus,intention:intention,efficacy:efficacy,narrative:narrative},
+      archetype:state.profile.archetype||"stoiker"
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ═══════════════════════════════════════════════════════════════════════════
+  function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+  function numOrNull(v){var t=String(v||"").trim().replace(",",".");if(!t)return null;var n=Number(t);return Number.isFinite(n)?n:null}
+  function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+  function ringSet(ringEl,percent){var prog=$(".prog",ringEl),pctEl=$(".pct",ringEl),val=clamp(percent,0,100);prog.setAttribute("stroke-dasharray",val+" "+(100-val));pctEl.textContent=Math.round(val)+"%"}
+  function getBadgeClass(score){if(score>=80)return"stable";if(score>=50)return"warning";return"critical"}
+  function getBadgeText(score){if(score>=80)return"Flow";if(score>=60)return"Stabil";if(score>=40)return"Aufbauen";return"Reset"}
+
+  function renderToday(){
+    var date=todayISO();
+    var dateBadge=$("#dateBadge");if(dateBadge)dateBadge.textContent=date;
+    var algoState=buildAlgoState(date);
+    var result=UnifiedScoring.compute(algoState);
+    // Header subline mit Archetyp
+    var arch=ARCHETYPES[state.profile.archetype]||ARCHETYPES.stoiker;
+    $("#subline").textContent=arch.emoji+" "+arch.name;
+    // Unified Score
+    $("#scoreNum").textContent=Math.round(result.total);
+    $("#badgeState").textContent=getBadgeText(result.total);
+    $("#badgeState").className="badge "+getBadgeClass(result.total);
+    // Weights bar
+    $("#wBarEpi").style.width=Math.round(result.weights.epigenetic*100)+"%";
+    $("#wBarMaslow").style.width=Math.round(result.weights.maslow*100)+"%";
+    $("#wBarMental").style.width=Math.round(result.weights.mental*100)+"%";
+    // Rings
+    var rings=$$(".ring");
+    ringSet(rings[0],result.components.epigenetic);
+    ringSet(rings[1],result.components.maslow);
+    ringSet(rings[2],result.components.mental);
+    // Small texts
+    $("#small-epi").textContent=result.components.epigenetic>=70?"Stabil":"Achtung";
+    $("#small-maslow").textContent=result.components.maslow>=70?"Stabil":"Luecken";
+    $("#small-mental").textContent=result.components.mental>=70?"Stark":"Aufbauen";
+    // Insight
+    var bottleneckText=result.bottleneck.sub?result.bottleneck.main.name+" > "+result.bottleneck.sub.name:result.bottleneck.main.name;
+    $("#insightLabel").textContent="Engpass: "+bottleneckText;
+    $("#insightText").textContent=result.recommendation;
+    $("#scoreDesc").textContent="Bio "+Math.round(result.weights.epigenetic*100)+"% | Maslow "+Math.round(result.weights.maslow*100)+"% | Mental "+Math.round(result.weights.mental*100)+"%";
+    // Tasks
+    renderTasks(date);
+    renderCoach(date);
+    renderPyramid(result.maslowTiers);
+    renderInsights();
+    renderJournal();
+  }
+  function renderPyramid(tiers){
+    $("#pyrBadge").textContent="Heute";
+    var html="";
+    for(var i=0;i<tiers.length;i++){
+      var t=tiers[i];
+      var tierMap={physiology:"foundation",safety:"safety",belonging:"connect",esteem:"esteem",selfActualization:"self",transcendence:"trans"};
+      var tierClass=tierMap[t.key]||"foundation";
+      html+='<div class="pyr-row'+(t.isDeficit?" bottleneck":"")+'" data-tier="'+tierClass+'"><div><strong>'+t.name+'</strong><br><span>'+(t.isDeficit?"Unter Schwelle":"OK")+'</span></div><div class="bar"><i style="width:'+clamp(t.value,0,100)+'%"></i></div></div>';
+    }
+    $("#pyr").innerHTML=html;
+  }
+  function renderTasks(date){
+    date=date||todayISO();
+    var list=$("#todayList");
+    var tasks=getTasks(date);
+    if(!tasks.length){
+      list.innerHTML='<div class="item"><div class="left"><div class="emoji">+</div><div><div class="txt">Keine Impulse.</div><div class="sub">Tippe Neu generieren.</div></div></div></div>';
+      return;
+    }
+    var html="";
+    for(var i=0;i<tasks.length;i++){
+      var t=tasks[i];
+      var hasHow=t.how&&t.how.length>0;
+      html+='<div class="item'+(t.done?" done":"")+(t.priority?" priority":"")+'" data-id="'+t.id+'" data-tier="'+(t.tier||"foundation")+'"><div class="left"><div class="emoji">'+(t.emoji||"X")+'</div><div><div class="txt">'+esc(t.text)+'</div><div class="sub">'+esc(t.tag||"Impuls")+'</div></div></div><div class="item-actions">'+(hasHow?'<button class="mini-btn" data-act="info" title="Anleitung">?</button>':'')+'<button class="mini-btn" data-act="toggle">OK</button><button class="mini-btn" data-act="del">X</button></div></div>';
+    }
+    list.innerHTML=html;
+  }
+  function setTasks(plan,date){
+    date=date||todayISO();
+    var tasks=getTasks(date);
+    var seen={};
+    for(var i=0;i<tasks.length;i++)seen[tasks[i].text.toLowerCase()]=true;
+    for(var j=0;j<plan.length;j++){
+      if(seen[plan[j].text.toLowerCase()])continue;
+      tasks.unshift(plan[j]);
+      seen[plan[j].text.toLowerCase()]=true;
+    }
+    state.todayTasks[date]=tasks.slice(0,12);
+    save();
+    renderTasks(date);
+  }
+  function clearTasks(date){date=date||todayISO();state.todayTasks[date]=[];save();renderTasks(date)}
+  function markAllDone(date){date=date||todayISO();var tasks=getTasks(date);for(var i=0;i<tasks.length;i++)tasks[i].done=true;save();renderTasks(date)}
+
+  function renderCoach(date){
+    date=date||todayISO();
+    var algoState=buildAlgoState(date);
+    var result=UnifiedScoring.compute(algoState);
+    $("#coachBadge").textContent=getBadgeText(result.total);
+    $("#coachScore").textContent=Math.round(result.total);
+    var focusText=result.bottleneck.sub?result.bottleneck.main.name+" > "+result.bottleneck.sub.name:result.bottleneck.main.name;
+    $("#coachFocus").textContent="Fokus: "+focusText;
+    $("#coachMini").textContent="Mental x"+result.multipliers.mental.toFixed(2)+" | Bio-Feedback: "+result.multipliers.bioFeedback.toFixed(0);
+    $("#coachWhy").textContent=result.recommendation;
+    var list=$("#coachPlan");
+    var html="";
+    for(var i=0;i<result.plan.length;i++){
+      var p=result.plan[i];
+      html+='<div class="item'+(p.priority?" priority":"")+'" data-tier="'+(p.tier||"foundation")+'"><div class="left"><div class="emoji">'+p.emoji+'</div><div><div class="txt">'+esc(p.text)+'</div><div class="sub">'+esc(p.tag)+'</div></div></div><div class="item-actions"><button class="mini-btn" data-add="'+esc(p.id)+'">+</button></div></div>';
+    }
+    list.innerHTML=html;
+    state._lastResult=result;
+    save();
+  }
+
+  function makeChip(label,on,onClick,isBad){
+    var c=document.createElement("div");
+    c.className="chip"+(isBad?" chip-bad":"");
+    c.dataset.on=on?"1":"0";
+    c.innerHTML='<span class="dot"></span><span>'+esc(label)+'</span>';
+    c.addEventListener("click",onClick);
+    return c;
+  }
+  function toggleFlag(bucket,key){
+    var log=getLog(todayISO());
+    log[bucket]=log[bucket]||{};
+    log[bucket][key]=!log[bucket][key];
+    save();
+    renderToday();
+    renderLogForm();
+  }
+  function renderLogForm(){
+    var log=getLog(todayISO());
+    var dateBadge2=$("#dateBadge2");if(dateBadge2)dateBadge2.textContent=todayISO();
+    $("#inSleepH").value=log.sleepH!=null?String(log.sleepH):"";
+    $("#inSleepQ").value=log.sleepQ!=null?String(log.sleepQ):"";
+    $("#inRecovery").value=log.recovery!=null?String(log.recovery):"";
+    $("#inSteps").value=log.steps!=null?String(log.steps):"";
+    $("#inTrainMin").value=log.trainMin!=null?String(log.trainMin):"";
+    $("#inEfficacy").value=log.efficacy!=null?String(log.efficacy):"";
+    $("#inLocus").value=log.locus!=null?String(log.locus):"";
+    function bind(mountId,arr,bucket){
+      var mount=$("#"+mountId);if(!mount)return;mount.innerHTML="";
+      for(var i=0;i<arr.length;i++){
+        (function(f){
+          var chip=makeChip(f.label,!!(log[bucket]||{})[f.k],function(){toggleFlag(bucket,f.k)},f.type==="bad");
+          mount.appendChild(chip);
+        })(arr[i]);
+      }
+    }
+    bind("foodChips",FOOD_FLAGS,"foodFlags");
+    bind("inflammationChips",INFLAMMATION_FLAGS,"inflammationFlags");
+    bind("safetyChips",SAFETY_FLAGS,"safetyFlags");
+    bind("connectChips",CONNECT_FLAGS,"connectFlags");
+    bind("growthChips",GROWTH_FLAGS,"growthFlags");
+    bind("mentalChips",MENTAL_FLAGS,"mentalFlags");
+  }
+
+  function lastNDates(n){var out=[],now=new Date();for(var i=0;i<n;i++){var d=new Date(now);d.setDate(now.getDate()-i);out.push(d.toISOString().slice(0,10))}return out}
+  function renderInsights(){
+    var dates=lastNDates(7);
+    var scores=[];
+    for(var i=0;i<dates.length;i++){
+      var algoState=buildAlgoState(dates[i]);
+      var result=UnifiedScoring.compute(algoState);
+      scores.push(Math.round(result.total));
+    }
+    $("#weekBadge").textContent="Letzte 7 Tage";
+    var sum=0;for(var j=0;j<scores.length;j++)sum+=scores[j];
+    var avg=Math.round(sum/scores.length);
+    $("#kpiAvg").textContent="Avg "+avg;
+    // Hebel
+    var algoState=buildAlgoState(todayISO());
+    var result=UnifiedScoring.compute(algoState);
+    var leverName=result.bottleneck.sub?result.bottleneck.sub.name:result.bottleneck.main.name;
+    $("#kpiLever").textContent="Hebel: "+leverName;
+    // Streak
+    var streak=0;
+    var all=lastNDates(60);
+    for(var k=0;k<all.length;k++){
+      var as=buildAlgoState(all[k]);
+      var r=UnifiedScoring.compute(as);
+      if(r.total>=70)streak++;else break;
+    }
+    $("#kpiStreak").textContent="Streak "+streak;
+    renderBarChart(dates,scores);
+  }
+  function renderBarChart(dates,scores){
+    var box=$("#chartBox");
+    var max=100;
+    for(var i=0;i<scores.length;i++)if(scores[i]>max)max=scores[i];
+    var w=box.clientWidth-20,h=box.clientHeight-20,barW=Math.floor(w/scores.length);
+    var labels=dates.slice().reverse();
+    var vals=scores.slice().reverse();
+    var svgNS="http://www.w3.org/2000/svg",svg=document.createElementNS(svgNS,"svg");
+    svg.setAttribute("width","100%");svg.setAttribute("height","100%");
+    for(var j=0;j<vals.length;j++){
+      var v=vals[j],bh=(v/max)*h*0.75,x=10+j*barW+barW*0.15,y=h-bh-16;
+      var rect=document.createElementNS(svgNS,"rect");
+      rect.setAttribute("x",x);rect.setAttribute("y",y);rect.setAttribute("width",barW*0.7);rect.setAttribute("height",bh);rect.setAttribute("rx","6");
+      rect.setAttribute("fill",v>=70?"rgba(47,111,115,0.65)":v>=50?"rgba(184,132,43,0.55)":"rgba(181,74,69,0.55)");
+      svg.appendChild(rect);
+      var valT=document.createElementNS(svgNS,"text");
+      valT.setAttribute("x",x+barW*0.35);valT.setAttribute("y",y-4);valT.setAttribute("text-anchor","middle");valT.setAttribute("font-size","10");valT.setAttribute("font-weight","800");valT.setAttribute("fill","rgba(20,20,20,0.82)");valT.textContent=v;
+      svg.appendChild(valT);
+      var t=document.createElementNS(svgNS,"text");
+      t.setAttribute("x",x+barW*0.35);t.setAttribute("y",h-2);t.setAttribute("text-anchor","middle");t.setAttribute("font-size","9");t.setAttribute("fill","rgba(92,88,83,0.70)");t.textContent=labels[j].slice(5);
+      svg.appendChild(t);
+    }
+    box.innerHTML="";box.appendChild(svg);
+  }
+  function renderJournal(){
+    var list=$("#journalList"),items=(state.journal||[]).slice(0,8);
+    if(!items.length){list.innerHTML='<div class="item"><div class="left"><div class="emoji">N</div><div><div class="txt">Noch keine Notizen.</div><div class="sub">Reflexion hilft.</div></div></div></div>';return}
+    var html="";
+    for(var i=0;i<items.length;i++){
+      var j=items[i],d=new Date(j.ts),stamp=d.toLocaleDateString("de-DE");
+      html+='<div class="item"><div class="left"><div class="emoji">N</div><div><div class="txt">'+esc(j.text)+'</div><div class="sub">'+stamp+'</div></div></div></div>';
+    }
+    list.innerHTML=html;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // UI BINDINGS
+  // ═══════════════════════════════════════════════════════════════════════════
+  var overlay=$("#modalOverlay"),toastEl=$("#toast"),toastTimer=null;
+  function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){toastEl.classList.remove("show")},1500)}
+  function openModal(title,text,bodyHtml){$("#mTitle").textContent=title;$("#mText").textContent=text;$("#mBody").innerHTML=bodyHtml;overlay.classList.add("open")}
+  function closeModal(){overlay.classList.remove("open")}
+  overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal()});
+  $$(".tab-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      $$(".tab-btn").forEach(function(b){b.classList.remove("active")});
+      btn.classList.add("active");
+      var key=btn.dataset.tab;
+      $$(".tab-content").forEach(function(s){s.classList.remove("active")});
+      $("#tab-"+key).classList.add("active");
+      if(key==="log")renderLogForm();
+      if(key==="coach")renderCoach();
+      if(key==="insights"){renderInsights();renderJournal()}
+    });
+  });
+  $("#todayList").addEventListener("click",function(e){
+    var row=e.target.closest(".item[data-id]");if(!row)return;
+    var id=row.getAttribute("data-id"),actEl=e.target.closest("[data-act]"),act=actEl?actEl.getAttribute("data-act"):null;if(!act)return;
+    var tasks=getTasks(todayISO()),idx=-1;
+    for(var i=0;i<tasks.length;i++){if(tasks[i].id===id){idx=i;break}}
+    if(idx<0)return;
+    if(act==="toggle")tasks[idx].done=!tasks[idx].done;
+    if(act==="del")tasks.splice(idx,1);
+    if(act==="info"){
+      var t=tasks[idx];
+      openModal(t.tag||"Anleitung",t.text,'<div class="insight-box"><div class="label">So geht es</div><div class="text">'+esc(t.how||"Keine Anleitung verfuegbar.")+'</div></div><div class="row"><button class="btn primary" id="howDone">Verstanden</button></div>');
+      setTimeout(function(){var btn=$("#howDone");if(btn)btn.addEventListener("click",closeModal)},50);
+      return;
+    }
+    save();renderTasks(todayISO());
+  });
+  $("#btnPlan").addEventListener("click",function(){
+    var algoState=buildAlgoState(todayISO());
+    var result=UnifiedScoring.compute(algoState);
+    setTasks(result.plan);
+    toast("Impulse generiert");
+    renderCoach();
+  });
+  $("#btnClear").addEventListener("click",function(){clearTasks();toast("Geleert")});
+  $("#btnMarkAll").addEventListener("click",function(){markAllDone();toast("Alles fertig")});
+  $("#qBasics").addEventListener("click",function(){document.querySelector('[data-tab="log"]').click()});
+  $("#qSafety").addEventListener("click",function(){document.querySelector('[data-tab="log"]').click()});
+  $("#qConnect").addEventListener("click",function(){document.querySelector('[data-tab="log"]').click()});
+  function openBreathTimer(){
+    var secs=120;
+    openModal("2-Min Downshift","4 Sek ein, 6-8 Sek aus.",'<div class="score-row"><div><div class="title">Timer</div></div><div class="num" style="font-size:32px" id="tLeft">120s</div></div><div class="row"><button class="btn" id="tStart">Start</button><button class="btn ghost" id="tStop">Stop</button><button class="btn secondary" id="tDone">Fertig</button></div>');
+    var timer=null;
+    function render(){$("#tLeft").textContent=secs+"s"}
+    render();
+    $("#tStart").addEventListener("click",function(){if(timer)return;timer=setInterval(function(){secs--;render();if(secs<=0){clearInterval(timer);timer=null;toast("Fertig")}},1000)});
+    $("#tStop").addEventListener("click",function(){if(timer){clearInterval(timer);timer=null}});
+    $("#tDone").addEventListener("click",function(){if(timer){clearInterval(timer);timer=null}var log=getLog(todayISO());log.recovery=Math.min(100,(log.recovery||50)+15);save();closeModal();renderToday();renderLogForm();toast("Recovery +15")});
+  }
+  $("#qBreath").addEventListener("click",openBreathTimer);
+  $("#btnSave").addEventListener("click",function(){
+    var log=getLog(todayISO());
+    log.sleepH=numOrNull($("#inSleepH").value);
+    log.sleepQ=numOrNull($("#inSleepQ").value);
+    log.recovery=numOrNull($("#inRecovery").value)||50;
+    log.steps=numOrNull($("#inSteps").value);
+    log.trainMin=numOrNull($("#inTrainMin").value);
+    log.efficacy=numOrNull($("#inEfficacy").value)||50;
+    log.locus=numOrNull($("#inLocus").value)||50;
+    save();renderToday();toast("Gespeichert");
+  });
+  $("#btnResetDay").addEventListener("click",function(){delete state.logs[todayISO()];delete state.todayTasks[todayISO()];save();renderLogForm();renderToday();toast("Heute reset")});
+  $("#btnRegen").addEventListener("click",function(){renderCoach();toast("Neu generiert")});
+  $("#btnBreath").addEventListener("click",openBreathTimer);
+  $("#btnAddToToday").addEventListener("click",function(){var r=state._lastResult;if(r&&r.plan)setTasks(r.plan);toast("Zu Heute hinzugefuegt");renderTasks()});
+  $("#coachPlan").addEventListener("click",function(e){
+    var addEl=e.target.closest("[data-add]");if(!addEl)return;
+    var id=addEl.getAttribute("data-add"),r=state._lastResult;if(!r||!r.plan)return;
+    var p=null;for(var i=0;i<r.plan.length;i++){if(r.plan[i].id===id){p=r.plan[i];break}}
+    if(p){setTasks([p]);toast("Hinzugefuegt")}
+  });
+  $("#btnImport").addEventListener("click",function(){
+    var inp=document.createElement("input");inp.type="file";inp.accept="application/json";
+    inp.onchange=function(){
+      var f=inp.files&&inp.files[0];if(!f)return;
+      var reader=new FileReader();
+      reader.onload=function(e){try{var obj=JSON.parse(e.target.result);state=mergeDeep(JSON.parse(JSON.stringify(defaultState)),obj);save();renderToday();renderLogForm();toast("Import OK")}catch(err){toast("Import fehlgeschlagen")}};
+      reader.readAsText(f);
+    };
+    inp.click();
+  });
+  $("#btnClearAll").addEventListener("click",function(){if(confirm("Wirklich alles loeschen?")){localStorage.removeItem(STORE_KEY);state=JSON.parse(JSON.stringify(defaultState));save();renderToday();renderLogForm();toast("Geloescht")}});
+  $("#btnProfile").addEventListener("click",function(){
+    var p=state.profile;
+    var archOpts=ARCHETYPE_LIST.map(function(k){var a=ARCHETYPES[k];return'<option value="'+k+'"'+(p.archetype===k?' selected':'')+'>'+a.emoji+' '+a.name+' - '+a.desc+'</option>'}).join('');
+    openModal("Profil & Vorbild","Waehle deinen Archetyp fuer passende Impulse.",'<div class="field"><label>Vorbild / Archetyp</label><select id="pArch">'+archOpts+'</select><div class="sublabel" id="archDesc">'+((ARCHETYPES[p.archetype]||{}).desc||'')+'</div></div><div class="field"><label>Ziel</label><select id="pGoal"><option value="Balance"'+(p.goal==="Balance"?' selected':'')+'>Balance finden</option><option value="Energie"'+(p.goal==="Energie"?' selected':'')+'>Mehr Energie</option><option value="Fokus"'+(p.goal==="Fokus"?' selected':'')+'>Besserer Fokus</option><option value="Ruhe"'+(p.goal==="Ruhe"?' selected':'')+'>Mehr Ruhe</option><option value="Wachstum"'+(p.goal==="Wachstum"?' selected':'')+'>Wachstum</option></select></div><div class="row"><button class="btn primary" id="pSave">Speichern</button><button class="btn ghost" id="pNo">Abbrechen</button></div>');
+    $("#pArch").addEventListener("change",function(){var a=ARCHETYPES[this.value];if(a)$("#archDesc").textContent=a.desc});
+    $("#pNo").addEventListener("click",closeModal);
+    $("#pSave").addEventListener("click",function(){p.archetype=$("#pArch").value;p.goal=$("#pGoal").value||"Balance";save();closeModal();clearTasks();var r=UnifiedScoring.compute(buildAlgoState(todayISO()));setTasks(r.plan);renderToday();toast("Vorbild: "+(ARCHETYPES[p.archetype]||{}).name)});
+  });
+  $("#btnExport").addEventListener("click",function(){var data=JSON.stringify(state,null,2),blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="humaneed_unified_"+todayISO()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000)});
+  $("#btnSaveJournal").addEventListener("click",function(){var t=($("#journalText").value||"").trim();if(!t){toast("Kurz notieren");return}state.journal.unshift({ts:Date.now(),date:todayISO(),text:t});state.journal=state.journal.slice(0,120);$("#journalText").value="";save();renderJournal();toast("Gespeichert")});
+  $("#btnExportAll").addEventListener("click",function(){var data=JSON.stringify(state,null,2),blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="humaneed_all_"+todayISO()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000)});
+  function init(){
+    renderLogForm();
+    var tasks=getTasks(todayISO());
+    if(!tasks.length){
+      var algoState=buildAlgoState(todayISO());
+      var result=UnifiedScoring.compute(algoState);
+      setTasks(result.plan);
+    }
+    renderToday();
+  }
+  init();
+})();
+</script>
+</body>
+</html>
