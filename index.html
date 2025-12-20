@@ -1,1143 +1,693 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <meta name="theme-color" content="#1A1A1A">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Humaneed</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-:root{
-  --s1:6px;--s2:12px;--s3:16px;--s4:24px;
-  --r:10px;--r2:8px;--r3:6px;
-  
-  --bg:#121212;
-  --bg2:#1E1E1E;
-  --card:#252525;
-  --cardHover:#2A2A2A;
-  
-  --text:#FFFFFF;
-  --sub:#B0B0B0;
-  --muted:#707070;
-  --faint:#505050;
-  
-  --line:rgba(255,255,255,.1);
-  --line2:rgba(255,255,255,.05);
-  
-  --accent:#E8A838;
-  
-  --good:#4CAF50;
-  --warn:#FFA726;
-  --bad:#EF5350;
-  
-  --t-foundation:#4CAF50;
-  --t-safety:#29B6F6;
-  --t-connect:#AB47BC;
-  --t-esteem:#FFA726;
-  --t-self:#EC407A;
-  --t-trans:#F06292;
-  
-  --shadow:0 2px 12px rgba(0,0,0,.4);
-  --ease:cubic-bezier(.22,1,.36,1);
-  --fast:100ms;
-}
-
-@media(prefers-color-scheme:light){:root{
-  --bg:#F5F5F5;
-  --bg2:#EBEBEB;
-  --card:#FFFFFF;
-  --cardHover:#FAFAFA;
-  --text:#1A1A1A;
-  --sub:#555555;
-  --muted:#888888;
-  --faint:#AAAAAA;
-  --line:rgba(0,0,0,.08);
-  --line2:rgba(0,0,0,.04);
-  --shadow:0 2px 12px rgba(0,0,0,.1);
-}}
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HUMANEED">
+<title>HUMANEED v3</title>
+<style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-
-body{
-  font-family:'Inter',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--sub);
-  min-height:100dvh;
-  display:flex;
-  justify-content:center;
-  -webkit-font-smoothing:antialiased;
-}
-
-#app{
-  width:100%;
-  max-width:420px;
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  background:var(--bg);
-}
-
-/* ===== HEADER ===== */
-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 16px;
-  background:var(--bg2);
-  border-bottom:1px solid var(--line);
-}
-.logo{font-size:15px;font-weight:700;color:var(--text)}
-.logo span{color:var(--accent)}
-.hdr-r{display:flex;gap:6px;align-items:center}
-.hdr-pill{
-  padding:6px 10px;
-  background:var(--card);
-  border-radius:var(--r3);
-  font-size:11px;
-  font-weight:600;
-  color:var(--sub);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:4px;
-}
-.hdr-pill:hover{background:var(--cardHover)}
-.hdr-score{
-  background:var(--accent);
-  color:var(--bg);
-  font-weight:700;
-  min-width:36px;
-  text-align:center;
-}
-
-/* ===== MAIN CONTENT ===== */
-main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-/* ===== MOOD BAR (always visible) ===== */
-.mood-bar{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  padding:14px 16px;
-  background:var(--bg2);
-  border-bottom:1px solid var(--line);
-}
-.mood-btn{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:none;
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  box-shadow:0 2px 6px rgba(0,0,0,.3),inset 0 1px 2px rgba(255,255,255,.2);
-}
-.mood-btn[data-m="1"]{background:linear-gradient(180deg,#EF5350,#C62828)}
-.mood-btn[data-m="2"]{background:linear-gradient(180deg,#FFA726,#EF6C00)}
-.mood-btn[data-m="3"]{background:linear-gradient(180deg,#FFCA28,#F9A825)}
-.mood-btn[data-m="4"]{background:linear-gradient(180deg,#9CCC65,#7CB342)}
-.mood-btn[data-m="5"]{background:linear-gradient(180deg,#66BB6A,#43A047)}
-.mood-btn:hover{transform:scale(1.1)}
-.mood-btn.on{
-  transform:translateY(2px);
-  box-shadow:0 1px 2px rgba(0,0,0,.2),inset 0 2px 6px rgba(0,0,0,.4);
-}
-
-/* ===== TAB CONTENT ===== */
-.tab-content{
-  flex:1;
-  overflow-y:auto;
-  padding:var(--s3);
-  padding-bottom:70px;
-}
-
-.view{display:none}
-.view.on{display:block;animation:fadeIn .15s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-/* ===== TIERS GRID ===== */
-.tiers{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px;
-  margin-bottom:var(--s3);
-}
-.tier{
-  background:var(--card);
-  border-radius:var(--r2);
-  padding:10px 12px;
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  border:1px solid var(--line);
-}
-.tier:hover{background:var(--cardHover);border-color:var(--accent)}
-.tier.focus{border-color:var(--accent);border-width:2px}
-.tier-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.tier-name{font-size:11px;font-weight:600;color:var(--text)}
-.tier-val{font-size:13px;font-weight:700}
-.tier-bar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
-.tier-fill{height:100%;border-radius:2px;transition:width .3s ease}
-.tier-icon{width:18px;height:18px}
-.tier-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* ===== ACTION CARD ===== */
-.action-card{
-  background:var(--card);
-  border-radius:var(--r);
-  padding:var(--s3);
-  margin-bottom:var(--s3);
-  border:1px solid var(--line);
-}
-.action-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-.action-tag{
-  font-size:9px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  color:var(--accent);
-  display:flex;
-  align-items:center;
-  gap:4px;
-}
-.action-counter{font-size:10px;color:var(--muted)}
-.action-text{font-size:15px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:12px}
-.action-flavor{
-  font-size:11px;
-  color:var(--muted);
-  font-style:italic;
-  margin-bottom:12px;
-  padding:8px 10px;
-  background:var(--bg);
-  border-radius:var(--r3);
-  display:none;
-}
-.action-flavor.show{display:block}
-.action-btns{display:flex;gap:6px}
-.action-btns button{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:var(--r3);
-  font:inherit;
-  font-size:11px;
-  font-weight:600;
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  background:var(--bg);
-  color:var(--sub);
-}
-.action-btns button:hover{background:var(--bg2)}
-.action-btns .primary{background:var(--accent);color:var(--bg)}
-.action-btns .primary:hover{filter:brightness(1.1)}
-
-.action-explain{
-  display:none;
-  background:var(--bg);
-  border-radius:var(--r3);
-  padding:10px 12px;
-  margin-bottom:12px;
-  font-size:11px;
-  line-height:1.5;
-}
-.action-explain.show{display:block}
-.action-explain-row{
-  display:flex;
-  gap:8px;
-  margin-bottom:6px;
-}
-.action-explain-row:last-child{margin-bottom:0}
-.action-explain-label{
-  font-size:9px;
-  font-weight:700;
-  text-transform:uppercase;
-  color:var(--muted);
-  min-width:50px;
-}
-.action-explain-text{color:var(--sub)}
-
-/* ===== PLAN LIST ===== */
-.plan-list{margin-bottom:var(--s3)}
-.plan-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-.plan-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
-.plan-action{font-size:10px;color:var(--accent);cursor:pointer}
-.plan-items{display:flex;flex-direction:column;gap:4px}
-.plan-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  background:var(--card);
-  border-radius:var(--r3);
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  border:1px solid transparent;
-}
-.plan-item:hover{background:var(--cardHover)}
-.plan-item.active{border-color:var(--accent)}
-.plan-item.done{opacity:.5}
-.plan-check{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  border:2px solid var(--line);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  color:transparent;
-  flex-shrink:0;
-}
-.plan-item.done .plan-check{background:var(--good);border-color:var(--good);color:#fff}
-.plan-item-text{font-size:12px;color:var(--text);flex:1}
-.plan-item.done .plan-item-text{text-decoration:line-through;color:var(--muted)}
-
-/* ===== CHIPS ===== */
-.chips-section{margin-bottom:var(--s3)}
-.chips-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:8px;
-}
-.chips-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
-.chips-toggle{font-size:10px;color:var(--accent);cursor:pointer}
-.chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{
-  padding:6px 10px;
-  background:var(--card);
-  border-radius:var(--r3);
-  font-size:10px;
-  color:var(--sub);
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  border:1px solid transparent;
-}
-.chip:hover{background:var(--cardHover)}
-.chip.on{background:rgba(76,175,80,.15);border-color:var(--good);color:var(--good)}
-.chip.bad.on{background:rgba(239,83,80,.15);border-color:var(--bad);color:var(--bad)}
-
-/* ===== SCORE VIEW ===== */
-.score-hero{
-  text-align:center;
-  padding:var(--s4) 0;
-  margin-bottom:var(--s3);
-}
-.score-num{font-size:64px;font-weight:700;color:var(--text);line-height:1}
-.score-label{font-size:12px;font-weight:600;color:var(--accent);margin-top:4px}
-.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:var(--s3)}
-.score-item{
-  background:var(--card);
-  border-radius:var(--r3);
-  padding:12px 8px;
-  text-align:center;
-}
-.score-item-val{font-size:18px;font-weight:700}
-.score-item-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);margin-top:2px}
-
-/* ===== JOURNAL VIEW ===== */
-.insight{
-  background:var(--card);
-  border-radius:var(--r3);
-  padding:10px 12px;
-  font-size:11px;
-  color:var(--sub);
-  margin-bottom:6px;
-  line-height:1.4;
-}
-.journal-list{display:flex;flex-direction:column;gap:6px}
-.journal-day{
-  background:var(--card);
-  border-radius:var(--r3);
-  padding:10px 12px;
-}
-.journal-day-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.journal-date{font-size:11px;font-weight:600;color:var(--text)}
-.journal-meta{display:flex;align-items:center;gap:8px}
-.journal-mood{width:10px;height:10px;border-radius:50%}
-.journal-score{font-size:12px;font-weight:700;color:var(--accent)}
-.journal-summary{font-size:10px;color:var(--muted)}
-.journal-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
-.tag{padding:2px 6px;border-radius:4px;font-size:8px;font-weight:600}
-.tag.g{background:rgba(76,175,80,.15);color:var(--good)}
-.tag.b{background:rgba(239,83,80,.15);color:var(--bad)}
-
-/* ===== BOTTOM NAV ===== */
-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:center;
-  padding:8px 16px calc(8px + env(safe-area-inset-bottom));
-  background:var(--bg2);
-  border-top:1px solid var(--line);
-}
-.nav-inner{
-  display:flex;
-  gap:4px;
-  background:var(--card);
-  padding:4px;
-  border-radius:var(--r);
-  width:100%;
-  max-width:300px;
-}
-nav button{
-  flex:1;
-  padding:10px;
-  border:none;
-  border-radius:var(--r3);
-  background:transparent;
-  font:inherit;
-  font-size:10px;
-  font-weight:600;
-  color:var(--muted);
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-}
-nav button:hover{color:var(--text)}
-nav button.on{background:var(--accent);color:var(--bg)}
-
-/* ===== MODAL ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:flex-end;
-  justify-content:center;
-  z-index:100;
-}
-.modal.show{display:flex}
-.modal-box{
-  background:var(--bg);
-  border-radius:var(--r) var(--r) 0 0;
-  padding:var(--s3);
-  width:100%;
-  max-width:420px;
-  max-height:60vh;
-  overflow-y:auto;
-}
-.modal-title{font-size:13px;font-weight:700;color:var(--text);text-align:center;margin-bottom:var(--s3)}
-.arch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.arch-opt{
-  padding:10px 6px;
-  background:var(--card);
-  border-radius:var(--r3);
-  text-align:center;
-  cursor:pointer;
-  transition:all var(--fast) var(--ease);
-  border:2px solid transparent;
-}
-.arch-opt:hover{background:var(--cardHover)}
-.arch-opt.on{border-color:var(--accent)}
-.arch-opt-icon{margin-bottom:4px}
-.arch-opt-name{font-size:9px;font-weight:600;color:var(--text)}
-.modal-close{
-  width:100%;
-  padding:12px;
-  margin-top:var(--s3);
-  border:none;
-  border-radius:var(--r3);
-  background:var(--card);
-  font:inherit;
-  font-size:11px;
-  font-weight:600;
-  color:var(--text);
-  cursor:pointer;
-}
-
-.toast{
-  position:fixed;
-  bottom:75px;
-  left:50%;
-  transform:translateX(-50%) translateY(10px);
-  background:var(--card);
-  border:1px solid var(--accent);
-  padding:8px 16px;
-  border-radius:var(--r);
-  font-size:11px;
-  font-weight:600;
-  color:var(--text);
-  opacity:0;
-  pointer-events:none;
-  transition:all .2s;
-  z-index:50;
-}
+:root{--bg:#0d1117;--bg2:#161b22;--card:#1c2128;--surface:#252c35;--text:#e6edf3;--sub:#8b949e;--muted:#6e7681;--accent:#c9b1ff;--accent-soft:rgba(201,177,255,.12);--accent-glow:rgba(201,177,255,.25);--petrol:#4ecdc4;--positive:#7ee787;--positive-soft:rgba(126,231,135,.1);--critical:#f85149;--critical-soft:rgba(248,81,73,.1);--line:rgba(139,148,158,.15);--hairline:rgba(139,148,158,.08);--r:10px;--r-sm:6px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;justify-content:center;font-size:14px;line-height:1.5}
+#app{width:100%;max-width:420px;display:flex;flex-direction:column;min-height:100dvh}
+header{height:58px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border-bottom:1px solid var(--hairline)}
+.logo{font-weight:600;font-size:16px}.logo span{color:var(--accent)}
+.hdr-r{display:flex;gap:10px;align-items:center}
+.pill{height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;display:flex;align-items:center;gap:6px}
+.pill.gold{color:var(--accent);border-color:var(--accent-glow);background:var(--accent-soft)}
+main{flex:1;overflow-y:auto;padding:20px;padding-bottom:88px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:68px;background:var(--bg2);border-top:1px solid var(--hairline);display:flex;padding:10px 12px;gap:8px}
+nav button{flex:1;background:var(--card);border:1px solid transparent;border-radius:var(--r);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+nav button.on{background:var(--accent-soft);border-color:var(--accent-glow);color:var(--accent)}
+nav button span{font-size:18px}
+.view{display:none}.view.on{display:block}
+.sec{margin-bottom:24px}.sec-t{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.btn{height:46px;padding:0 22px;border-radius:var(--r);border:1px solid var(--line);background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn-row{display:flex;gap:10px}.btn-row .btn{flex:1}
+.wheel-box{position:relative;width:100%;max-width:260px;margin:0 auto;aspect-ratio:1}
+.wheel-box svg{width:100%;height:100%}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.wheel-score{font-size:36px;font-weight:700}.wheel-label{font-size:10px;color:var(--muted);text-transform:uppercase}
+.rec{background:var(--card);background-image:linear-gradient(135deg,var(--accent-soft),transparent 70%);border:1px solid var(--accent-glow);border-radius:var(--r);padding:18px}
+.rec-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.rec-icon{font-size:28px}.rec-info{flex:1}
+.rec-why{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.rec-task{font-size:15px;font-weight:600;margin-top:4px;line-height:1.45}
+.coach{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:16px}
+.coach-title{font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.coach-msg{font-size:13px;color:var(--sub);line-height:1.6}
+.impulse{background:var(--card);border:1px solid var(--accent-glow);border-radius:var(--r);padding:18px;margin-top:20px}
+.impulse-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.impulse-icon{font-size:22px}.impulse-tier{font-size:12px;font-weight:600;flex:1}
+.impulse-x{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.impulse-task{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:14px}
+.impulse-detail{background:var(--surface);border-radius:var(--r-sm);padding:14px;margin-bottom:16px}
+.impulse-row{font-size:12px;color:var(--sub);line-height:1.55;margin-bottom:8px}
+.impulse-row b{color:var(--accent);margin-right:8px}
+.impulse-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.impulse-btns .btn{height:42px;font-size:12px}
+.tier-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tier-btn{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--surface);font-size:18px;cursor:pointer;opacity:.5}
+.tier-btn.on{opacity:1;border-color:var(--c)}
+.gen-card{text-align:center}
+.gen-tier{font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:12px}
+.gen-task{font-size:16px;font-weight:600;line-height:1.5;min-height:52px;margin-bottom:16px}
+.gen-detail{background:var(--surface);border-radius:var(--r-sm);padding:14px;margin-bottom:18px;text-align:left}
+.gen-row{font-size:12px;color:var(--sub);line-height:1.55;margin-bottom:8px}
+.gen-row b{color:var(--accent);width:55px;display:inline-block}
+.hist{background:var(--surface);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:8px;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:10px}
+.hist strong{color:var(--text)}
+.breakdown{margin-top:16px}
+.bd-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--hairline)}
+.bd-icon{font-size:16px;width:28px}.bd-name{flex:1;font-size:12px}.bd-bar{width:80px;height:6px;background:var(--surface);border-radius:3px;overflow:hidden}
+.bd-fill{height:100%;border-radius:3px}.bd-val{font-size:12px;font-weight:600;color:var(--accent);width:28px;text-align:right}
+/* CHECK-IN */
+.mood-box{text-align:center;padding:20px 0}
+.mood-q{font-size:16px;font-weight:600;margin-bottom:20px}
+.mood-row{display:flex;justify-content:center;gap:16px}
+.mood-btn{width:52px;height:52px;border-radius:50%;border:2px solid transparent;cursor:pointer}
+.mood-btn[data-m="1"]{background:linear-gradient(180deg,#f87171,#dc2626)}
+.mood-btn[data-m="2"]{background:linear-gradient(180deg,#fb923c,#ea580c)}
+.mood-btn[data-m="3"]{background:linear-gradient(180deg,#a8a29e,#78716c)}
+.mood-btn[data-m="4"]{background:linear-gradient(180deg,#86efac,#22c55e)}
+.mood-btn[data-m="5"]{background:linear-gradient(180deg,#4ade80,#16a34a)}
+.mood-btn.on{transform:scale(.92);border-color:var(--text)}
+.mood-label{margin-top:16px;font-size:13px;font-weight:600;color:var(--accent);min-height:20px}
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bio-item{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:14px}
+.bio-item.wide{grid-column:span 2}
+.bio-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.bio-label{font-size:12px;font-weight:600;color:var(--sub)}
+.bio-value{font-size:14px;font-weight:700;color:var(--accent)}
+.bio-slider{width:100%;height:6px;-webkit-appearance:none;background:var(--card);border-radius:3px}
+.bio-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer}
+.bio-slider.cyan::-webkit-slider-thumb{background:var(--petrol)}
+.bio-slider.green::-webkit-slider-thumb{background:var(--positive)}
+.bio-hint{font-size:10px;color:var(--muted);margin-top:8px}
+.mental-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mental-item{background:var(--surface);border:1px solid var(--accent-glow);border-radius:var(--r);padding:14px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{height:40px;padding:0 16px;border-radius:20px;border:1px solid var(--line);background:var(--card);font-size:13px;color:var(--sub);cursor:pointer;display:flex;align-items:center;gap:8px}
+.chip.on{border-color:var(--positive);background:var(--positive-soft);color:var(--positive)}
+.chip.bad.on{border-color:var(--critical);background:var(--critical-soft);color:var(--critical)}
+/* PROFILE */
+.tabs{display:flex;gap:6px;background:var(--surface);padding:6px;border-radius:var(--r);margin-bottom:20px}
+.tab{flex:1;height:40px;border-radius:var(--r-sm);border:none;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.tab.on{background:var(--card);color:var(--text)}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.arch{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 8px;text-align:center;cursor:pointer}
+.arch.on{border-color:var(--accent);background:var(--accent-soft)}
+.arch-e{font-size:26px}.arch-n{font-size:12px;font-weight:600;margin-top:6px}.arch-d{font-size:10px;color:var(--muted);margin-top:3px}
+.arch-detail{margin-top:16px}
+.arch-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.arch-big{font-size:36px}.arch-info h3{font-size:17px;font-weight:600}.arch-info p{font-size:12px;color:var(--muted);margin-top:3px}
+.traits{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.trait{padding:6px 12px;border-radius:var(--r-sm);background:var(--surface);font-size:11px;color:var(--sub)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:var(--surface);border-radius:var(--r);padding:16px;text-align:center}
+.stat-v{font-size:28px;font-weight:700;color:var(--accent)}.stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.insight{background:var(--surface);border-radius:var(--r-sm);padding:14px;margin-bottom:10px;font-size:13px;color:var(--sub)}
+.insight strong{color:var(--text)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal.on{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px;text-align:center}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--accent-glow);border-radius:var(--r);padding:12px 20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:200}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-.blocker{
-  background:rgba(239,83,80,.1);
-  border:1px solid var(--bad);
-  border-radius:var(--r3);
-  padding:10px 12px;
-  margin-bottom:var(--s3);
-  font-size:11px;
-}
-.blocker-title{font-weight:700;color:var(--bad);margin-bottom:2px}
-.blocker-msg{color:var(--sub)}
-
-.icon{display:inline-flex;align-items:center;justify-content:center}
-.icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.icon-sm{width:14px;height:14px}
-.icon-md{width:18px;height:18px}
-.icon-lg{width:24px;height:24px}
-
-.section-title{
-  font-size:10px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  color:var(--muted);
-  margin-bottom:8px;
-}
-  </style>
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}
+.sub{display:none}.sub.on{display:block}
+</style>
 </head>
 <body>
 <div id="app">
   <header>
-    <div class="logo">Human<span>eed</span></div>
+    <div class="logo">HUMAN<span>EED</span></div>
     <div class="hdr-r">
-      <div class="hdr-pill" id="hdrArch"></div>
-      <div class="hdr-pill hdr-score" id="hdrScore">—</div>
+      <div class="pill" id="streakPill">🔥 <span id="streakVal">0</span></div>
+      <div class="pill gold" id="archPill">⚔️</div>
     </div>
   </header>
   
   <main>
-    <div class="mood-bar" id="moodBar"></div>
-    
-    <div class="tab-content">
-      <!-- TODAY -->
-      <div class="view on" id="v-today">
-        <div class="blocker" id="blocker" style="display:none"></div>
-        
-        <div class="tiers" id="tiers"></div>
-        
-        <div class="action-card" id="actionCard">
-          <div class="action-header">
-            <div class="action-tag" id="actionTag"></div>
-            <div class="action-counter" id="actionCounter"></div>
-          </div>
-          <div class="action-text" id="actionText">Wähle deine Stimmung</div>
-          <div class="action-explain" id="actionExplain"></div>
-          <div class="action-btns">
-            <button id="btnWhy">Warum?</button>
-            <button id="btnSkip">Weiter</button>
-            <button class="primary" id="btnDone">Erledigt ✓</button>
+    <!-- HOME -->
+    <section class="view on" id="v-home">
+      <div class="sec">
+        <div class="wheel-box">
+          <svg id="wheelSvg" viewBox="0 0 300 300"></svg>
+          <div class="wheel-center">
+            <div class="wheel-score" id="centerScore">60</div>
+            <div class="wheel-label">Balance</div>
           </div>
         </div>
-        
-        <div class="plan-list" id="planSection">
-          <div class="plan-header">
-            <div class="plan-title">Perspektiven</div>
-            <div class="plan-action" id="regenPlan">Neu</div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Smart-Empfehlung</div>
+        <div class="rec">
+          <div class="rec-head">
+            <div class="rec-icon" id="recIcon">🌿</div>
+            <div class="rec-info">
+              <div class="rec-why" id="recWhy">Basis stärken</div>
+              <div class="rec-task" id="recTask">10 Min spazieren</div>
+            </div>
           </div>
-          <div class="plan-items" id="planItems"></div>
+          <div class="btn-row">
+            <button class="btn" id="recSkip">Andere</button>
+            <button class="btn primary" id="recDo">→ Jetzt</button>
+          </div>
         </div>
-        
-        <div class="chips-section">
-          <div class="chips-header">
-            <div class="chips-title">Positiv</div>
-            <div class="chips-toggle" id="togG">+</div>
-          </div>
-          <div class="chips" id="goodChips"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Coach</div>
+        <div class="coach">
+          <div class="coach-title" id="coachTitle">💬 Tages-Tipp</div>
+          <div class="coach-msg" id="coachMsg">Starte mit kleinen Schritten.</div>
         </div>
-        
-        <div class="chips-section">
-          <div class="chips-header">
-            <div class="chips-title">Negativ</div>
-            <div class="chips-toggle" id="togB">+</div>
+      </div>
+      <div id="impulseBox"></div>
+    </section>
+
+    <!-- AKTION -->
+    <section class="view" id="v-action">
+      <div class="sec">
+        <div class="sec-t">Ebene wählen</div>
+        <div class="tier-row" id="tierRow"></div>
+      </div>
+      <div class="sec">
+        <div class="card gen-card">
+          <div class="gen-tier" id="genTier">🌿 Basis</div>
+          <div class="gen-task" id="genTask">Wasser trinken</div>
+          <div class="gen-detail" id="genDetail"></div>
+          <div class="btn-row">
+            <button class="btn" id="genSkip">Andere</button>
+            <button class="btn primary" id="genDone">✓ Erledigt</button>
           </div>
-          <div class="chips" id="badChips"></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Letzte Aktionen</div>
+        <div id="histList"></div>
+      </div>
+    </section>
+
+    <!-- CHECK-IN (ERWEITERT) -->
+    <section class="view" id="v-checkin">
+      <div class="sec">
+        <div class="mood-box">
+          <div class="mood-q">Wie geht es dir gerade?</div>
+          <div class="mood-row">
+            <button class="mood-btn" data-m="1"></button>
+            <button class="mood-btn" data-m="2"></button>
+            <button class="mood-btn" data-m="3"></button>
+            <button class="mood-btn" data-m="4"></button>
+            <button class="mood-btn" data-m="5"></button>
+          </div>
+          <div class="mood-label" id="moodLabel"></div>
         </div>
       </div>
       
-      <!-- SCORE -->
-      <div class="view" id="v-score">
-        <div class="score-hero">
-          <div class="score-num" id="scoreVal">—</div>
-          <div class="score-label" id="scoreBadge">Startklar</div>
+      <div class="sec">
+        <div class="sec-t">― Biomarker</div>
+        <div class="bio-grid">
+          <div class="bio-item"><div class="bio-head"><span class="bio-label">○ Schlaf</span><span class="bio-value" id="bioSleepVal">7h</span></div><input type="range" class="bio-slider" id="bioSleep" min="0" max="12" step="0.5" value="7"><div class="bio-hint">Stunden letzte Nacht</div></div>
+          <div class="bio-item"><div class="bio-head"><span class="bio-label">◇ Qualität</span><span class="bio-value" id="bioQualVal">3</span></div><input type="range" class="bio-slider cyan" id="bioQual" min="1" max="5" step="1" value="3"><div class="bio-hint">1=schlecht, 5=super</div></div>
+          <div class="bio-item"><div class="bio-head"><span class="bio-label">△ Schritte</span><span class="bio-value" id="bioStepsVal">5k</span></div><input type="range" class="bio-slider green" id="bioSteps" min="0" max="20000" step="500" value="5000"><div class="bio-hint">Heute (ca.)</div></div>
+          <div class="bio-item"><div class="bio-head"><span class="bio-label">□ Training</span><span class="bio-value" id="bioTrainVal">0m</span></div><input type="range" class="bio-slider" id="bioTrain" min="0" max="120" step="5" value="0"><div class="bio-hint">Minuten heute</div></div>
         </div>
-        <div class="score-grid">
-          <div class="score-item"><div class="score-item-val" id="vBase" style="color:var(--t-foundation)">—</div><div class="score-item-label">Basis</div></div>
-          <div class="score-item"><div class="score-item-val" id="vSafe" style="color:var(--t-safety)">—</div><div class="score-item-label">Sicherheit</div></div>
-          <div class="score-item"><div class="score-item-val" id="vConn" style="color:var(--t-connect)">—</div><div class="score-item-label">Verbindung</div></div>
-        </div>
-        <div class="score-grid">
-          <div class="score-item"><div class="score-item-val" id="vEsteem" style="color:var(--t-esteem)">—</div><div class="score-item-label">Selbstwert</div></div>
-          <div class="score-item"><div class="score-item-val" id="vSelf" style="color:var(--t-self)">—</div><div class="score-item-label">Wachstum</div></div>
-          <div class="score-item"><div class="score-item-val" id="vTrans" style="color:var(--t-trans)">—</div><div class="score-item-label">Beitrag</div></div>
-        </div>
-        <div class="section-title" style="margin-top:16px">Empfehlungen</div>
-        <div id="recs"></div>
       </div>
-      
-      <!-- JOURNAL -->
-      <div class="view" id="v-journal">
-        <div class="section-title">Erkenntnisse</div>
-        <div id="insights"></div>
-        <div class="section-title" style="margin-top:16px">Verlauf</div>
-        <div class="journal-list" id="journal"></div>
+
+      <div class="sec">
+        <div class="sec-t">◈ Mental State</div>
+        <div class="mental-grid">
+          <div class="mental-item"><div class="bio-head"><span class="bio-label">◎ Kontrolle</span><span class="bio-value" id="menLocusVal">50</span></div><input type="range" class="bio-slider" id="menLocus" min="0" max="100" step="5" value="50"><div class="bio-hint">Locus of Control</div></div>
+          <div class="mental-item"><div class="bio-head"><span class="bio-label">◉ Intention</span><span class="bio-value" id="menIntentVal">50</span></div><input type="range" class="bio-slider" id="menIntent" min="0" max="100" step="5" value="50"><div class="bio-hint">Handlungsabsicht</div></div>
+          <div class="mental-item"><div class="bio-head"><span class="bio-label">◈ Wirksamkeit</span><span class="bio-value" id="menEfficVal">50</span></div><input type="range" class="bio-slider" id="menEffic" min="0" max="100" step="5" value="50"><div class="bio-hint">Selbstwirksamkeit</div></div>
+          <div class="mental-item"><div class="bio-head"><span class="bio-label">◇ Narrativ</span><span class="bio-value" id="menNarrVal">50</span></div><input type="range" class="bio-slider" id="menNarr" min="0" max="100" step="5" value="50"><div class="bio-hint">Selbstbild</div></div>
+        </div>
       </div>
-    </div>
+
+      <div class="sec">
+        <div class="sec-t">✓ Was lief gut?</div>
+        <div class="chips" id="goodChips"></div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">✗ Was war schwierig?</div>
+        <div class="chips" id="badChips"></div>
+      </div>
+    </section>
+
+    <!-- PROFIL -->
+    <section class="view" id="v-profile">
+      <div class="tabs">
+        <button class="tab on" data-t="arch">• Vorbild</button>
+        <button class="tab" data-t="journal">• Journal</button>
+      </div>
+      <div class="sub on" id="sub-arch">
+        <div class="sec"><div class="arch-grid" id="archGrid"></div></div>
+        <div class="sec" id="archDetail"></div>
+      </div>
+      <div class="sub" id="sub-journal" style="display:none">
+        <div class="sec">
+          <div class="stats">
+            <div class="stat"><div class="stat-v" id="statStreak">0</div><div class="stat-l">Streak</div></div>
+            <div class="stat"><div class="stat-v" id="statActions">0</div><div class="stat-l">Aktionen</div></div>
+            <div class="stat"><div class="stat-v" id="statScore">60</div><div class="stat-l">Score</div></div>
+          </div>
+        </div>
+        <div class="sec"><div class="sec-t">Erkenntnisse</div><div id="insights"></div></div>
+      </div>
+    </section>
   </main>
   
   <nav>
-    <div class="nav-inner">
-      <button class="on" data-v="today">Heute</button>
-      <button data-v="score">Score</button>
-      <button data-v="journal">Verlauf</button>
-    </div>
+    <button data-v="action"><span>→</span>Aktion</button>
+    <button class="on" data-v="home"><span>○</span>Home</button>
+    <button data-v="checkin"><span>◐</span>Check-in</button>
+    <button data-v="profile"><span>≡</span>Profil</button>
   </nav>
-  
-  <div class="toast" id="toast"></div>
-  
-  <div class="modal" id="modal">
-    <div class="modal-box">
-      <div class="modal-title">Archetyp wählen</div>
-      <div class="arch-grid" id="archGrid"></div>
-      <button class="modal-close" id="closeModal">Fertig</button>
-    </div>
-  </div>
 </div>
 
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-title">Vorbild wählen</div>
+    <div class="arch-grid" id="modalArchGrid"></div>
+    <button class="btn primary" id="modalClose" style="width:100%;margin-top:16px">Schließen</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
-(function(){
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const today=()=>new Date().toISOString().slice(0,10);
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const uid=()=>Math.random().toString(36).slice(2,9);
-
-// SVG Icons
-const ICONS={
-  foundation:'<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-  safety:'<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  connect:'<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  esteem:'<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-  self:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-  trans:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-  stoiker:'<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/></svg>',
-  athlet:'<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><path d="M12 8v8M8 21l4-5 4 5"/></svg>',
-  minimalist:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>',
-  macher:'<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
-  verbinder:'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-  kreativ:'<svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>',
-  forscher:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  heiler:'<svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
-  stratege:'<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>',
-  mentor:'<svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
-  abenteurer:'<svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>',
-  philosoph:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
-  handwerker:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>'
-};
-
-const icon=(name,cls='')=>`<span class="icon ${cls}">${ICONS[name]||''}</span>`;
-
-const MOOD_N=['Schlecht','Mäßig','Okay','Gut','Super'];
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 
 const TIERS=[
-  {k:'foundation',n:'Basis',c:'--t-foundation'},
-  {k:'safety',n:'Sicherheit',c:'--t-safety'},
-  {k:'connect',n:'Verbindung',c:'--t-connect'},
-  {k:'esteem',n:'Selbstwert',c:'--t-esteem'},
-  {k:'self',n:'Wachstum',c:'--t-self'},
-  {k:'trans',n:'Beitrag',c:'--t-trans'}
+  {k:'foundation',n:'Basis',e:'🌿',c:'#4CAF50'},
+  {k:'safety',n:'Sicherheit',e:'🛡️',c:'#29B6F6'},
+  {k:'connect',n:'Verbindung',e:'💜',c:'#AB47BC'},
+  {k:'esteem',n:'Selbstwert',e:'⭐',c:'#FFA726'},
+  {k:'growth',n:'Wachstum',e:'🌱',c:'#EC407A'},
+  {k:'transcend',n:'Beitrag',e:'✨',c:'#F06292'}
 ];
 
-const GOOD=[
-  {k:'sleep',l:'Gut geschlafen',t:'foundation'},{k:'move',l:'Bewegt',t:'foundation'},{k:'eat',l:'Gesund gegessen',t:'foundation'},{k:'water',l:'Getrunken',t:'foundation'},
-  {k:'plan',l:'Geplant',t:'safety'},{k:'tidy',l:'Aufgeräumt',t:'safety'},{k:'focus',l:'Fokussiert',t:'safety'},
-  {k:'contact',l:'Kontakt',t:'connect'},{k:'thanks',l:'Dankbar',t:'connect'},{k:'helped',l:'Geholfen',t:'connect'},
-  {k:'skill',l:'Gelernt',t:'esteem'},{k:'finished',l:'Erledigt',t:'esteem'},{k:'courage',l:'Mut',t:'esteem'},
-  {k:'deep',l:'Deep Work',t:'self'},{k:'create',l:'Erschaffen',t:'self'},
-  {k:'value',l:'Wert gegeben',t:'trans'},{k:'inspire',l:'Inspiriert',t:'trans'}
-];
-
-const BAD=[
-  {k:'tired',l:'Erschöpft',t:'foundation'},{k:'bad_sleep',l:'Schlecht geschlafen',t:'foundation'},{k:'no_move',l:'Nicht bewegt',t:'foundation'},
-  {k:'chaos',l:'Chaos',t:'safety'},{k:'scroll',l:'Viel gescrollt',t:'safety'},{k:'overwhelm',l:'Überfordert',t:'safety'},
-  {k:'alone',l:'Einsam',t:'connect'},{k:'conflict',l:'Konflikt',t:'connect'},
-  {k:'procrastinate',l:'Aufgeschoben',t:'esteem'},{k:'stuck',l:'Blockiert',t:'esteem'},
-  {k:'no_progress',l:'Kein Fortschritt',t:'self'},{k:'meaningless',l:'Sinnlos',t:'trans'}
-];
-
-const ARCH={
-  stoiker:{n:'Stoiker',e:'stoiker',tier:'safety'},
-  athlet:{n:'Athlet',e:'athlet',tier:'foundation'},
-  minimalist:{n:'Minimalist',e:'minimalist',tier:'safety'},
-  macher:{n:'Macher',e:'macher',tier:'esteem'},
-  verbinder:{n:'Verbinder',e:'verbinder',tier:'connect'},
-  kreativ:{n:'Künstler',e:'kreativ',tier:'self'},
-  forscher:{n:'Forscher',e:'forscher',tier:'self'},
-  heiler:{n:'Heiler',e:'heiler',tier:'foundation'},
-  stratege:{n:'Stratege',e:'stratege',tier:'safety'},
-  mentor:{n:'Mentor',e:'mentor',tier:'trans'},
-  abenteurer:{n:'Abenteurer',e:'abenteurer',tier:'self'},
-  philosoph:{n:'Philosoph',e:'philosoph',tier:'self'},
-  handwerker:{n:'Handwerker',e:'handwerker',tier:'esteem'}
+// 15 ARCHETYPES - kompakt mit Farben
+const ARCHETYPES={
+  warrior:{e:'⚔️',n:'Krieger',d:'Mut & Disziplin',color:'#ef4444',traits:['Disziplin','Ausdauer','Mut','Schutz','Entschlossenheit'],philosophy:'Der wahre Krieger kämpft gegen seine eigenen Schwächen.',icons:['Marcus Aurelius','David Goggins'],tone:{anrede:'Krieger',motiv:'Stärke wächst durch Taten.'}},
+  sage:{e:'📚',n:'Weiser',d:'Wissen & Klarheit',color:'#6366f1',traits:['Reflexion','Lernen','Tiefe','Klarheit','Geduld'],philosophy:'Angewandtes Wissen ist Macht.',icons:['Seneca','Naval Ravikant'],tone:{anrede:'Weiser',motiv:'Weisheit entsteht durch bewusstes Handeln.'}},
+  creator:{e:'🎨',n:'Schöpfer',d:'Kreativität & Vision',color:'#f97316',traits:['Innovation','Vision','Ausdruck','Freiheit','Originalität'],philosophy:'Kreativität ist höchste Denkform.',icons:['Da Vinci','Steve Jobs'],tone:{anrede:'Schöpfer',motiv:'Jede Handlung ist ein Pinselstrich.'}},
+  caregiver:{e:'💚',n:'Beschützer',d:'Fürsorge & Empathie',color:'#22c55e',traits:['Mitgefühl','Fürsorge','Geduld','Heilung','Präsenz'],philosophy:'Man kann nur geben, was man hat.',icons:['Mr. Rogers'],tone:{anrede:'Beschützer',motiv:'Selbstfürsorge ermöglicht Fürsorge.'}},
+  explorer:{e:'🧭',n:'Entdecker',d:'Neugier & Abenteuer',color:'#eab308',traits:['Neugier','Freiheit','Mut','Offenheit','Anpassung'],philosophy:'Das größte Abenteuer ist das Leben.',icons:['Bear Grylls'],tone:{anrede:'Entdecker',motiv:'Jeder Tag birgt neue Entdeckungen.'}},
+  leader:{e:'👑',n:'Anführer',d:'Vision & Verantwortung',color:'#a855f7',traits:['Vision','Einfluss','Verantwortung','Inspiration','Integrität'],philosophy:'Leadership ist Service.',icons:['Mandela','Lincoln'],tone:{anrede:'Anführer',motiv:'Du gehst voran – andere folgen.'}},
+  healer:{e:'🌸',n:'Heiler',d:'Ganzheit & Balance',color:'#ec4899',traits:['Intuition','Ganzheit','Regeneration','Sanftheit','Balance'],philosophy:'Der Körper heilt sich selbst.',icons:['Hippokrates'],tone:{anrede:'Heiler',motiv:'Heilung beginnt mit Erlaubnis.'}},
+  rebel:{e:'🔥',n:'Rebell',d:'Authentizität & Wandel',color:'#f43f5e',traits:['Authentizität','Nonkonformität','Mut','Wandel','Ehrlichkeit'],philosophy:'Wer verändern will, muss anders sein.',icons:['Jobs','Chanel'],tone:{anrede:'Rebell',motiv:'Regeln sind für Menschen ohne Denken.'}},
+  monk:{e:'🧘',n:'Mönch',d:'Stille & Fokus',color:'#64748b',traits:['Stille','Fokus','Gelassenheit','Disziplin','Achtsamkeit'],philosophy:'Weniger ist mehr.',icons:['Thich Nhat Hanh'],tone:{anrede:'Mönch',motiv:'In der Stille findest du Antworten.'}},
+  athlete:{e:'🏆',n:'Athlet',d:'Körper & Leistung',color:'#14b8a6',traits:['Körperbewusstsein','Ausdauer','Leistung','Regeneration','Fokus'],philosophy:'Excellence ist Gewohnheit.',icons:['Jordan','Wim Hof'],tone:{anrede:'Athlet',motiv:'Dein Körper ist dein Instrument.'}},
+  artist:{e:'🎭',n:'Künstler',d:'Ausdruck & Emotion',color:'#d946ef',traits:['Sensibilität','Ausdruck','Emotion','Schönheit','Tiefe'],philosophy:'Kunst zeigt, was andere sehen lässt.',icons:['Frida Kahlo','Van Gogh'],tone:{anrede:'Künstler',motiv:'Erschaffe. Expresse. Existiere.'}},
+  scientist:{e:'🔬',n:'Forscher',d:'Wahrheit & Methode',color:'#0ea5e9',traits:['Analytik','Neugier','Präzision','Skeptizismus','Ausdauer'],philosophy:'Ich weiß, dass ich nichts weiß.',icons:['Curie','Sagan'],tone:{anrede:'Forscher',motiv:'Fakten zählen. Hypothesen testen.'}},
+  mentor:{e:'🎓',n:'Mentor',d:'Weitergabe & Vermächtnis',color:'#8b5cf6',traits:['Geduld','Erfahrung','Anleitung','Großzügigkeit','Weitsicht'],philosophy:'Lehren ist zweimal lernen.',icons:['Sokrates'],tone:{anrede:'Mentor',motiv:'Dein größtes Werk sind Menschen.'}},
+  stoic:{e:'🏛️',n:'Stoiker',d:'Gelassenheit & Akzeptanz',color:'#78716c',traits:['Gelassenheit','Selbstkontrolle','Akzeptanz','Rationalität','Resilienz'],philosophy:'Es sind nicht die Dinge, die uns beunruhigen.',icons:['Marcus Aurelius','Ryan Holiday'],tone:{anrede:'Stoiker',motiv:'Kontrolliere was du kannst.'}},
+  mystic:{e:'🌙',n:'Mystiker',d:'Intuition & Tiefe',color:'#7c3aed',traits:['Intuition','Spiritualität','Tiefe','Verbundenheit','Transformation'],philosophy:'Das Universum ist in dir.',icons:['Rumi','Alan Watts'],tone:{anrede:'Mystiker',motiv:'Hinter dem Sichtbaren liegt Wahrheit.'}}
 };
-const ARCH_ORDER=Object.keys(ARCH);
 
-// Actions with explanations
+// AKTIONEN - zusammengefasst nach Tier (je ~20 Aktionen)
 const ACTIONS={
-  foundation:{
-    hi:[
-      {t:'30 Min Bewegung',why:'Bewegung setzt Endorphine frei und verbessert Fokus.',how:'Spazieren, Joggen, oder Workout.',min:'10 Min reichen auch.'},
-      {t:'Gesunde Mahlzeit',why:'Nährstoffe beeinflussen Energie und Stimmung direkt.',how:'Gemüse, Protein, wenig Zucker.',min:'Eine gesunde Zutat hinzufügen.'},
-      {t:'8h Schlaf planen',why:'Schlaf ist das Fundament für alles andere.',how:'Wecker rückwärts rechnen, Bildschirme weg.',min:'30 Min früher ins Bett.'},
-      {t:'Spaziergang draußen',why:'Tageslicht reguliert den Schlafrhythmus.',how:'15-30 Min ohne Handy.',min:'5 Min vor die Tür.'},
-      {t:'Stretching-Routine',why:'Löst Verspannungen und verbessert Durchblutung.',how:'5-10 Min dehnen.',min:'3 tiefe Atemzüge mit Stretch.'}
-    ],
-    lo:[
-      {t:'5 Min Bewegung',why:'Selbst kurze Bewegung aktiviert den Körper.',how:'Kniebeugen, Arme kreisen.',min:'Einmal aufstehen und strecken.'},
-      {t:'Glas Wasser trinken',why:'Dehydration verstärkt Müdigkeit.',how:'Großes Glas, langsam trinken.',min:'Ein paar Schlucke.'},
-      {t:'Kurze Pause machen',why:'Das Gehirn braucht Erholung.',how:'Augen schließen, nichts tun.',min:'30 Sekunden Augen zu.'},
-      {t:'Fenster öffnen',why:'Frische Luft bringt Sauerstoff.',how:'5 Min lüften.',min:'Einmal tief einatmen.'},
-      {t:'3 tiefe Atemzüge',why:'Aktiviert das parasympathische Nervensystem.',how:'4 Sek ein, 7 halten, 8 aus.',min:'Ein bewusster Atemzug.'}
-    ]
-  },
-  safety:{
-    hi:[
-      {t:'Woche planen',why:'Klarheit reduziert Stress.',how:'Top 3 Prioritäten pro Tag festlegen.',min:'Nur morgen planen.'},
-      {t:'Aufräumen',why:'Äußere Ordnung schafft innere Ruhe.',how:'Ein Bereich komplett aufräumen.',min:'Eine Oberfläche frei machen.'},
-      {t:'Finanzen checken',why:'Finanzielle Klarheit gibt Sicherheit.',how:'Kontostand, offene Rechnungen.',min:'Nur Kontostand ansehen.'},
-      {t:'Digital Detox 2h',why:'Ständige Erreichbarkeit stresst.',how:'Handy in anderen Raum.',min:'30 Min ohne Handy.'},
-      {t:'Prioritäten setzen',why:'Nicht alles ist gleich wichtig.',how:'Was hat heute den größten Impact?',min:'Eine Sache als wichtigste markieren.'}
-    ],
-    lo:[
-      {t:'1 Aufgabe aufschreiben',why:'Aus dem Kopf aufs Papier entlastet.',how:'Egal welche, einfach notieren.',min:'Gedanke aussprechen.'},
-      {t:'Kleines aufräumen',why:'Kleine Erfolge bauen Momentum.',how:'Schreibtisch oder eine Schublade.',min:'3 Dinge an ihren Platz.'},
-      {t:'2-Minuten-Regel',why:'Schnelle Wins eliminieren mentale Last.',how:'Alles unter 2 Min sofort tun.',min:'Eine Sache sofort erledigen.'},
-      {t:'Handy weglegen',why:'Aus den Augen, aus dem Sinn.',how:'In Schublade oder anderen Raum.',min:'Umdrehen reicht.'},
-      {t:'Nein sagen',why:'Grenzen schützen deine Energie.',how:'Höflich aber bestimmt ablehnen.',min:'Innerlich Nein denken.'}
-    ]
-  },
-  connect:{
-    hi:[
-      {t:'Freund anrufen',why:'Stimme schafft mehr Nähe als Text.',how:'10-15 Min ungestört telefonieren.',min:'Kurze Sprachnachricht.'},
-      {t:'Echtes Gespräch führen',why:'Tiefe Gespräche erfüllen mehr als Small Talk.',how:'Offene Fragen stellen, zuhören.',min:'Eine ehrliche Frage stellen.'},
-      {t:'Danke sagen',why:'Dankbarkeit stärkt Beziehungen.',how:'Konkret sagen wofür.',min:'Innerlich dankbar sein.'},
-      {t:'Gemeinsam essen',why:'Geteilte Mahlzeiten verbinden.',how:'Mit Familie, Freund, Kollege.',min:'Jemanden fragen.'},
-      {t:'Aktiv zuhören',why:'Echtes Zuhören ist selten und wertvoll.',how:'Nicht unterbrechen, nachfragen.',min:'30 Sek nur zuhören.'}
-    ],
-    lo:[
-      {t:'Kurze Nachricht senden',why:'Zeigt dass du an jemanden denkst.',how:'Hey, wie geht es dir?',min:'Emoji schicken.'},
-      {t:'Jemanden anlächeln',why:'Lächeln ist ansteckend.',how:'Bewusst anlächeln.',min:'Mundwinkel heben.'},
-      {t:'Blickkontakt halten',why:'Verbindet ohne Worte.',how:'3 Sekunden halten.',min:'Kurz in die Augen schauen.'},
-      {t:'An jemanden denken',why:'Positive Gedanken wirken.',how:'Jemandem Gutes wünschen.',min:'Ein Gesicht visualisieren.'},
-      {t:'Kompliment machen',why:'Hebt beide Seiten.',how:'Ehrlich und spezifisch.',min:'Innerlich anerkennen.'}
-    ]
-  },
-  esteem:{
-    hi:[
-      {t:'Schwieriges zuerst',why:'Willenskraft ist morgens am höchsten.',how:'Unangenehmste Aufgabe zuerst.',min:'Nur anfangen.'},
-      {t:'Projekt abschließen',why:'Abschlüsse geben Erfolgsgefühl.',how:'Etwas zu 100% fertig machen.',min:'Einen Teil abschließen.'},
-      {t:'Skill üben',why:'Kompetenz baut Selbstwert.',how:'30 Min fokussiert üben.',min:'5 Min üben.'},
-      {t:'Feedback holen',why:'Zeigt Mut und beschleunigt Lernen.',how:'Konkret fragen was besser geht.',min:'Eine Frage stellen.'},
-      {t:'Etwas präsentieren',why:'Überwindet Angst und baut Selbstvertrauen.',how:'Idee vorstellen, egal wie klein.',min:'Laut aussprechen.'}
-    ],
-    lo:[
-      {t:'Kleinste Aufgabe',why:'Selbst winzige Erfolge zählen.',how:'Was ist das Minimum?',min:'Einen Schritt machen.'},
-      {t:'5 Min anfangen',why:'Anfangen ist das Schwerste.',how:'Timer auf 5 Min, dann stoppen erlaubt.',min:'Datei öffnen.'},
-      {t:'Erfolg notieren',why:'Wir vergessen unsere Erfolge zu schnell.',how:'Was hast du heute geschafft?',min:'Einen Erfolg denken.'},
-      {t:'Fehler zugeben',why:'Ehrlichkeit stärkt Integrität.',how:'Ohne Ausreden.',min:'Dir selbst gegenüber.'},
-      {t:'Zusage einhalten',why:'Zuverlässigkeit baut Selbstvertrauen.',how:'Tu was du gesagt hast.',min:'Eine kleine Zusage.'}
-    ]
-  },
-  self:{
-    hi:[
-      {t:'Deep Work 90 Min',why:'Tiefe Arbeit bringt echten Fortschritt.',how:'Keine Ablenkungen, ein Thema.',min:'30 Min fokussiert.'},
-      {t:'Etwas Neues lernen',why:'Lernen hält den Geist flexibel.',how:'Kurs, Buch, Tutorial.',min:'Einen Artikel lesen.'},
-      {t:'Kreativ sein',why:'Kreativität ist ein Grundbedürfnis.',how:'Schreiben, zeichnen, bauen.',min:'Eine Idee skizzieren.'},
-      {t:'Reflektieren',why:'Reflexion macht Erfahrung zu Weisheit.',how:'Journal, Meditation.',min:'Eine Frage beantworten.'},
-      {t:'Lesen',why:'Lesen erweitert Perspektiven.',how:'30 Min ohne Ablenkung.',min:'Eine Seite.'}
-    ],
-    lo:[
-      {t:'15 Min fokussiert',why:'Kurze fokussierte Zeit schlägt lange abgelenkte.',how:'Eine Sache, keine Ablenkung.',min:'5 Min.'},
-      {t:'1 Artikel komplett lesen',why:'Tiefe statt Breite.',how:'Bis zum Ende, nicht überfliegen.',min:'Ersten Absatz.'},
-      {t:'Idee notieren',why:'Ideen verschwinden schnell.',how:'Sofort aufschreiben.',min:'Ein Wort.'},
-      {t:'5 Min meditieren',why:'Trainiert Aufmerksamkeit.',how:'Nur auf Atem achten.',min:'3 Atemzüge bewusst.'},
-      {t:'Neugierig sein',why:'Neugier ist der Anfang von Wachstum.',how:'Eine Frage googlen.',min:'Frage stellen.'}
-    ]
-  },
-  trans:{
-    hi:[
-      {t:'Jemandem helfen',why:'Helfen gibt Sinn und Verbindung.',how:'Aktiv anbieten.',min:'Fragen ob Hilfe nötig.'},
-      {t:'Wissen teilen',why:'Geteiltes Wissen multipliziert sich.',how:'Erklären, schreiben, zeigen.',min:'Einen Tipp geben.'},
-      {t:'Mentoring',why:'Andere wachsen zu sehen ist erfüllend.',how:'Zeit für jemanden nehmen.',min:'Eine Frage beantworten.'},
-      {t:'Spenden',why:'Geben aktiviert Belohnungszentrum.',how:'Zeit, Geld, oder Sachen.',min:'Etwas aussortieren.'},
-      {t:'Projekt für andere starten',why:'Größere Wirkung durch Systeme.',how:'Was hilft vielen?',min:'Idee notieren.'}
-    ],
-    lo:[
-      {t:'Tür aufhalten',why:'Kleine Gesten zählen.',how:'Aufmerksam sein.',min:'Lächeln.'},
-      {t:'Jemanden ermutigen',why:'Ermutigung kann alles ändern.',how:'Du schaffst das.',min:'Nicken.'},
-      {t:'Ressource teilen',why:'Was dir hilft, hilft anderen.',how:'Link, Buch, Tipp.',min:'Empfehlung merken.'},
-      {t:'Wirklich zuhören',why:'Volle Aufmerksamkeit ist ein Geschenk.',how:'Ohne eigene Agenda.',min:'Nachfragen.'},
-      {t:'Kleine Geste',why:'Unerwartete Freundlichkeit wirkt.',how:'Kaffee, Kompliment, Hilfe.',min:'Gedanke.'}
-    ]
-  }
+  foundation:[
+    {t:'10 Min spazieren',h:'Geh raus, atme bewusst.',w:'Bewegung aktiviert Kreislauf.',tags:['explorer','warrior','athlete'],energy:'low'},
+    {t:'Großes Glas Wasser',h:'500ml langsam trinken.',w:'Dehydration = Müdigkeit.',tags:['all'],energy:'low'},
+    {t:'5 Min Dehnen',h:'Nacken, Schultern, Rücken.',w:'Löst Verspannungen.',tags:['athlete','healer','monk'],energy:'low'},
+    {t:'Gesunder Snack',h:'Obst, Nüsse, Gemüse.',w:'Stabile Energie.',tags:['caregiver','healer'],energy:'low'},
+    {t:'Atemübung (4-4-6)',h:'4s ein, 4s halten, 6s aus.',w:'Aktiviert Parasympathikus.',tags:['monk','stoic','healer','sage'],energy:'low'},
+    {t:'Fenster öffnen',h:'10x tief durchatmen.',w:'Sauerstoff macht wach.',tags:['all'],energy:'low'},
+    {t:'Kalte Dusche (30s)',h:'Am Ende: Kalt stellen.',w:'Stärkt Willenskraft.',tags:['warrior','stoic','athlete','rebel'],energy:'high',time:'morning'},
+    {t:'10 Liegestütze',h:'Saubere Form.',w:'Kurze Belastung = Energie.',tags:['warrior','athlete','leader'],energy:'medium'},
+    {t:'Yoga Sonnengruß',h:'3 Runden fließend.',w:'Ganzheitliche Mobilisierung.',tags:['healer','monk','athlete'],energy:'medium',time:'morning'},
+    {t:'Barfuß laufen',h:'5 Min auf Gras/Sand.',w:'Erdung und Präsenz.',tags:['explorer','healer','mystic'],energy:'low'},
+    {t:'Proteinreiche Mahlzeit',h:'Eier, Quark, Hülsenfrüchte.',w:'Stabiler Blutzucker.',tags:['athlete','warrior','scientist'],energy:'low'},
+    {t:'Grünes Gemüse',h:'Brokkoli, Spinat, Salat.',w:'Mikronährstoffe.',tags:['healer','caregiver','sage'],energy:'low'},
+    {t:'Kräutertee',h:'Pfefferminze, Kamille, Ingwer.',w:'Hydration + Wirkstoffe.',tags:['healer','monk','mystic'],energy:'low',time:'evening'},
+    {t:'Box Breathing',h:'4s ein, 4s halten, 4s aus, 4s halten.',w:'Navy SEAL Technik.',tags:['warrior','stoic','athlete'],energy:'low'},
+    {t:'Power Nap',h:'15-20 Min, Timer stellen.',w:'Regeneriert Aufmerksamkeit.',tags:['sage','creator','scientist'],energy:'low'},
+    {t:'Sonnenlicht tanken',h:'10 Min direktes Tageslicht.',w:'Synchronisiert Rhythmus.',tags:['scientist','healer','explorer'],energy:'low',time:'morning'},
+    {t:'Körperhaltung korrigieren',h:'Schultern zurück, Brust raus.',w:'Aufrecht = selbstsicher.',tags:['leader','warrior','stoic'],energy:'low'},
+    {t:'Treppen statt Aufzug',h:'Bewusst Treppe wählen.',w:'Integrierte Bewegung.',tags:['all'],energy:'medium'},
+    {t:'Tanz zu einem Song',h:'3-4 Min bewegen.',w:'Bewegung mit Freude.',tags:['artist','creator','rebel'],energy:'high'},
+    {t:'Body Scan',h:'Langsam durch Körper spüren.',w:'Was braucht Aufmerksamkeit?',tags:['healer','monk','mystic'],energy:'low',time:'evening'},
+    {t:'Bildschirm-Pause',h:'30 Min ohne Screen.',w:'Blaulicht stört Melatonin.',tags:['monk','sage','scientist'],energy:'low',time:'evening'}
+  ],
+  safety:[
+    {t:'Schreibtisch aufräumen',h:'Alles weg was nicht gebraucht wird.',w:'Äußere Ordnung = innere Ruhe.',tags:['warrior','leader','monk','stoic'],energy:'medium'},
+    {t:'Eine Schublade aufräumen',h:'10 Min, eine Schublade.',w:'Kleine Siege bauen Momentum.',tags:['caregiver','sage'],energy:'low'},
+    {t:'Inbox Zero',h:'E-Mails auf Null/kategorisieren.',w:'Offene Loops stressen.',tags:['leader','scientist','sage'],energy:'medium'},
+    {t:'Morgen-Routine planen',h:'3-5 Schritte für morgen.',w:'Struktur reduziert Entscheidungsmüdigkeit.',tags:['leader','warrior','stoic'],energy:'low',time:'evening'},
+    {t:'Wochenplanung',h:'15 Min: Top 3 Ziele.',w:'Proaktiv statt reaktiv.',tags:['leader','sage','scientist'],energy:'medium'},
+    {t:'Finanzüberblick',h:'Einnahmen vs. Ausgaben.',w:'Klarheit = weniger Stress.',tags:['leader','sage','stoic'],energy:'medium'},
+    {t:'Handy auf Flugmodus',h:'1 Stunde ohne Unterbrechungen.',w:'Benachrichtigungen fragmentieren.',tags:['monk','scientist','creator'],energy:'low'},
+    {t:'Nein sagen',h:'Eine Anfrage ablehnen.',w:'Grenzen schützen Energie.',tags:['warrior','stoic','rebel','leader'],energy:'high'},
+    {t:'Social Media Pause',h:'Heute keine Social Media.',w:'Dopamin-Reset.',tags:['monk','stoic','scientist'],energy:'medium'},
+    {t:'Fokusblock einrichten',h:'90 Min ungestörte Zeit.',w:'Deep Work braucht Schutz.',tags:['scientist','creator','sage'],energy:'medium'},
+    {t:'Backup erstellen',h:'Wichtige Dateien sichern.',w:'Datenverlust vermeiden.',tags:['sage','scientist','leader'],energy:'low'},
+    {t:'Sorgen aufschreiben',h:'Alles notieren was beunruhigt.',w:'Externalisieren = Distanz.',tags:['sage','creator','scientist'],energy:'low',time:'evening'},
+    {t:'Worst-Case durchdenken',h:'Was wäre das Schlimmste?',w:'Premeditatio Malorum.',tags:['stoic','sage','warrior'],energy:'medium'},
+    {t:'Kontrollkreise zeichnen',h:'Was kann ich kontrollieren?',w:'Fokus auf Beeinflussbares.',tags:['stoic','sage','scientist'],energy:'low'},
+    {t:'Digitale Ordnung',h:'Downloads aufräumen.',w:'Digitales Chaos stresst.',tags:['scientist','leader','sage'],energy:'low'},
+    {t:'Buffer-Zeit einplanen',h:'30 Min Puffer zwischen Terminen.',w:'Reduziert Zeitdruck.',tags:['sage','caregiver','healer'],energy:'low'}
+  ],
+  connect:[
+    {t:'Freund anrufen',h:'Frag wie es wirklich geht.',w:'Soziale Verbindung = Oxytocin.',tags:['caregiver','explorer','leader'],energy:'medium'},
+    {t:'Voice Message senden',h:'2 Min persönliche Nachricht.',w:'Stimme transportiert mehr.',tags:['caregiver','creator','artist'],energy:'low'},
+    {t:'Alte Freundschaft aufwärmen',h:'Jemand schreiben den du lange nicht sahst.',w:'Beziehungen brauchen Pflege.',tags:['caregiver','explorer','mentor'],energy:'low'},
+    {t:'Smalltalk mit Fremden',h:'Kurzes Gespräch: Nachbar, Kollege.',w:'Soziale Übung.',tags:['explorer','leader','rebel'],energy:'medium'},
+    {t:'Dankbarkeit senden',h:'Schreib wofür du dankbar bist.',w:'Stärkt Beziehungen.',tags:['caregiver','sage','mystic'],energy:'low'},
+    {t:'Kompliment geben',h:'Ehrlich und spezifisch loben.',w:'Positive Interaktion.',tags:['caregiver','leader','mentor'],energy:'low'},
+    {t:'Aktiv zuhören',h:'5 Min volle Aufmerksamkeit.',w:'Menschen fühlen sich wertgeschätzt.',tags:['sage','caregiver','mentor','monk'],energy:'low'},
+    {t:'Deep Talk führen',h:'Statt "Wie gehts?" frag "Was beschäftigt dich?"',w:'Tiefe Gespräche nähren.',tags:['mystic','sage','mentor','artist'],energy:'medium'},
+    {t:'Gemeinsame Aktivität',h:'Zusammen spazieren, kochen.',w:'Geteilte Erlebnisse verbinden.',tags:['explorer','creator','caregiver'],energy:'medium'},
+    {t:'Handy weglegen',h:'Bei Gespräch vollständige Präsenz.',w:'Ungeteilte Aufmerksamkeit ist Geschenk.',tags:['monk','caregiver','sage'],energy:'low'},
+    {t:'Hilfe anbieten',h:'Konkret: "Kann ich bei X helfen?"',w:'Helfen stärkt Verbindung.',tags:['caregiver','warrior','leader','mentor'],energy:'medium'},
+    {t:'Jemanden vorstellen',h:'Zwei Menschen verbinden.',w:'Netzwerke durch Geben stärken.',tags:['leader','mentor','explorer'],energy:'medium'},
+    {t:'Eltern anrufen',h:'5 Min Check-in.',w:'Familienbindung ist Grundbedürfnis.',tags:['caregiver','sage'],energy:'low',time:'evening'},
+    {t:'Partner-Moment',h:'15 Min volle Aufmerksamkeit.',w:'Beziehungen brauchen Qualitätszeit.',tags:['caregiver','mystic'],energy:'low',time:'evening'},
+    {t:'Feedback einholen',h:'"Wie kann ich besser sein?"',w:'Zeigt Respekt und Offenheit.',tags:['sage','leader','scientist'],energy:'medium'}
+  ],
+  esteem:[
+    {t:'3 Erfolge aufschreiben',h:'Was hast du gut gemacht?',w:'Trainiert positive Selbstwahrnehmung.',tags:['sage','creator','mentor'],energy:'low',time:'evening'},
+    {t:'5 Stärken auflisten',h:'Worin bist du gut?',w:'Bewusstsein für eigene Ressourcen.',tags:['warrior','leader','sage'],energy:'low'},
+    {t:'Positives Selbstgespräch',h:'"Ich gebe mein Bestes."',w:'Innerer Dialog formt Selbstwert.',tags:['caregiver','sage','healer','stoic'],energy:'low'},
+    {t:'Herausforderung annehmen',h:'Etwas tun das nervös macht.',w:'Gemeistert = bewiesen.',tags:['warrior','explorer','athlete','rebel'],energy:'high'},
+    {t:'Skill 15 Min üben',h:'Wichtige Fähigkeit trainieren.',w:'Kompetenz = Selbstwirksamkeit.',tags:['creator','warrior','scientist','athlete'],energy:'medium'},
+    {t:'Nein sagen üben',h:'Höflich aber klar ablehnen.',w:'Grenzen = Selbstachtung.',tags:['warrior','stoic','rebel','leader'],energy:'high'},
+    {t:'Etwas zu Ende bringen',h:'Offene Aufgabe abschließen.',w:'Completion steigert Selbstwert.',tags:['warrior','stoic','leader'],energy:'medium'},
+    {t:'Eigene Meinung vertreten',h:'Position beziehen.',w:'Authentizität stärkt Selbstwert.',tags:['rebel','leader','stoic'],energy:'high'},
+    {t:'Für dich einstehen',h:'Etwas ansprechen das stört.',w:'Selbstbehauptung = Selbstrespekt.',tags:['warrior','rebel','stoic'],energy:'high'},
+    {t:'Komfortzone verlassen',h:'Etwas Neues ausprobieren.',w:'Wachstum passiert am Rand.',tags:['explorer','rebel','warrior'],energy:'high'},
+    {t:'Öffentlich sprechen',h:'Meinung in Meeting teilen.',w:'Sichtbarkeit baut Selbstvertrauen.',tags:['leader','rebel','mentor'],energy:'high'},
+    {t:'Feedback geben',h:'Konstruktive Rückmeldung.',w:'Positioniert als Experte.',tags:['leader','mentor','sage'],energy:'medium'},
+    {t:'Fortschritt dokumentieren',h:'Wo stehst du vs. vor 1 Jahr?',w:'Perspektive zeigt Wachstum.',tags:['sage','scientist','mentor'],energy:'low'},
+    {t:'Kritik hinterfragen',h:'Ist diese Selbstkritik fair?',w:'Distanz zum inneren Kritiker.',tags:['sage','scientist','stoic'],energy:'low'},
+    {t:'Schwieriges tun',h:'Was du aufschiebst, jetzt anpacken.',w:'Überwundene Prokrastination = Stolz.',tags:['warrior','stoic','rebel'],energy:'high'}
+  ],
+  growth:[
+    {t:'15 Min lernen',h:'Tutorial, Artikel, Podcast.',w:'Kontinuierliches Lernen.',tags:['sage','explorer','scientist','mentor'],energy:'medium'},
+    {t:'Buch lesen (20 Min)',h:'Sachbuch oder anspruchsvolle Literatur.',w:'Bücher komprimieren Weisheit.',tags:['sage','scientist','mystic'],energy:'low',time:'evening'},
+    {t:'Online-Kurs Lektion',h:'Eine Lektion absolvieren.',w:'Strukturiertes Lernen.',tags:['scientist','sage','creator'],energy:'medium'},
+    {t:'Kreativ sein (15 Min)',h:'Zeichnen, schreiben ohne Ziel.',w:'Aktiviert Flow.',tags:['creator','explorer','artist','mystic'],energy:'medium'},
+    {t:'Morning Pages',h:'3 Seiten Bewusstseinsstrom.',w:'Klärt den Geist.',tags:['creator','artist','sage','mystic'],energy:'low',time:'morning'},
+    {t:'Ideen brainstormen',h:'10 Ideen zu einem Thema.',w:'Ideen-Muskel trainieren.',tags:['creator','scientist','rebel','explorer'],energy:'medium'},
+    {t:'Journal schreiben',h:'5-10 Min über Tag reflektieren.',w:'Verarbeitung und Selbsterkenntnis.',tags:['sage','mystic','scientist','stoic'],energy:'low',time:'evening'},
+    {t:'Zukunftsvision schreiben',h:'Ideales Leben in 5 Jahren.',w:'Klare Vision = Richtung.',tags:['leader','creator','mystic'],energy:'medium'},
+    {t:'Fehler analysieren',h:'Was kannst du lernen?',w:'Fehler = Daten.',tags:['sage','warrior','scientist','stoic'],energy:'medium'},
+    {t:'Werte definieren',h:'Top 3 Werte?',w:'Werte geben Klarheit.',tags:['sage','stoic','mystic','leader'],energy:'low'},
+    {t:'Neuen Weg nehmen',h:'Andere Route.',w:'Neue Eindrücke stimulieren.',tags:['explorer','creator','rebel'],energy:'low'},
+    {t:'Fremde Perspektive',h:'Thema aus anderer Sicht.',w:'Flexibilität trainieren.',tags:['sage','scientist','mystic'],energy:'medium'},
+    {t:'Deep Work Session',h:'90 Min fokussierte Arbeit.',w:'Tiefe = wahre Produktivität.',tags:['scientist','creator','sage','leader'],energy:'high'},
+    {t:'Schwieriges Thema angehen',h:'Etwas lernen das einschüchtert.',w:'An der Grenze wächst man.',tags:['scientist','sage','warrior','explorer'],energy:'high'},
+    {t:'Etwas bauen/reparieren',h:'Hands-on Projekt.',w:'Making ist erfüllend.',tags:['creator','scientist','explorer'],energy:'medium'},
+    {t:'Podcast hören',h:'Bildend, nicht nur unterhaltend.',w:'Nutze "tote Zeit".',tags:['sage','explorer','scientist'],energy:'low'}
+  ],
+  transcend:[
+    {t:'Jemandem konkret helfen',h:'Aktiv Hilfe anbieten.',w:'Aktiviert Belohnungssystem.',tags:['caregiver','warrior','leader','mentor'],energy:'medium'},
+    {t:'Wissen teilen',h:'Jemandem etwas erklären.',w:'Teilen verstärkt Verstehen.',tags:['sage','mentor','leader','scientist'],energy:'medium'},
+    {t:'Mentoring anbieten',h:'Jüngere unterstützen.',w:'Vermächtnis beginnt mit Gespräch.',tags:['mentor','sage','leader'],energy:'medium'},
+    {t:'Spenden',h:'Geld oder Ressourcen.',w:'Finanzieller Beitrag.',tags:['caregiver','leader','sage'],energy:'low'},
+    {t:'Zeit schenken',h:'Stunde ohne Gegenleistung.',w:'Zeit ist wertvollste Ressource.',tags:['caregiver','mentor','sage'],energy:'medium'},
+    {t:'Inspiration teilen',h:'Motivierenden Gedanken weitergeben.',w:'Positive Energie verstärkt sich.',tags:['leader','creator','mentor','mystic'],energy:'low'},
+    {t:'Müll aufsammeln',h:'5 Dinge auf dem Weg.',w:'Kleine Taten für Gemeinschaft.',tags:['explorer','caregiver','warrior'],energy:'low'},
+    {t:'Umweltfreundliche Entscheidung',h:'Plastik vermeiden, Rad fahren.',w:'Verbindung mit Größerem.',tags:['explorer','caregiver','sage'],energy:'low'},
+    {t:'Legacy-Gedanken',h:'Was möchtest du hinterlassen?',w:'Über Leben hinausdenken.',tags:['sage','leader','mystic','mentor'],energy:'low',time:'evening'},
+    {t:'Dankbarkeitsbrief',h:'Längeren Brief an prägende Person.',w:'Tiefe Dankbarkeit transformiert.',tags:['sage','caregiver','mystic'],energy:'medium'},
+    {t:'Purpose reflektieren',h:'Wozu bist du hier?',w:'Sinnfragen ordnen Prioritäten.',tags:['mystic','sage','leader'],energy:'medium'},
+    {t:'Meditation (10 Min)',h:'Stille sitzen, Atem beobachten.',w:'Verbindung mit tieferer Ebene.',tags:['monk','mystic','sage','healer','stoic'],energy:'low'},
+    {t:'Dankbarkeits-Meditation',h:'3 Dinge durchgehen.',w:'Dankbarkeit = Fülle.',tags:['mystic','healer','sage'],energy:'low',time:'evening'},
+    {t:'In Natur sein',h:'Zeit in Parks, Wäldern.',w:'Naturverbundenheit heilt.',tags:['explorer','mystic','healer'],energy:'low'},
+    {t:'Sternenhimmel betrachten',h:'5 Min Nachthimmel ansehen.',w:'Teil von etwas Größerem.',tags:['mystic','explorer','sage'],energy:'low',time:'night'},
+    {t:'Positive Review schreiben',h:'Für Service/Produkt das half.',w:'Feedback hilft anderen.',tags:['caregiver','mentor','leader'],energy:'low'}
+  ]
 };
 
-let state={arch:'stoiker',streak:0,logs:{}};
-let currentActionIndex=0;
-let showAllG=false,showAllB=false;
+const MOOD_LABELS=['','Sehr schlecht','Schlecht','Neutral','Gut','Sehr gut'];
+const GOOD_CHIPS=[{k:'sleep',e:'😴',t:'Gut geschlafen'},{k:'move',e:'🏃',t:'Bewegt'},{k:'walk',e:'🚶',t:'Spaziert'},{k:'eat',e:'🥗',t:'Gesund gegessen'},{k:'water',e:'💧',t:'Getrunken'},{k:'stretch',e:'🧘',t:'Gedehnt'},{k:'meditate',e:'🧠',t:'Meditiert'},{k:'nature',e:'🌳',t:'In Natur'},{k:'social',e:'👥',t:'Sozial'},{k:'creative',e:'🎨',t:'Kreativ'}];
+const BAD_CHIPS=[{k:'badsleep',e:'😫',t:'Schlecht geschlafen'},{k:'junk',e:'🍟',t:'Junk Food'},{k:'lazy',e:'🛋️',t:'Wenig bewegt'},{k:'dehydrate',e:'🏜️',t:'Wenig getrunken'},{k:'chaos',e:'📦',t:'Chaos'},{k:'overwhelm',e:'🌊',t:'Überwältigt'},{k:'lonely',e:'😔',t:'Einsam'},{k:'procrastinate',e:'⏰',t:'Aufgeschoben'},{k:'scroll',e:'📱',t:'Zu viel Handy'},{k:'negative',e:'💭',t:'Negative Gedanken'}];
+const COACH_MSGS={balanced:'Deine Balance ist stark!',foundation_low:'Basis stärken. Körper zuerst.',safety_low:'Zeit für Ordnung.',connect_low:'Menschen brauchen Menschen.',esteem_low:'Stärke dein Selbstbild.',growth_low:'Zeit zum Wachsen!',transcend_low:'Wie kannst du beitragen?'};
 
-function log(d=today()){
-  if(!state.logs[d])state.logs[d]={mood:0,good:{},bad:{},plan:[]};
-  return state.logs[d];
+// STATE
+const defaults={bio:{sleepH:7,sleepQ:3,steps:5000,trainMin:0},mental:{locus:50,intention:50,efficacy:50,narrative:50}};
+let state={arch:'warrior',streak:0,actions:[],genTier:0,lastDate:null,mood:0,good:{},bad:{},dayLog:[],bio:{...defaults.bio},mental:{...defaults.mental},currentAction:null};
+
+function load(){try{const s=localStorage.getItem('humaneed3');if(s){const d=JSON.parse(s);state={...state,...d};state.bio={...defaults.bio,...(d.bio||{})};state.mental={...defaults.mental,...(d.mental||{})};}}catch(e){}checkDayReset();}
+function save(){localStorage.setItem('humaneed3',JSON.stringify(state));}
+function checkDayReset(){const today=new Date().toDateString();if(state.lastDate&&state.lastDate!==today){state.dayLog.unshift({date:state.lastDate,mood:state.mood,good:{...state.good},bad:{...state.bad},bio:{...state.bio},mental:{...state.mental}});if(state.dayLog.length>30)state.dayLog.pop();state.good={};state.bad={};state.mood=0;state.bio={...defaults.bio};state.mental={...defaults.mental};}state.lastDate=today;save();}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+
+// SCORING mit Mental-Multiplikator
+function subFoundation(){const{sleepH,sleepQ,steps,trainMin}=state.bio;let s=(sleepH/8)*30+(sleepQ/5)*20+(steps/8000)*30+(trainMin/30)*20;if(state.good.sleep)s+=10;if(state.good.move)s+=8;if(state.good.walk)s+=6;if(state.good.water)s+=5;if(state.bad.badsleep)s-=15;if(state.bad.lazy)s-=10;if(state.bad.junk)s-=8;if(state.bad.dehydrate)s-=6;return clamp(s,0,120);}
+function subSafety(){let s=50;if(state.good.eat)s+=10;if(state.bad.chaos)s-=15;if(state.bad.overwhelm)s-=10;if(state.bad.procrastinate)s-=8;s+=(state.mental.locus-50)*0.2;return clamp(s,0,120);}
+function subConnect(){let s=50;if(state.good.social)s+=15;if(state.bad.lonely)s-=15;if(state.bad.overwhelm)s-=8;s+=(state.mental.narrative-50)*0.15;return clamp(s,0,120);}
+function subEsteem(){let s=50;if(state.good.creative)s+=10;if(state.bad.negative)s-=12;if(state.bad.overwhelm)s-=10;s+=(state.mental.efficacy-50)*0.3;s+=(state.mental.intention-50)*0.2;return clamp(s,0,120);}
+function subGrowth(){let s=50;if(state.good.meditate)s+=8;if(state.good.stretch)s+=6;if(state.bad.scroll)s-=10;s+=(state.mental.intention-50)*0.25;s+=(state.mental.locus-50)*0.15;return clamp(s,0,120);}
+function subTranscend(){let s=50;if(state.good.nature)s+=8;s+=(state.mental.narrative-50)*0.2;s+=(state.mental.efficacy-50)*0.15;return clamp(s,0,120);}
+function getMentalMult(){return 0.8+((state.mental.locus+state.mental.efficacy)/200)*0.4;}
+
+function getScores(){
+  const subs=[subFoundation(),subSafety(),subConnect(),subEsteem(),subGrowth(),subTranscend()];
+  const moodMod={1:-8,2:-4,3:0,4:4,5:8}[state.mood]||0;
+  const mm=getMentalMult();
+  const now=new Date();
+  const actBonus=[0,0,0,0,0,0];
+  state.actions?.forEach(a=>{const age=(now-new Date(a.date))/(1000*60*60*24);if(age<=7)actBonus[a.tier]+=8*(1-age/14);});
+  return subs.map((v,i)=>Math.round(clamp((v+actBonus[i]+moodMod)*mm/6,0,20)));
 }
 
-function save(){localStorage.setItem('humaneed5',JSON.stringify(state))}
-function load(){
-  try{const s=localStorage.getItem('humaneed5');if(s)state=JSON.parse(s)}catch(e){}
+// WHEEL
+function renderWheel(){
+  const svg=$('#wheelSvg'),cx=150,cy=150,r=95,scores=getScores(),total=scores.reduce((a,b)=>a+b,0);
+  let h='';
+  TIERS.forEach((t,i)=>{
+    const a=(i*60-90)*Math.PI/180,sc=scores[i]/20,nr=22+sc*12,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);
+    h+=`<g class="wn" data-t="${i}" style="cursor:pointer">`;
+    h+=`<circle cx="${x}" cy="${y}" r="${nr}" fill="rgba(15,15,25,.95)" stroke="${t.c}" stroke-width="${1.5+sc}"/>`;
+    if(sc>0){const circ=2*Math.PI*nr,dash=circ*sc;h+=`<circle cx="${x}" cy="${y}" r="${nr}" fill="none" stroke="${t.c}" stroke-width="2.5" stroke-dasharray="${dash} ${circ-dash}" transform="rotate(-90 ${x} ${y})" stroke-linecap="round"/>`;}
+    h+=`<text x="${x}" y="${y-2}" text-anchor="middle" font-size="${10+sc*4}">${t.e}</text>`;
+    h+=`<text x="${x}" y="${y+10}" text-anchor="middle" font-size="10" fill="${t.c}" font-weight="700">${scores[i]}</text></g>`;
+  });
+  svg.innerHTML=h;
+  svg.querySelectorAll('.wn').forEach(n=>n.onclick=()=>showImpulse(+n.dataset.t));
+  $('#centerScore').textContent=total;if($('#statScore'))$('#statScore').textContent=total;
+  renderBreakdown();
 }
 
-function compute(d=today()){
-  const l=log(d);
-  const gC=k=>GOOD.filter(g=>g.t===k&&l.good[g.k]).length;
-  const bC=k=>BAD.filter(b=>b.t===k&&l.bad[b.k]).length;
-  const mood=l.mood||3;
-  
-  const calc=k=>{
-    const g=gC(k),b=bC(k);
-    let v=50+g*15-b*20+(mood-3)*5;
-    return clamp(v,0,100);
-  };
-  
-  const scores={};
-  TIERS.forEach(t=>scores[t.k]=calc(t.k));
-  
-  let minK='foundation',minV=100;
-  TIERS.forEach(t=>{if(scores[t.k]<minV){minV=scores[t.k];minK=t.k}});
-  
-  scores.focus=minK;
-  scores.mood=mood;
-  scores.total=Math.round(TIERS.reduce((s,t)=>s+scores[t.k],0)/6);
-  
-  return scores;
+function renderBreakdown(){
+  const scores=getScores();
+  $('#breakdown').innerHTML=TIERS.map((t,i)=>`<div class="bd-row"><div class="bd-icon">${t.e}</div><div class="bd-name">${t.n}</div><div class="bd-bar"><div class="bd-fill" style="width:${scores[i]*5}%;background:${t.c}"></div></div><div class="bd-val">${scores[i]}</div></div>`).join('');
 }
 
-function badge(v){
-  if(v>=90)return'Optimal';
-  if(v>=75)return'Stark';
-  if(v>=60)return'Gut';
-  if(v>=45)return'Aufbauend';
-  if(v>=30)return'Wachsend';
-  return'Startklar';
+// SMART
+function getSmartTier(){
+  const scores=getScores();
+  const weights=[1.5,1.3,1.0,1.0,0.8,0.6]; // Maslow: Basis wichtiger
+  const weighted=scores.map((s,i)=>({tier:i,priority:(20-s)*weights[i]}));
+  weighted.sort((a,b)=>b.priority-a.priority);
+  return weighted[0].tier;
 }
 
-function genPlan(){
-  const c=compute();
-  const l=log();
-  const energy=c.mood>=3?'hi':'lo';
-  const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+function getActionForTier(tier,skip=false){
+  const pool=ACTIONS[TIERS[tier].k]||[];
+  const arch=state.arch;
+  const recent=state.actions.slice(0,5).map(a=>a.text);
+  const hour=new Date().getHours();
   
-  const plan=[];
-  const used=new Set();
+  // Score each action
+  const scored=pool.map(a=>{
+    let score=1;
+    // Archetyp-Bonus
+    if(a.tags?.includes(arch)||a.tags?.includes('all'))score*=1.5;
+    // Recency-Penalty
+    if(recent.includes(a.t))score*=0.1;
+    // Skip current
+    if(skip&&state.currentAction&&a.t===state.currentAction.t)score*=0;
+    // Time-of-day bonus
+    if(a.time==='morning'&&hour>=5&&hour<10)score*=1.3;
+    if(a.time==='evening'&&hour>=18&&hour<23)score*=1.3;
+    if(a.time==='night'&&(hour>=22||hour<6))score*=1.2;
+    // Energy-based
+    if(a.energy==='low'&&state.mental.efficacy<40)score*=1.4;
+    if(a.energy==='high'&&state.mental.efficacy>60)score*=1.3;
+    return{a,score};
+  }).filter(x=>x.score>0);
   
-  const add=(tier)=>{
-    const pool=ACTIONS[tier][energy].filter(a=>!used.has(a.t));
-    if(pool.length){
-      const a=pick(pool);
-      used.add(a.t);
-      plan.push({id:uid(),text:a.t,tier,why:a.why,how:a.how,min:a.min,done:false});
-    }
-  };
-  
-  add('foundation');
-  if(c.focus!=='foundation')add(c.focus);
-  else add('safety');
-  add(ARCH[state.arch]?.tier||'connect');
-  
-  l.plan=plan;
-  currentActionIndex=0;
-  save();
+  // Weighted random selection
+  const total=scored.reduce((sum,x)=>sum+x.score,0);
+  let r=Math.random()*total;
+  for(const x of scored){r-=x.score;if(r<=0)return x.a;}
+  return pool[0];
 }
 
-function addTierAction(tier){
-  const l=log();
-  const c=compute();
-  if(!l.plan)l.plan=[];
-  
-  const energy=c.mood>=3?'hi':'lo';
-  const used=new Set(l.plan.map(p=>p.text));
-  const pool=ACTIONS[tier][energy].filter(a=>!used.has(a.t));
-  const a=pool.length?pool[Math.floor(Math.random()*pool.length)]:ACTIONS[tier][energy][0];
-  
-  l.plan.push({id:uid(),text:a.t,tier,why:a.why,how:a.how,min:a.min,done:false});
-  currentActionIndex=l.plan.length-1;
-  save();
+function renderRec(){
+  const tier=getSmartTier(),act=getActionForTier(tier);
+  state.currentAction={...act,tier};
+  const t=TIERS[tier],a=ARCHETYPES[state.arch];
+  $('#recIcon').textContent=t.e;
+  $('#recWhy').textContent=`${t.n} stärken · ${a.tone.anrede}`;
+  $('#recTask').textContent=act.t;
 }
 
-// Render functions
-function rMoods(){
-  $('#moodBar').innerHTML=[1,2,3,4,5].map(v=>
-    `<button class="mood-btn${log().mood===v?' on':''}" data-m="${v}"></button>`
-  ).join('');
+$('#recSkip').onclick=()=>{renderRec();toast('Andere Empfehlung');};
+$('#recDo').onclick=()=>{state.genTier=getSmartTier();switchView('action');renderTierRow();renderGen();};
+
+function renderCoach(){
+  const s=getScores(),minIdx=s.indexOf(Math.min(...s)),arch=ARCHETYPES[state.arch],tier=TIERS[minIdx];
+  let msg=Math.min(...s)>12?COACH_MSGS.balanced:COACH_MSGS[tier.k+'_low']||COACH_MSGS.balanced;
+  $('#coachTitle').textContent=`💬 ${arch.tone.anrede} · ${tier.n}`;
+  $('#coachMsg').innerHTML=`<strong>${arch.n}:</strong> ${arch.tone.motiv}<br><br>${msg}`;
 }
 
-function rTiers(){
-  const c=compute();
-  $('#tiers').innerHTML=TIERS.map(t=>{
-    const v=Math.round(c[t.k]);
-    return`<div class="tier${c.focus===t.k?' focus':''}" data-t="${t.k}">
-      <div class="tier-top">
-        <div class="tier-name">${t.n}</div>
-        <div class="tier-val" style="color:var(${t.c})">${v}</div>
-      </div>
-      <div class="tier-bar"><div class="tier-fill" style="width:${v}%;background:var(${t.c})"></div></div>
-    </div>`;
-  }).join('');
+function showImpulse(tier){
+  const act=getActionForTier(tier),t=TIERS[tier];
+  $('#impulseBox').innerHTML=`<div class="impulse"><div class="impulse-head"><div class="impulse-icon">${t.e}</div><div class="impulse-tier" style="color:${t.c}">${t.n}</div><button class="impulse-x" onclick="$('#impulseBox').innerHTML=''">×</button></div><div class="impulse-task">${act.t}</div><div class="impulse-detail"><div class="impulse-row"><b>Wie:</b> ${act.h}</div><div class="impulse-row"><b>Warum:</b> ${act.w}</div></div><div class="impulse-btns"><button class="btn" onclick="showImpulse(${tier})">Andere</button><button class="btn primary" onclick="completeAction(${tier},'${act.t.replace(/'/g,"\\'")}');$('#impulseBox').innerHTML=''">✓ Done</button></div></div>`;
 }
 
-let showExplain=false;
+const STREAK_MILESTONES={3:'🔥 3-Tage-Streak!',7:'💪 Wochenkrieger!',14:'⭐ 2 Wochen stark!',30:'🏆 Monatsheld!',50:'👑 50 Tage Legende!',100:'🌟 100 Tage Meister!'};
 
-function rAction(){
-  const l=log();
-  const p=l.plan?.[currentActionIndex];
+function completeAction(tier,text){
+  state.actions.unshift({tier,text,date:new Date().toISOString()});
+  if(state.actions.length>100)state.actions.pop();
+  state.streak=(state.streak||0)+1;
   
-  if(!p){
-    $('#actionTag').textContent='';
-    $('#actionCounter').textContent='';
-    $('#actionText').textContent='Wähle deine Stimmung';
-    $('#actionExplain').innerHTML='';
-    $('#actionExplain').classList.remove('show');
-    return;
-  }
+  // Streak milestone check
+  const milestone=STREAK_MILESTONES[state.streak];
   
-  const tier=TIERS.find(t=>t.k===p.tier);
-  $('#actionTag').innerHTML=`${icon(p.tier,'icon-sm')} ${tier?.n||'Aktion'}`;
-  $('#actionCounter').textContent=`${currentActionIndex+1}/${l.plan.length}`;
-  $('#actionText').textContent=p.text;
+  save();renderWheel();renderRec();renderCoach();updateHeader();renderHist();
   
-  // Explanation content
-  if(p.why||p.how||p.min){
-    $('#actionExplain').innerHTML=`
-      <div class="action-explain-row"><div class="action-explain-label">Warum</div><div class="action-explain-text">${p.why||'—'}</div></div>
-      <div class="action-explain-row"><div class="action-explain-label">Wie</div><div class="action-explain-text">${p.how||'—'}</div></div>
-      <div class="action-explain-row"><div class="action-explain-label">Minimum</div><div class="action-explain-text">${p.min||'—'}</div></div>
-    `;
-    if(showExplain)$('#actionExplain').classList.add('show');
-    else $('#actionExplain').classList.remove('show');
-  }else{
-    $('#actionExplain').innerHTML='';
-    $('#actionExplain').classList.remove('show');
-  }
+  if(milestone){toast(milestone);}else{toast('✓ Erledigt! +1');}
 }
 
-function rPlan(){
-  const l=log();
-  if(!l.plan?.length){$('#planSection').style.display='none';return}
-  $('#planSection').style.display='block';
-  
-  $('#planItems').innerHTML=l.plan.map((p,i)=>{
-    const active=i===currentActionIndex;
-    return`<div class="plan-item${p.done?' done':''}${active?' active':''}" data-idx="${i}">
-      <div class="plan-check">${p.done?'✓':''}</div>
-      <div class="plan-item-text">${p.text}</div>
-    </div>`;
-  }).join('');
+// GENERATOR
+function renderTierRow(){
+  $('#tierRow').innerHTML=TIERS.map((t,i)=>`<button class="tier-btn${i===state.genTier?' on':''}" style="--c:${t.c}" data-t="${i}">${t.e}</button>`).join('');
+  $$('.tier-btn').forEach(b=>b.onclick=function(){state.genTier=+this.dataset.t;renderTierRow();renderGen();});
 }
 
-function rChips(){
-  const l=log();
-  const gList=showAllG?GOOD:GOOD.slice(0,8);
-  const bList=showAllB?BAD:BAD.slice(0,6);
-  
-  $('#goodChips').innerHTML=gList.map(c=>
-    `<div class="chip${l.good[c.k]?' on':''}" data-g="${c.k}">${c.l}</div>`
-  ).join('');
-  
-  $('#badChips').innerHTML=bList.map(c=>
-    `<div class="chip bad${l.bad[c.k]?' on':''}" data-b="${c.k}">${c.l}</div>`
-  ).join('');
-  
-  $('#togG').textContent=showAllG?'−':'+';
-  $('#togB').textContent=showAllB?'−':'+';
+function renderGen(){
+  const tier=state.genTier,act=getActionForTier(tier,true),t=TIERS[tier];
+  state.currentAction={...act,tier};
+  $('#genTier').innerHTML=`${t.e} ${t.n}`;$('#genTier').style.color=t.c;
+  $('#genTask').textContent=act.t;
+  $('#genDetail').innerHTML=`<div class="gen-row"><b>Wie:</b> ${act.h}</div><div class="gen-row"><b>Warum:</b> ${act.w}</div>`;
 }
 
-function rScore(){
-  const c=compute();
-  $('#scoreVal').textContent=c.total;
-  $('#scoreBadge').textContent=badge(c.total);
-  $('#vBase').textContent=Math.round(c.foundation);
-  $('#vSafe').textContent=Math.round(c.safety);
-  $('#vConn').textContent=Math.round(c.connect);
-  $('#vEsteem').textContent=Math.round(c.esteem);
-  $('#vSelf').textContent=Math.round(c.self);
-  $('#vTrans').textContent=Math.round(c.trans);
-  $('#hdrScore').textContent=c.total;
+$('#genSkip').onclick=()=>renderGen();
+$('#genDone').onclick=()=>{if(state.currentAction){completeAction(state.genTier,state.currentAction.t);renderGen();}};
+
+function renderHist(){
+  const el=$('#histList');
+  if(!state.actions?.length){el.innerHTML='<div class="empty">Noch keine Aktionen</div>';return;}
+  el.innerHTML=state.actions.slice(0,10).map(a=>{const t=TIERS[a.tier],d=new Date(a.date).toLocaleDateString('de-DE',{day:'numeric',month:'short'});return`<div class="hist">${t.e} <strong>${a.text}</strong> · ${d}</div>`;}).join('');
 }
 
-function rArch(){
-  const a=ARCH[state.arch];
-  $('#hdrArch').innerHTML=`${icon(a.e,'icon-sm')} ${a.n}`;
+// CHECK-IN
+function renderMood(){
+  $$('.mood-btn').forEach(b=>{b.classList.toggle('on',+b.dataset.m===state.mood);b.onclick=()=>{state.mood=+b.dataset.m;save();renderMood();renderWheel();};});
+  $('#moodLabel').textContent=MOOD_LABELS[state.mood]||'';
 }
 
-function rArchGrid(){
-  $('#archGrid').innerHTML=ARCH_ORDER.map(k=>{
-    const a=ARCH[k];
-    return`<div class="arch-opt${state.arch===k?' on':''}" data-a="${k}">
-      <div class="arch-opt-icon">${icon(a.e,'icon-md')}</div>
-      <div class="arch-opt-name">${a.n}</div>
-    </div>`;
-  }).join('');
+function renderChips(){
+  $('#goodChips').innerHTML=GOOD_CHIPS.map(c=>`<div class="chip${state.good[c.k]?' on':''}" data-k="${c.k}">${c.e} ${c.t}</div>`).join('');
+  $('#badChips').innerHTML=BAD_CHIPS.map(c=>`<div class="chip bad${state.bad[c.k]?' on':''}" data-k="${c.k}">${c.e} ${c.t}</div>`).join('');
+  $$('#goodChips .chip').forEach(c=>c.onclick=()=>{state.good[c.dataset.k]=!state.good[c.dataset.k];save();renderChips();renderWheel();});
+  $$('#badChips .chip').forEach(c=>c.onclick=()=>{state.bad[c.dataset.k]=!state.bad[c.dataset.k];save();renderChips();renderWheel();});
 }
 
-function rJournal(){
-  const entries=Object.entries(state.logs).filter(([_,l])=>l.mood).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
-  if(!entries.length){$('#journal').innerHTML='<div class="insight">Noch keine Einträge</div>';return}
-  
-  const colors=['#C62828','#EF6C00','#F9A825','#7CB342','#43A047'];
-  const WD=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  
-  $('#journal').innerHTML=entries.map(([d,l])=>{
-    const dt=new Date(d+'T12:00:00');
-    const c=compute(d);
-    const done=(l.plan||[]).filter(p=>p.done).length;
-    const total=(l.plan||[]).length;
-    return`<div class="journal-day">
-      <div class="journal-day-header">
-        <div class="journal-date">${WD[dt.getDay()]} ${dt.getDate()}.${dt.getMonth()+1}</div>
-        <div class="journal-meta">
-          <div class="journal-mood" style="background:${colors[l.mood-1]}"></div>
-          <div class="journal-score">${Math.round(c.total)}</div>
-        </div>
-      </div>
-      <div class="journal-summary">${MOOD_N[l.mood-1]} · ${done}/${total} erledigt</div>
-    </div>`;
-  }).join('');
+function renderBioInputs(){
+  const b=state.bio;
+  $('#bioSleep').value=b.sleepH;$('#bioSleepVal').textContent=b.sleepH+'h';
+  $('#bioQual').value=b.sleepQ;$('#bioQualVal').textContent=b.sleepQ;
+  $('#bioSteps').value=b.steps;$('#bioStepsVal').textContent=(b.steps/1000).toFixed(1)+'k';
+  $('#bioTrain').value=b.trainMin;$('#bioTrainVal').textContent=b.trainMin+'m';
+}
+$('#bioSleep').oninput=function(){state.bio.sleepH=+this.value;$('#bioSleepVal').textContent=this.value+'h';save();renderWheel();};
+$('#bioQual').oninput=function(){state.bio.sleepQ=+this.value;$('#bioQualVal').textContent=this.value;save();renderWheel();};
+$('#bioSteps').oninput=function(){state.bio.steps=+this.value;$('#bioStepsVal').textContent=(this.value/1000).toFixed(1)+'k';save();renderWheel();};
+$('#bioTrain').oninput=function(){state.bio.trainMin=+this.value;$('#bioTrainVal').textContent=this.value+'m';save();renderWheel();};
+
+function renderMentalInputs(){
+  const m=state.mental;
+  $('#menLocus').value=m.locus;$('#menLocusVal').textContent=m.locus;
+  $('#menIntent').value=m.intention;$('#menIntentVal').textContent=m.intention;
+  $('#menEffic').value=m.efficacy;$('#menEfficVal').textContent=m.efficacy;
+  $('#menNarr').value=m.narrative;$('#menNarrVal').textContent=m.narrative;
+}
+$('#menLocus').oninput=function(){state.mental.locus=+this.value;$('#menLocusVal').textContent=this.value;save();renderWheel();};
+$('#menIntent').oninput=function(){state.mental.intention=+this.value;$('#menIntentVal').textContent=this.value;save();renderWheel();};
+$('#menEffic').oninput=function(){state.mental.efficacy=+this.value;$('#menEfficVal').textContent=this.value;save();renderWheel();};
+$('#menNarr').oninput=function(){state.mental.narrative=+this.value;$('#menNarrVal').textContent=this.value;save();renderWheel();};
+
+// PROFILE
+function renderArchGrid(){
+  const keys=Object.keys(ARCHETYPES);
+  $('#archGrid').innerHTML=keys.map(k=>{const a=ARCHETYPES[k];return`<div class="arch${state.arch===k?' on':''}" data-k="${k}"><div class="arch-e">${a.e}</div><div class="arch-n">${a.n}</div><div class="arch-d">${a.d}</div></div>`;}).join('');
+  $$('#archGrid .arch').forEach(el=>el.onclick=()=>{state.arch=el.dataset.k;save();renderArchGrid();renderArchDetail();updateHeader();renderRec();renderCoach();toast(ARCHETYPES[state.arch].n+' gewählt');});
 }
 
-function rInsights(){
-  const c=compute();
-  const insights=[];
-  
-  if(c.foundation<50)insights.push('Basis stärken: Schlaf und Bewegung priorisieren');
-  if(c.connect<50)insights.push('Verbindung fehlt: Heute jemanden kontaktieren');
-  if(c.mood<=2)insights.push('Niedrige Energie: Nur Minimum-Versionen heute');
-  
-  if(!insights.length)insights.push('Alles im grünen Bereich!');
-  
-  $('#insights').innerHTML=insights.map(i=>`<div class="insight">${i}</div>`).join('');
+function renderArchDetail(){
+  const a=ARCHETYPES[state.arch];if(!a)return;
+  $('#archDetail').innerHTML=`<div class="card arch-detail"><div class="arch-head"><div class="arch-big">${a.e}</div><div class="arch-info"><h3>${a.n}</h3><p>${a.d}</p></div></div><div style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:12px"><em>"${a.philosophy}"</em></div><div class="traits">${a.traits.map(t=>`<span class="trait">${t}</span>`).join('')}</div>${a.icons?`<div style="margin-top:14px;font-size:11px;color:var(--muted)">Vorbilder: ${a.icons.join(', ')}</div>`:''}</div>`;
 }
 
-function render(){
-  rArch();rMoods();rTiers();rAction();rPlan();rChips();rScore();rInsights();rJournal();
+function updateHeader(){const a=ARCHETYPES[state.arch];$('#archPill').textContent=a?.e||'⚔️';$('#streakVal').textContent=state.streak||0;setAccentColor();}
+
+function setAccentColor(){
+  const a=ARCHETYPES[state.arch];
+  if(!a)return;
+  const c=a.color;
+  const root=document.documentElement;
+  root.style.setProperty('--accent',c);
+  root.style.setProperty('--accent-soft',c+'1a');
+  root.style.setProperty('--accent-glow',c+'40');
 }
 
-function toast(m){
-  const t=$('#toast');
-  t.textContent=m;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+$('#archPill').onclick=()=>{$('#modal').classList.add('on');renderModalArch();};
+$('#modalClose').onclick=()=>$('#modal').classList.remove('on');
+$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').classList.remove('on');};
+
+function renderModalArch(){
+  const keys=Object.keys(ARCHETYPES);
+  $('#modalArchGrid').innerHTML=keys.map(k=>{const a=ARCHETYPES[k];return`<div class="arch${state.arch===k?' on':''}" data-k="${k}"><div class="arch-e">${a.e}</div><div class="arch-n">${a.n}</div></div>`;}).join('');
+  $$('#modalArchGrid .arch').forEach(el=>el.onclick=()=>{state.arch=el.dataset.k;save();renderArchGrid();renderArchDetail();updateHeader();renderRec();renderCoach();renderModalArch();toast(ARCHETYPES[state.arch].n+' gewählt');});
 }
 
-// Events
-$('#moodBar').addEventListener('click',e=>{
-  const btn=e.target.closest('.mood-btn');
-  if(!btn)return;
-  log().mood=+btn.dataset.m;
-  if(!log().plan?.length)genPlan();
-  save();render();
+function renderStats(){$('#statStreak').textContent=state.streak||0;$('#statActions').textContent=state.actions?.length||0;}
+
+function renderInsights(){
+  const s=getScores(),total=s.reduce((a,b)=>a+b,0),minT=TIERS[s.indexOf(Math.min(...s))],maxT=TIERS[s.indexOf(Math.max(...s))];
+  $('#insights').innerHTML=`<div class="insight">Gesamtscore: <strong>${total}/120</strong></div><div class="insight">Stärkste Ebene: <strong>${maxT.e} ${maxT.n}</strong></div><div class="insight">Fokus nötig: <strong>${minT.e} ${minT.n}</strong></div>`;
+}
+
+// NAV
+function switchView(v){$$('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));}
+$$('nav button').forEach(b=>b.onclick=function(){
+  switchView(this.dataset.v);
+  if(this.dataset.v==='action'){state.genTier=getSmartTier();renderTierRow();renderGen();renderHist();}
+  if(this.dataset.v==='checkin'){renderBioInputs();renderMentalInputs();}
+  if(this.dataset.v==='profile'){renderInsights();renderStats();}
 });
 
-$('#btnWhy').addEventListener('click',()=>{
-  showExplain=!showExplain;
-  $('#actionExplain').classList.toggle('show',showExplain);
+$$('.tab').forEach(t=>t.onclick=function(){
+  $$('.tab').forEach(x=>x.classList.remove('on'));this.classList.add('on');
+  $$('.sub').forEach(s=>{s.style.display='none';s.classList.remove('on');});
+  const sub=$(`#sub-${this.dataset.t}`);sub.style.display='block';sub.classList.add('on');
+  if(this.dataset.t==='journal'){renderInsights();renderStats();}
 });
 
-$('#btnDone').addEventListener('click',()=>{
-  const l=log();
-  if(!l.plan?.[currentActionIndex])return;
-  l.plan[currentActionIndex].done=true;
-  currentActionIndex=Math.min(currentActionIndex+1,l.plan.length-1);
-  save();render();
-  toast('Erledigt! ✓');
-});
-
-$('#btnSkip').addEventListener('click',()=>{
-  const l=log();
-  if(!l.plan?.length)return;
-  currentActionIndex=(currentActionIndex+1)%l.plan.length;
-  render();
-});
-
-$('#planItems').addEventListener('click',e=>{
-  const item=e.target.closest('.plan-item');
-  if(!item)return;
-  currentActionIndex=+item.dataset.idx;
-  render();
-});
-
-$('#regenPlan').addEventListener('click',()=>{genPlan();render();toast('Neuer Plan!')});
-
-$('#tiers').addEventListener('click',e=>{
-  const tier=e.target.closest('.tier');
-  if(!tier)return;
-  addTierAction(tier.dataset.t);
-  render();
-  toast(`+1 ${TIERS.find(t=>t.k===tier.dataset.t)?.n}`);
-});
-
-$('#goodChips').addEventListener('click',e=>{
-  const chip=e.target.closest('.chip');
-  if(!chip)return;
-  const l=log();
-  l.good[chip.dataset.g]=!l.good[chip.dataset.g];
-  save();render();
-});
-
-$('#badChips').addEventListener('click',e=>{
-  const chip=e.target.closest('.chip');
-  if(!chip)return;
-  const l=log();
-  l.bad[chip.dataset.b]=!l.bad[chip.dataset.b];
-  save();render();
-});
-
-$('#togG').addEventListener('click',()=>{showAllG=!showAllG;rChips()});
-$('#togB').addEventListener('click',()=>{showAllB=!showAllB;rChips()});
-
-$$('nav button').forEach(btn=>btn.addEventListener('click',function(){
-  $$('nav button').forEach(b=>b.classList.remove('on'));
-  this.classList.add('on');
-  $$('.view').forEach(v=>v.classList.remove('on'));
-  $(`#v-${this.dataset.v}`).classList.add('on');
-  if(this.dataset.v==='journal'){rInsights();rJournal()}
-}));
-
-$('#hdrArch').addEventListener('click',()=>{rArchGrid();$('#modal').classList.add('show')});
-$('#closeModal').addEventListener('click',()=>{$('#modal').classList.remove('show')});
-$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))$('#modal').classList.remove('show')});
-
-$('#archGrid').addEventListener('click',e=>{
-  const opt=e.target.closest('.arch-opt');
-  if(!opt)return;
-  state.arch=opt.dataset.a;
-  save();render();rArchGrid();
-  toast(`${ARCH[state.arch].n} gewählt`);
-});
-
-load();render();
-})();
+// INIT
+load();
+setAccentColor();
+renderWheel();renderRec();renderCoach();
+renderTierRow();renderGen();renderHist();
+renderMood();renderChips();renderBioInputs();renderMentalInputs();
+renderArchGrid();renderArchDetail();updateHeader();
+renderStats();
 </script>
 </body>
 </html>
