@@ -3,268 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMANEED | Next-Gen Coaching Interface</title>
+    <title>HUMANEED | Bio-Mechanical Telemetry</title>
     <style>
         :root {
-            /* --- DESIGN SYSTEM TOKENS --- */
-
-            /* Colors - Materiality & Light */
+            /* --- PREVIOUS DESIGN SYSTEM TOKENS (UNCHANGED) --- */
             --c-surface-dark: #141619;
             --c-surface-mid: #1e2126;
             --c-surface-light: #2a2e35;
-            
             --c-text-primary: #e0e4e8;
             --c-text-secondary: #8a929c;
             --c-text-tertiary: #5c626b;
-
-            /* Accent - "Warm Amber Backlight" */
             --c-accent-amber: #ffb347;
-            --c-accent-amber-glow: rgba(255, 179, 71, 0.35);
+            --c-accent-amber-glow: rgba(255, 179, 71, 0.45);
             --c-accent-amber-dim: rgba(255, 179, 71, 0.1);
-
-            /* Micro-Tech Cues */
             --border-hairline: 1px solid rgba(255, 255, 255, 0.08);
             --border-hairline-strong: 1px solid rgba(255, 255, 255, 0.15);
-
-            /* Skeuomorphism 2.0 - Depth & Texture Gradients */
             --grad-metal-brushed: linear-gradient(135deg, var(--c-surface-light) 0%, var(--c-surface-mid) 50%, var(--c-surface-dark) 100%);
             --grad-metal-vertical: linear-gradient(to right, var(--c-surface-mid) 0%, var(--c-surface-light) 50%, var(--c-surface-mid) 100%);
-            
-            /* Shadows for CNC/Milled Look */
             --shadow-inset-deep: inset 2px 2px 6px rgba(0,0,0,0.7), inset -1px -1px 2px rgba(255,255,255,0.1);
             --shadow-inset-shallow: inset 1px 1px 3px rgba(0,0,0,0.5), inset -1px -1px 1px rgba(255,255,255,0.07);
             --shadow-outset-button: 3px 3px 6px rgba(0,0,0,0.6), -1px -1px 2px rgba(255,255,255,0.1);
             --shadow-active-glow: 0 0 15px var(--c-accent-amber-glow), inset 0 0 10px var(--c-accent-amber-dim);
+
+            /* --- NEW TOKENS FOR MECHANICAL LOTUS --- */
+            /* The brushed metal look for the petals */
+            --grad-petal-metal: linear-gradient(to bottom right, #3a3f47 0%, #23272e 60%, #1a1d22 100%);
+            /* The glowing edge of the mechanical plates */
+            --petal-rim-light: 1px solid var(--c-accent-amber-glow);
         }
 
-        /* --- BASE RESET & TYPOGRAPHY --- */
+        /* --- BASE RESET & UTILITIES (UNCHANGED) --- */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
         body {
             background-color: var(--c-surface-dark);
-            /* Subtle scanline/noise texture for tech feel */
             background-image: repeating-linear-gradient(transparent 0px, transparent 2px, rgba(0,0,0,0.3) 3px), var(--grad-metal-brushed);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: var(--c-text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-
-        /* --- UTILITIES --- */
         .text-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-text-secondary); font-weight: 600; }
         .text-value { font-family: 'Roboto Mono', monospace; font-weight: 500; }
-        .flex-center { display: flex; align-items: center; justify-content: center; }
         .no-select { user-select: none; -webkit-user-select: none; }
 
-        /* --- APP CONTAINER --- */
-        #app-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-            max-width: 500px; /* Mobile-first constraints */
-            margin: 0 auto;
-            gap: 20px;
-        }
-
-        /* --- HEADER (Micro-Tech Cues) --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: var(--border-hairline);
-            position: relative;
-        }
-        header::after {
-            /* Subtle scanline gradient beneath header line */
-            content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 4px;
-            background: repeating-linear-gradient(90deg, var(--c-accent-amber-dim) 0, var(--c-accent-amber-dim) 1px, transparent 1px, transparent 8px);
-            opacity: 0.4;
-        }
+        /* --- APP CONTAINER & HEADER (UNCHANGED) --- */
+        #app-container { flex: 1; display: flex; flex-direction: column; padding: 16px; max-width: 500px; margin: 0 auto; gap: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: var(--border-hairline); position: relative; }
+        header::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 4px; background: repeating-linear-gradient(90deg, var(--c-accent-amber-dim) 0, var(--c-accent-amber-dim) 1px, transparent 1px, transparent 8px); opacity: 0.4; }
         .brand { font-weight: 800; letter-spacing: 0.15em; font-size: 0.9rem; }
         .status-indicator { display: flex; align-items: center; gap: 8px; }
         .status-dot { width: 6px; height: 6px; background: var(--c-accent-amber); border-radius: 50%; box-shadow: 0 0 8px var(--c-accent-amber); }
+        .module-card { background: var(--c-surface-mid); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-outset-button), var(--shadow-inset-shallow); border-top: var(--border-hairline-strong); position: relative; overflow: hidden; }
 
-        /* --- MAIN MODULES --- */
-        .module-card {
-            background: var(--c-surface-mid);
-            border-radius: 12px;
-            padding: 16px;
-            /* The CNC milled chassis look */
-            box-shadow: var(--shadow-outset-button), var(--shadow-inset-shallow);
-            border-top: var(--border-hairline-strong);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* --- TELEMETRY HUB (Central Circle) --- */
-        .telemetry-hub {
+        /* --- NEW: BIOMECHANICAL LOTUS MODULE --- */
+        .lotus-telemetry-hub {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 30px 0;
+            padding: 20px 0;
             position: relative;
+            /* Ensure adequate space for the unfolding animation */
+            min-height: 320px; 
         }
-        /* Thin etched lines connecting icons */
-        .hub-connectors svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; opacity: 0.3; pointer-events: none; }
+
+        /* The SVG container */
+        .lotus-svg {
+            width: 300px;
+            height: 300px;
+            /* Subtle mechanical base glow */
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+            overflow: visible; /* Allow petals to extend during animation */
+        }
+
+        /* --- LOTUS DYNAMICS & ANIMATION --- */
+        /* The 'bloom-container' CSS variable '--bloom-progress' (0.0 to 1.0) 
+           controls the entire opening mechanism via CSS calc().
+        */
+        .bloom-container {
+            /* Default state (e.g., 94% open) */
+            --bloom-progress: 0.94; 
+            transition: --bloom-progress 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring physics */
+        }
         
-        .main-gauge-rim {
-            width: 180px; height: 180px;
-            border-radius: 50%;
-            background: var(--c-surface-mid);
-            /* Deep physical inset for the main instrument */
-            box-shadow: var(--shadow-inset-deep);
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-            border: var(--border-hairline);
+        /* A class to simulate a low score state for demonstration */
+        .bloom-container.state-low {
+             --bloom-progress: 0.42;
         }
-        .main-gauge-glass {
-            width: 150px; height: 150px;
-            border-radius: 50%;
-            /* Simulate glass covering the display */
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.2) 80%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-            border: var(--border-hairline);
-        }
-        .gauge-value { font-size: 3rem; font-weight: 700; color: var(--c-accent-amber); text-shadow: 0 0 10px var(--c-accent-amber-glow); }
 
-        /* Satellite Icons around Hub */
-        .satellite-nodes { position: absolute; width: 260px; height: 260px; pointer-events: none; }
-        .node-icon {
-            position: absolute;
-            width: 36px; height: 36px;
-            background: var(--c-surface-light);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--shadow-outset-button);
-            border: var(--border-hairline);
-            color: var(--c-text-tertiary);
+        /* The Petal (Mechanical Plate) */
+        .mech-petal {
+            transform-origin: center center;
             transition: all 0.3s ease;
-            pointer-events: auto; cursor: pointer;
-        }
-        /* Positioning the 8 nodes */
-        .node-n { top: 0; left: 50%; transform: translateX(-50%); }
-        .node-ne { top: 15%; right: 15%; }
-        .node-e { top: 50%; right: 0; transform: translateY(-50%); }
-        .node-se { bottom: 15%; right: 15%; }
-        .node-s { bottom: 0; left: 50%; transform: translateX(-50%); }
-        .node-sw { bottom: 15%; left: 15%; }
-        .node-w { top: 50%; left: 0; transform: translateY(-50%); }
-        .node-nw { top: 15%; left: 15%; }
-
-        .node-icon:hover, .node-icon.active {
-            color: var(--c-accent-amber);
-            box-shadow: var(--shadow-active-glow), var(--shadow-inset-shallow);
-            border-color: var(--c-accent-amber);
-        }
-
-        /* --- BIOMETRICS (Gauges & Sliders) --- */
-        .biometrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .bio-panel {
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        /* Analog Gauge */
-        .analog-gauge-container {
-            height: 80px;
-            position: relative;
-            background: var(--c-surface-dark);
-            border-radius: 8px 8px 0 0;
-            box-shadow: var(--shadow-inset-deep);
-            overflow: hidden;
-            border-bottom: var(--border-hairline);
-        }
-        .gauge-svg-layer { width: 100%; height: 100%; position: absolute; bottom: -10px; }
-        .gauge-needle {
-            transform-origin: bottom center;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Mechanical bounce */
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
-        }
-
-        /* Knurled Sliders */
-        .slider-container {
-            display: flex; flex-direction: column; gap: 12px;
-        }
-        .mech-slider-track {
-            height: 8px;
-            background: var(--c-surface-dark);
-            border-radius: 4px;
-            box-shadow: var(--shadow-inset-deep);
-            position: relative;
-            border: var(--border-hairline);
-        }
-        .mech-slider-fill {
-            position: absolute; left: 0; top: 0; height: 100%;
-            background: var(--c-accent-amber);
-            border-radius: 4px;
-            opacity: 0.6;
-            box-shadow: 0 0 10px var(--c-accent-amber-glow);
-            transition: width 0.4s ease-out;
-        }
-        /* The Knurled Handle */
-        .mech-slider-handle {
-            position: absolute;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px; height: 16px;
-            background: var(--c-surface-light);
-            border-radius: 3px;
-            border: var(--border-hairline-strong);
-            box-shadow: var(--shadow-outset-button);
-            /* Knurling Texture via gradients */
-            background-image: 
-                linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2)), 
-                linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2));
-            background-size: 4px 4px;
-            background-position: 0 0, 2px 2px;
-            transition: left 0.4s ease-out;
-            cursor: grab;
-        }
-
-        /* --- CONTROLS (Haptic Switches) --- */
-        .controls-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-        }
-        .haptic-switch {
-            background: var(--grad-metal-vertical);
-            border: none;
-            padding: 16px 8px;
-            border-radius: 8px;
-            color: var(--c-text-primary);
-            font-family: inherit;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            /* Mechanical button feel - raised */
-            box-shadow: var(--shadow-outset-button), inset 1px 1px 1px rgba(255,255,255,0.1);
-            border-top: var(--border-hairline-strong);
             cursor: pointer;
-            transition: all 0.1s ease-in-out;
-            position: relative;
-            overflow: hidden;
         }
-        /* Micro-tech detail on switches */
-        .haptic-switch::before { content: ''; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 3px; height: 12px; background: var(--c-surface-dark); border-radius: 2px; box-shadow: var(--shadow-inset-shallow); }
 
-        .haptic-switch:active, .haptic-switch.engaged {
-            /* Mechanical button pressed - sunken & glowing */
-            box-shadow: var(--shadow-inset-deep), 0 0 10px var(--c-accent-amber-dim);
-            color: var(--c-accent-amber);
-            transform: translateY(2px); /* Physical depression */
-            border-top: none;
-            border-bottom: var(--border-hairline-strong);
+        /* The metal plate shape itself */
+        .petal-plate-path {
+            fill: url(#petalMetalGrad); /* Brushed metal gradient defined in SVG defs */
+            stroke: var(--c-accent-amber);
+            stroke-width: 0.5px;
+            /* The rim lighting gets brighter as it opens */
+            stroke-opacity: calc(0.3 + (0.7 * var(--bloom-progress)));
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .haptic-switch.engaged::after {
-             /* Active state indicator light */
-            content: ''; position: absolute; right: 8px; top: 8px; width: 4px; height: 4px; background: var(--c-accent-amber); border-radius: 50%; box-shadow: 0 0 6px var(--c-accent-amber);
+
+        /* The icon inside the petal */
+        .petal-icon {
+            fill: var(--c-text-tertiary);
+            transition: fill 0.3s ease;
+             /* Counter-rotation to keep icons upright while petals rotate */
+            transform-box: fill-box;
+            transform-origin: center;
+            /* Complex calc to counter rotate based on petal angle and bloom state */
+            transform: rotate(calc(var(--petal-angle-offset) * -1 * var(--bloom-progress)));
         }
+
+        /* Positioning and animating the 8 petals */
+        .mech-petal:nth-child(1) { --base-angle: 0deg; }
+        .mech-petal:nth-child(2) { --base-angle: 45deg; }
+        .mech-petal:nth-child(3) { --base-angle: 90deg; }
+        .mech-petal:nth-child(4) { --base-angle: 135deg; }
+        .mech-petal:nth-child(5) { --base-angle: 180deg; }
+        .mech-petal:nth-child(6) { --base-angle: 225deg; }
+        .mech-petal:nth-child(7) { --base-angle: 270deg; }
+        .mech-petal:nth-child(8) { --base-angle: 315deg; }
+
+        .mech-petal {
+            /* THE CORE MECHANIC:
+               1. Rotate to its base position.
+               2. Translate outwards based on bloom progress (pushing out).
+               3. Rotate the plate itself to open up (like a flower, or iris mechanism).
+            */
+            --petal-angle-offset: calc(var(--base-angle) + (20deg * (1 - var(--bloom-progress)))); /* Slight twist when closed */
+            --petal-distance: calc(50px + (60px * var(--bloom-progress))); /* Move out */
+            
+            transform: 
+                rotate(var(--petal-angle-offset)) 
+                translateY(calc(var(--petal-distance) * -1)) 
+                /* Subtle scale effect */
+                scale(calc(0.85 + (0.15 * var(--bloom-progress)))); 
+        }
+
+
+        /* Hover state for individual petals */
+        .mech-petal:hover .petal-plate-path {
+            stroke-opacity: 1;
+            filter: drop-shadow(0 0 8px var(--c-accent-amber-glow));
+            fill: var(--c-surface-mid); /* Slightly lighter metal on hover */
+        }
+        .mech-petal:hover .petal-icon {
+            fill: var(--c-accent-amber);
+        }
+
+
+        /* --- CENTRAL CORE (The Stamen) --- */
+        .lotus-core {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            /* Deep mechanical inset */
+            background: var(--c-surface-dark);
+            box-shadow: var(--shadow-inset-deep);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: var(--border-hairline);
+            z-index: 10; /* Sits above petals */
+            cursor: pointer; /* Clickable to demo animation */
+        }
+        /* The glowing glass dome */
+        .core-glass {
+            position: absolute; inset: 4px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 80%);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+            border: var(--border-hairline-strong);
+            /* Core glow intensity based on bloom progress */
+            box-shadow: 0 0 calc(20px * var(--bloom-progress)) var(--c-accent-amber-dim);
+        }
+        .core-value { font-size: 2rem; font-weight: 700; color: var(--c-accent-amber); z-index: 11; text-shadow: 0 0 calc(10px * var(--bloom-progress)) var(--c-accent-amber-glow); transition: all 1.5s ease; }
+        .core-label { z-index: 11; margin-top: 4px; opacity: 0.7; }
+
+
+        /* --- OTHER MODULES (UNCHANGED FOR CONTEXT) --- */
+        .biometrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .bio-panel { display: flex; flex-direction: column; gap: 10px; }
+        .analog-gauge-container { height: 80px; position: relative; background: var(--c-surface-dark); border-radius: 8px 8px 0 0; box-shadow: var(--shadow-inset-deep); overflow: hidden; border-bottom: var(--border-hairline); }
+        .gauge-svg-layer { width: 100%; height: 100%; position: absolute; bottom: -10px; }
+        .gauge-needle { transform-origin: bottom center; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+        .slider-container { display: flex; flex-direction: column; gap: 12px; }
+        .mech-slider-track { height: 8px; background: var(--c-surface-dark); border-radius: 4px; box-shadow: var(--shadow-inset-deep); position: relative; border: var(--border-hairline); }
+        .mech-slider-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--c-accent-amber); border-radius: 4px; opacity: 0.6; box-shadow: 0 0 10px var(--c-accent-amber-glow); transition: width 0.4s ease-out; }
+        .mech-slider-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 24px; height: 16px; background: var(--c-surface-light); border-radius: 3px; border: var(--border-hairline-strong); box-shadow: var(--shadow-outset-button); background-image: linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2)), linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2)); background-size: 4px 4px; background-position: 0 0, 2px 2px; transition: left 0.4s ease-out; }
+        .controls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .haptic-switch { background: var(--grad-metal-vertical); border: none; padding: 16px 8px; border-radius: 8px; color: var(--c-text-primary); font-family: inherit; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: var(--shadow-outset-button), inset 1px 1px 1px rgba(255,255,255,0.1); border-top: var(--border-hairline-strong); cursor: pointer; transition: all 0.1s ease-in-out; position: relative; overflow: hidden; }
+        .haptic-switch::before { content: ''; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 3px; height: 12px; background: var(--c-surface-dark); border-radius: 2px; box-shadow: var(--shadow-inset-shallow); }
+        .haptic-switch:active, .haptic-switch.engaged { box-shadow: var(--shadow-inset-deep), 0 0 10px var(--c-accent-amber-dim); color: var(--c-accent-amber); transform: translateY(2px); border-top: none; border-bottom: var(--border-hairline-strong); }
+        .haptic-switch.engaged::after { content: ''; position: absolute; right: 8px; top: 8px; width: 4px; height: 4px; background: var(--c-accent-amber); border-radius: 50%; box-shadow: 0 0 6px var(--c-accent-amber); }
 
     </style>
 </head>
@@ -272,122 +206,113 @@
 
     <div id="app-container">
         <header>
-            <div class="brand">HUMANEED <span style="color:var(--c-accent-amber);">//</span> SYS.01</div>
-            <div class="status-indicator text-label">
-                ONLINE <div class="status-dot"></div>
-            </div>
+            <div class="brand">HUMANEED <span style="color:var(--c-accent-amber);">//</span> SYS.02 (LOTUS)</div>
+            <div class="status-indicator text-label">ONLINE <div class="status-dot"></div></div>
         </header>
 
-        <section class="module-card telemetry-hub">
-            <div class="hub-connectors">
-                <svg viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="140" cy="140" r="120" stroke="currentColor" stroke-width="0.5" stroke-dasharray="2 4"/>
-                    <line x1="140" y1="20" x2="140" y2="260" stroke="currentColor" stroke-width="0.5"/>
-                    <line x1="20" y1="140" x2="260" y2="140" stroke="currentColor" stroke-width="0.5"/>
-                    <line x1="55" y1="55" x2="225" y2="225" stroke="currentColor" stroke-width="0.5"/>
-                    <line x1="225" y1="55" x2="55" y2="225" stroke="currentColor" stroke-width="0.5"/>
+        <section class="module-card lotus-telemetry-hub">
+            <div class="bloom-container" id="lotusController">
+                
+                <svg class="lotus-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="petalMetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3a3f47;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#23272e;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1a1d22;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <g transform="translate(150, 150)">
+                        <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                            <g transform="translate(0, -35)">
+                                 <svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                            </g>
+                        </g>
+                        <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                            <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2.69l5.74 5.88a6 6 0 0 1-8.48 8.48A6 6 0 0 1 5.26 8.57L12 2.69z"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></g>
+                        </g>
+                         <g class="mech-petal">
+                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
+                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></g>
+                        </g>
+                    </g>
                 </svg>
-            </div>
 
-            <div class="main-gauge-rim">
-                <div class="main-gauge-glass">
-                     <span class="text-label">Tages-Kohärenz</span>
-                    <div class="gauge-value">84%</div>
-                    <span class="text-label" style="margin-top: 4px; opacity: 0.7;">Stabil</span>
+                <div class="lotus-core">
+                    <div class="core-glass"></div>
+                    <span class="text-label core-label">Kohärenz</span>
+                    <div class="core-value" id="coreValueDisplay">94%</div>
                 </div>
-            </div>
 
-            <div class="satellite-nodes">
-                <div class="node-icon node-n active" title="Fokus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
-                <div class="node-icon node-ne" title="Schlaf"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
-                <div class="node-icon node-e" title="Aktivität"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-                <div class="node-icon node-se" title="Ernährung"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-                <div class="node-icon node-s" title="Stresslevel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg></div>
-                <div class="node-icon node-sw" title="Hydration"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.74 5.88a6 6 0 0 1-8.48 8.48A6 6 0 0 1 5.26 8.57L12 2.69z"/></svg></div>
-                <div class="node-icon node-w" title="Mood"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-                <div class="node-icon node-nw" title="Kognition"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="7.5 4.21 12 6.81 16.5 4.21"/><polyline points="7.5 19.79 12 17.19 16.5 19.79"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg></div>
             </div>
         </section>
-
         <section class="biometrics-grid">
             <div class="module-card bio-panel">
-                <div style="display:flex; justify-content: space-between; align-items: baseline;">
-                    <span class="text-label">HRV Status</span>
-                    <span class="text-value" style="color:var(--c-accent-amber);">65 ms</span>
-                </div>
-                <div class="analog-gauge-container">
-                    <svg class="gauge-svg-layer" viewBox="0 0 100 50">
-                        <path d="M10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--c-surface-light)" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M10 50 A 40 40 0 0 1 60 15" fill="none" stroke="var(--c-accent-amber)" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-                        <line x1="10" y1="50" x2="5" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/>
-                        <line x1="50" y1="10" x2="50" y2="5" stroke="var(--c-text-tertiary)" stroke-width="1"/>
-                        <line x1="90" y1="50" x2="95" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/>
-                        <g class="gauge-needle" style="transform: rotate(15deg);"> <line x1="50" y1="50" x2="50" y2="15" stroke="var(--c-accent-amber)" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="50" cy="50" r="4" fill="var(--c-surface-mid)" stroke="var(--c-accent-amber)" stroke-width="2"/>
-                        </g>
-                    </svg>
-                </div>
-                 <span class="text-label" style="text-align: right; font-size: 0.6rem; opacity: 0.6;">Sensor: Oura Gen3</span>
+                <div style="display:flex; justify-content: space-between; align-items: baseline;"><span class="text-label">HRV Status</span><span class="text-value" style="color:var(--c-accent-amber);">65 ms</span></div>
+                <div class="analog-gauge-container"><svg class="gauge-svg-layer" viewBox="0 0 100 50"><path d="M10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--c-surface-light)" stroke-width="2" stroke-linecap="round"/><path d="M10 50 A 40 40 0 0 1 60 15" fill="none" stroke="var(--c-accent-amber)" stroke-width="3" stroke-linecap="round" opacity="0.6"/><line x1="10" y1="50" x2="5" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="5" stroke="var(--c-text-tertiary)" stroke-width="1"/><line x1="90" y1="50" x2="95" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/><g class="gauge-needle" style="transform: rotate(15deg);"><line x1="50" y1="50" x2="50" y2="15" stroke="var(--c-accent-amber)" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="var(--c-surface-mid)" stroke="var(--c-accent-amber)" stroke-width="2"/></g></svg></div>
             </div>
-
             <div class="module-card bio-panel">
-                 <div style="display:flex; justify-content: space-between; align-items: baseline;">
-                    <span class="text-label">Energie-Reserve</span>
-                    <span class="text-value">72%</span>
-                </div>
-                <div class="slider-container" style="padding: 10px 0;">
-                    <div style="position:relative; height: 16px;">
-                         <div class="mech-slider-track">
-                            <div class="mech-slider-fill" style="width: 72%;"></div>
-                        </div>
-                        <div class="mech-slider-handle" style="left: 72%;"></div>
-                    </div>
-                     <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                         <span class="text-label" style="font-size: 0.6rem;">Recovery Load</span>
-                        <div style="position:relative; height: 12px; width: 60%;">
-                             <div class="mech-slider-track" style="height: 6px;">
-                                <div class="mech-slider-fill" style="width: 45%; height: 6px; opacity: 0.4;"></div>
-                            </div>
-                            <div class="mech-slider-handle" style="left: 45%; width: 16px; height: 12px;"></div>
-                        </div>
-                     </div>
-                </div>
+                 <div style="display:flex; justify-content: space-between; align-items: baseline;"><span class="text-label">Energie</span><span class="text-value">72%</span></div>
+                <div class="slider-container" style="padding: 10px 0;"><div style="position:relative; height: 16px;"><div class="mech-slider-track"><div class="mech-slider-fill" style="width: 72%;"></div></div><div class="mech-slider-handle" style="left: 72%;"></div></div><div style="display:flex; justify-content: space-between; align-items: center; margin-top: 8px;"><span class="text-label" style="font-size: 0.6rem;">Load</span><div style="position:relative; height: 12px; width: 60%;"><div class="mech-slider-track" style="height: 6px;"><div class="mech-slider-fill" style="width: 45%; height: 6px; opacity: 0.4;"></div></div><div class="mech-slider-handle" style="left: 45%; width: 16px; height: 12px;"></div></div></div></div>
             </div>
         </section>
 
         <section class="module-card">
-             <div style="margin-bottom: 12px;"><span class="text-label">Protokoll-Aktionen</span></div>
+             <div style="margin-bottom: 12px;"><span class="text-label">System Aktionen</span></div>
             <div class="controls-grid">
                 <button class="haptic-switch engaged">Scan Starten</button>
-                <button class="haptic-switch">Log Eintrag</button>
                 <button class="haptic-switch">Kalibrieren</button>
+                <button class="haptic-switch">Reset</button>
             </div>
         </section>
 
     </div>
 
     <script>
-        // Toggle engaged state on buttons for haptic visual feedback
-        const switches = document.querySelectorAll('.haptic-switch');
-        switches.forEach(sw => {
-            sw.addEventListener('click', function() {
-                // Simple toggle for demo purposes
-                this.classList.toggle('engaged');
-                
-                // Optional: Vibrate device if supported for real haptics
-                if (navigator.vibrate) {
-                    navigator.vibrate(30); // Short, sharp mechanical tap
-                }
-            });
+        // DEMO INTERACTION: Click center to toggle bloom state
+        const lotusController = document.getElementById('lotusController');
+        const coreValueDisplay = document.getElementById('coreValueDisplay');
+        const lotusCore = document.querySelector('.lotus-core');
+
+        lotusCore.addEventListener('click', function() {
+            // Toggle between high and low state classes
+            lotusController.classList.toggle('state-low');
+
+            // Update text to reflect state
+            if (lotusController.classList.contains('state-low')) {
+                coreValueDisplay.textContent = "42%";
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30]); // Mechanical "power down" feel
+            } else {
+                coreValueDisplay.textContent = "94%";
+                if (navigator.vibrate) navigator.vibrate([20, 100, 40]); // Mechanical "power up" feel
+            }
         });
 
-        // Demo interaction for nodes
-        const nodes = document.querySelectorAll('.node-icon');
-        nodes.forEach(node => {
-             node.addEventListener('click', function() {
-                nodes.forEach(n => n.classList.remove('active'));
-                this.classList.add('active');
-             });
+        // Basic Haptic Switch Toggle (same as before)
+        document.querySelectorAll('.haptic-switch').forEach(sw => {
+            sw.addEventListener('click', function() { this.classList.toggle('engaged'); });
         });
     </script>
 </body>
