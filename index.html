@@ -1,319 +1,1660 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUMANEED | Bio-Mechanical Telemetry</title>
-    <style>
-        :root {
-            /* --- PREVIOUS DESIGN SYSTEM TOKENS (UNCHANGED) --- */
-            --c-surface-dark: #141619;
-            --c-surface-mid: #1e2126;
-            --c-surface-light: #2a2e35;
-            --c-text-primary: #e0e4e8;
-            --c-text-secondary: #8a929c;
-            --c-text-tertiary: #5c626b;
-            --c-accent-amber: #ffb347;
-            --c-accent-amber-glow: rgba(255, 179, 71, 0.45);
-            --c-accent-amber-dim: rgba(255, 179, 71, 0.1);
-            --border-hairline: 1px solid rgba(255, 255, 255, 0.08);
-            --border-hairline-strong: 1px solid rgba(255, 255, 255, 0.15);
-            --grad-metal-brushed: linear-gradient(135deg, var(--c-surface-light) 0%, var(--c-surface-mid) 50%, var(--c-surface-dark) 100%);
-            --grad-metal-vertical: linear-gradient(to right, var(--c-surface-mid) 0%, var(--c-surface-light) 50%, var(--c-surface-mid) 100%);
-            --shadow-inset-deep: inset 2px 2px 6px rgba(0,0,0,0.7), inset -1px -1px 2px rgba(255,255,255,0.1);
-            --shadow-inset-shallow: inset 1px 1px 3px rgba(0,0,0,0.5), inset -1px -1px 1px rgba(255,255,255,0.07);
-            --shadow-outset-button: 3px 3px 6px rgba(0,0,0,0.6), -1px -1px 2px rgba(255,255,255,0.1);
-            --shadow-active-glow: 0 0 15px var(--c-accent-amber-glow), inset 0 0 10px var(--c-accent-amber-dim);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>HUMANEED | Precision</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
 
-            /* --- NEW TOKENS FOR MECHANICAL LOTUS --- */
-            /* The brushed metal look for the petals */
-            --grad-petal-metal: linear-gradient(to bottom right, #3a3f47 0%, #23272e 60%, #1a1d22 100%);
-            /* The glowing edge of the mechanical plates */
-            --petal-rim-light: 1px solid var(--c-accent-amber-glow);
-        }
+<style>
+:root {
+  /* Engineering Palette */
+  --bg-void: #080808;
+  --bg-panel: #111111;
+  
+  /* Matte Steel - The Primary Ink */
+  --c-steel: #6b7a8f; 
+  --c-steel-dim: #3f4a59;
+  
+  /* Indicators */
+  --c-amber: #d4a574;      /* Active / Focus */
+  --c-signal: #32d74b;     /* Success / On */
+  --c-alert: #ff453a;      /* Critical */
+  
+  --border: rgba(107, 122, 143, 0.2); /* Steel border */
+  --border-active: rgba(212, 165, 116, 0.5); /* Amber border */
+  
+  --font-tech: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+  
+  --ease-mech: cubic-bezier(0.2, 0, 0, 1); /* Mechanical snap */
+}
 
-        /* --- BASE RESET & UTILITIES (UNCHANGED) --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
-        body {
-            background-color: var(--c-surface-dark);
-            background-image: repeating-linear-gradient(transparent 0px, transparent 2px, rgba(0,0,0,0.3) 3px), var(--grad-metal-brushed);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: var(--c-text-primary);
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-        .text-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-text-secondary); font-weight: 600; }
-        .text-value { font-family: 'Roboto Mono', monospace; font-weight: 500; }
-        .no-select { user-select: none; -webkit-user-select: none; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-        /* --- APP CONTAINER & HEADER (UNCHANGED) --- */
-        #app-container { flex: 1; display: flex; flex-direction: column; padding: 16px; max-width: 500px; margin: 0 auto; gap: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: var(--border-hairline); position: relative; }
-        header::after { content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 4px; background: repeating-linear-gradient(90deg, var(--c-accent-amber-dim) 0, var(--c-accent-amber-dim) 1px, transparent 1px, transparent 8px); opacity: 0.4; }
-        .brand { font-weight: 800; letter-spacing: 0.15em; font-size: 0.9rem; }
-        .status-indicator { display: flex; align-items: center; gap: 8px; }
-        .status-dot { width: 6px; height: 6px; background: var(--c-accent-amber); border-radius: 50%; box-shadow: 0 0 8px var(--c-accent-amber); }
-        .module-card { background: var(--c-surface-mid); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-outset-button), var(--shadow-inset-shallow); border-top: var(--border-hairline-strong); position: relative; overflow: hidden; }
+body {
+  background: var(--bg-void);
+  color: var(--c-steel);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
 
-        /* --- NEW: BIOMECHANICAL LOTUS MODULE --- */
-        .lotus-telemetry-hub {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 0;
-            position: relative;
-            /* Ensure adequate space for the unfolding animation */
-            min-height: 320px; 
-        }
+/* Precision Icons */
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  display: block;
+}
 
-        /* The SVG container */
-        .lotus-svg {
-            width: 300px;
-            height: 300px;
-            /* Subtle mechanical base glow */
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
-            overflow: visible; /* Allow petals to extend during animation */
-        }
+.icon-sm { width: 16px; height: 16px; }
+.icon-lg { width: 32px; height: 32px; stroke-width: 1.2; }
+.icon-xl { width: 48px; height: 48px; stroke-width: 1; }
 
-        /* --- LOTUS DYNAMICS & ANIMATION --- */
-        /* The 'bloom-container' CSS variable '--bloom-progress' (0.0 to 1.0) 
-           controls the entire opening mechanism via CSS calc().
-        */
-        .bloom-container {
-            /* Default state (e.g., 94% open) */
-            --bloom-progress: 0.94; 
-            transition: --bloom-progress 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring physics */
-        }
-        
-        /* A class to simulate a low score state for demonstration */
-        .bloom-container.state-low {
-             --bloom-progress: 0.42;
-        }
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 10;
+}
 
-        /* The Petal (Mechanical Plate) */
-        .mech-petal {
-            transform-origin: center center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+/* Header: Cockpit Style */
+.header {
+  padding: max(1.5rem, env(safe-area-inset-top)) 1.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(107, 122, 143, 0.08);
+}
 
-        /* The metal plate shape itself */
-        .petal-plate-path {
-            fill: url(#petalMetalGrad); /* Brushed metal gradient defined in SVG defs */
-            stroke: var(--c-accent-amber);
-            stroke-width: 0.5px;
-            /* The rim lighting gets brighter as it opens */
-            stroke-opacity: calc(0.3 + (0.7 * var(--bloom-progress)));
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-            transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+.brand {
+  font-family: var(--font-tech);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--c-steel);
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
 
-        /* The icon inside the petal */
-        .petal-icon {
-            fill: var(--c-text-tertiary);
-            transition: fill 0.3s ease;
-             /* Counter-rotation to keep icons upright while petals rotate */
-            transform-box: fill-box;
-            transform-origin: center;
-            /* Complex calc to counter rotate based on petal angle and bloom state */
-            transform: rotate(calc(var(--petal-angle-offset) * -1 * var(--bloom-progress)));
-        }
+.brand::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--c-amber);
+  border-radius: 1px;
+  box-shadow: 0 0 8px rgba(212, 165, 116, 0.4);
+}
 
-        /* Positioning and animating the 8 petals */
-        .mech-petal:nth-child(1) { --base-angle: 0deg; }
-        .mech-petal:nth-child(2) { --base-angle: 45deg; }
-        .mech-petal:nth-child(3) { --base-angle: 90deg; }
-        .mech-petal:nth-child(4) { --base-angle: 135deg; }
-        .mech-petal:nth-child(5) { --base-angle: 180deg; }
-        .mech-petal:nth-child(6) { --base-angle: 225deg; }
-        .mech-petal:nth-child(7) { --base-angle: 270deg; }
-        .mech-petal:nth-child(8) { --base-angle: 315deg; }
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
 
-        .mech-petal {
-            /* THE CORE MECHANIC:
-               1. Rotate to its base position.
-               2. Translate outwards based on bloom progress (pushing out).
-               3. Rotate the plate itself to open up (like a flower, or iris mechanism).
-            */
-            --petal-angle-offset: calc(var(--base-angle) + (20deg * (1 - var(--bloom-progress)))); /* Slight twist when closed */
-            --petal-distance: calc(50px + (60px * var(--bloom-progress))); /* Move out */
-            
-            transform: 
-                rotate(var(--petal-angle-offset)) 
-                translateY(calc(var(--petal-distance) * -1)) 
-                /* Subtle scale effect */
-                scale(calc(0.85 + (0.15 * var(--bloom-progress)))); 
-        }
+.profile-btn {
+  color: var(--c-steel);
+  background: transparent;
+  border: 1px solid var(--border);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
 
+.profile-btn:hover {
+  border-color: var(--c-steel);
+  color: #fff;
+}
 
-        /* Hover state for individual petals */
-        .mech-petal:hover .petal-plate-path {
-            stroke-opacity: 1;
-            filter: drop-shadow(0 0 8px var(--c-accent-amber-glow));
-            fill: var(--c-surface-mid); /* Slightly lighter metal on hover */
-        }
-        .mech-petal:hover .petal-icon {
-            fill: var(--c-accent-amber);
-        }
+.profile-btn.has-profile {
+  border-color: var(--c-amber);
+  color: var(--c-amber);
+  background: rgba(212, 165, 116, 0.05);
+}
 
+/* Typography */
+h1 {
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #ededed;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
 
-        /* --- CENTRAL CORE (The Stamen) --- */
-        .lotus-core {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            /* Deep mechanical inset */
-            background: var(--c-surface-dark);
-            box-shadow: var(--shadow-inset-deep);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: var(--border-hairline);
-            z-index: 10; /* Sits above petals */
-            cursor: pointer; /* Clickable to demo animation */
-        }
-        /* The glowing glass dome */
-        .core-glass {
-            position: absolute; inset: 4px; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 80%);
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
-            border: var(--border-hairline-strong);
-            /* Core glow intensity based on bloom progress */
-            box-shadow: 0 0 calc(20px * var(--bloom-progress)) var(--c-accent-amber-dim);
-        }
-        .core-value { font-size: 2rem; font-weight: 700; color: var(--c-accent-amber); z-index: 11; text-shadow: 0 0 calc(10px * var(--bloom-progress)) var(--c-accent-amber-glow); transition: all 1.5s ease; }
-        .core-label { z-index: 11; margin-top: 4px; opacity: 0.7; }
+.sub {
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  color: var(--c-steel-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2rem;
+  display: block;
+}
 
+/* Views */
+.view {
+  display: none;
+  padding: 0 1.5rem;
+  animation: fadeSnap 0.3s var(--ease-mech);
+}
+.view.active { display: block; }
 
-        /* --- OTHER MODULES (UNCHANGED FOR CONTEXT) --- */
-        .biometrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .bio-panel { display: flex; flex-direction: column; gap: 10px; }
-        .analog-gauge-container { height: 80px; position: relative; background: var(--c-surface-dark); border-radius: 8px 8px 0 0; box-shadow: var(--shadow-inset-deep); overflow: hidden; border-bottom: var(--border-hairline); }
-        .gauge-svg-layer { width: 100%; height: 100%; position: absolute; bottom: -10px; }
-        .gauge-needle { transform-origin: bottom center; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
-        .slider-container { display: flex; flex-direction: column; gap: 12px; }
-        .mech-slider-track { height: 8px; background: var(--c-surface-dark); border-radius: 4px; box-shadow: var(--shadow-inset-deep); position: relative; border: var(--border-hairline); }
-        .mech-slider-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--c-accent-amber); border-radius: 4px; opacity: 0.6; box-shadow: 0 0 10px var(--c-accent-amber-glow); transition: width 0.4s ease-out; }
-        .mech-slider-handle { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 24px; height: 16px; background: var(--c-surface-light); border-radius: 3px; border: var(--border-hairline-strong); box-shadow: var(--shadow-outset-button); background-image: linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2)), linear-gradient(45deg, rgba(0,0,0,0.2) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0.2)); background-size: 4px 4px; background-position: 0 0, 2px 2px; transition: left 0.4s ease-out; }
-        .controls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .haptic-switch { background: var(--grad-metal-vertical); border: none; padding: 16px 8px; border-radius: 8px; color: var(--c-text-primary); font-family: inherit; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: var(--shadow-outset-button), inset 1px 1px 1px rgba(255,255,255,0.1); border-top: var(--border-hairline-strong); cursor: pointer; transition: all 0.1s ease-in-out; position: relative; overflow: hidden; }
-        .haptic-switch::before { content: ''; position: absolute; left: 4px; top: 50%; transform: translateY(-50%); width: 3px; height: 12px; background: var(--c-surface-dark); border-radius: 2px; box-shadow: var(--shadow-inset-shallow); }
-        .haptic-switch:active, .haptic-switch.engaged { box-shadow: var(--shadow-inset-deep), 0 0 10px var(--c-accent-amber-dim); color: var(--c-accent-amber); transform: translateY(2px); border-top: none; border-bottom: var(--border-hairline-strong); }
-        .haptic-switch.engaged::after { content: ''; position: absolute; right: 8px; top: 8px; width: 4px; height: 4px; background: var(--c-accent-amber); border-radius: 50%; box-shadow: 0 0 6px var(--c-accent-amber); }
+@keyframes fadeSnap {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    </style>
+/* HUD Panels (Cards) */
+.hud-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: all 0.2s var(--ease-mech);
+}
+
+.hud-card:hover {
+  border-color: var(--c-steel);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.hud-card:active {
+  transform: scale(0.99);
+  border-color: var(--c-amber);
+}
+
+.hud-label {
+  font-family: var(--font-tech);
+  font-size: 0.6rem;
+  color: var(--c-amber);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Recommendation Specifics */
+.rec-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rec-icon-box {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--c-steel);
+  flex-shrink: 0;
+}
+
+.rec-info { flex: 1; }
+
+.rec-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.rec-meta {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  color: var(--c-steel-dim);
+  margin-bottom: 8px;
+}
+
+.rec-reason {
+  font-size: 0.8rem;
+  color: var(--c-steel);
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Dimension Grid */
+.dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+
+.dim-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.dim-card:hover { border-color: var(--c-steel); }
+.dim-card.critical { border-color: var(--c-alert); }
+.dim-card.low { border-color: var(--c-amber); }
+
+.dim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.dim-icon { color: var(--c-steel); }
+.dim-card.critical .dim-icon { color: var(--c-alert); }
+
+.dim-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ddd;
+}
+
+.dim-progress-track {
+  height: 2px;
+  background: var(--bg-panel);
+  margin-top: 8px;
+  width: 100%;
+}
+
+.dim-progress-fill {
+  height: 100%;
+  background: var(--c-steel);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+/* Skill List */
+.skill-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.skill-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--c-steel);
+}
+
+.skill-row.completed {
+  border-color: var(--c-signal);
+  opacity: 0.6;
+}
+
+.skill-row.completed .skill-icon-wrap { color: var(--c-signal); }
+.skill-row.recommended { border-color: var(--c-amber); }
+
+.skill-icon-wrap {
+  margin-right: 1rem;
+  color: var(--c-steel);
+}
+
+.skill-content { flex: 1; }
+
+.skill-name {
+  font-size: 0.9rem;
+  color: #eee;
+  margin-bottom: 2px;
+}
+
+.skill-meta {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  color: var(--c-steel-dim);
+}
+
+/* XP Bar */
+.xp-track {
+  height: 4px;
+  background: var(--bg-panel);
+  width: 100%;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.xp-fill {
+  height: 100%;
+  background: var(--c-amber);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.xp-text {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  color: var(--c-steel-dim);
+  text-align: right;
+  display: block;
+}
+
+/* Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--c-steel);
+  color: var(--c-steel);
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.btn:hover {
+  background: rgba(107, 122, 143, 0.1);
+  color: #fff;
+  border-color: #fff;
+}
+
+.btn-primary {
+  background: var(--c-steel);
+  color: #000;
+  font-weight: 600;
+  border-color: var(--c-steel);
+}
+
+.btn-primary:hover {
+  background: #fff;
+  border-color: #fff;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.7rem;
+  width: auto;
+}
+
+/* Onboarding Specifics */
+.onboarding-option {
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  color: var(--c-steel);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onboarding-option:hover {
+  border-color: var(--c-steel);
+  background: rgba(255,255,255,0.05);
+}
+
+.onboarding-option.selected {
+  border-color: var(--c-amber);
+  background: rgba(212, 165, 116, 0.1);
+  color: #fff;
+}
+
+.onboarding-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border);
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding-option.selected .onboarding-checkbox {
+  border-color: var(--c-amber);
+  background: var(--c-amber);
+}
+
+/* Modals */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.overlay.active { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  background: #151515;
+  border-top: 1px solid var(--c-steel);
+  padding: 2rem 1.5rem;
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease-mech);
+  border-radius: 12px 12px 0 0;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.overlay.active .sheet { transform: translateY(0); }
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--c-amber);
+  margin-bottom: 0.75rem;
+  display: block;
+  letter-spacing: 1px;
+}
+
+.section-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #d0d0d0;
+  margin-bottom: 2rem;
+}
+
+/* Resonance Modal */
+.resonance-modal {
+  background: #111;
+  border: 1px solid var(--c-amber);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  margin-bottom: 20%;
+}
+
+.qualia-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 1.5rem 0;
+}
+
+.qualia-btn {
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--c-steel);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.qualia-btn:hover {
+  border-color: var(--c-amber);
+  color: var(--c-amber);
+}
+
+/* Badge Grid */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.badge {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  transition: all 0.3s;
+}
+
+.badge.unlocked {
+  opacity: 1;
+  border-color: var(--c-amber);
+  background: rgba(212, 165, 116, 0.05);
+}
+
+.badge-icon {
+  margin-bottom: 4px;
+  color: var(--c-steel);
+}
+.badge.unlocked .badge-icon { color: var(--c-amber); }
+
+/* Algorithm Widget */
+.algo-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid var(--c-steel);
+  margin-bottom: 8px;
+}
+.algo-time {
+  font-family: var(--font-tech);
+  font-size: 0.65rem;
+  color: var(--c-steel-dim);
+  width: 50px;
+}
+.algo-text {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+</style>
 </head>
-<body class="no-select">
+<body>
 
-    <div id="app-container">
-        <header>
-            <div class="brand">HUMANEED <span style="color:var(--c-accent-amber);">//</span> SYS.02 (LOTUS)</div>
-            <div class="status-indicator text-label">ONLINE <div class="status-dot"></div></div>
-        </header>
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="brand" onclick="goHome()">
+      HUMANEED v10
+    </div>
+    <div class="header-actions">
+      <button class="profile-btn" id="profileBtn" onclick="openProfile()">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
+  </header>
 
-        <section class="module-card lotus-telemetry-hub">
-            <div class="bloom-container" id="lotusController">
-                
-                <svg class="lotus-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="petalMetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#3a3f47;stop-opacity:1" />
-                            <stop offset="50%" style="stop-color:#23272e;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#1a1d22;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
+  <!-- View: Welcome -->
+  <div class="view" id="viewWelcome">
+    <div style="padding-top: 20vh; text-align: center;">
+      <div style="margin: 0 auto 2rem; width: 64px; height: 64px; color: var(--c-amber);">
+         <svg class="icon" viewBox="0 0 24 24" style="width:100%; height:100%; stroke-width:1;"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+      </div>
+      <h1>HUMANEED</h1>
+      <p class="sub">Precision Bio-Modulation</p>
+      
+      <div style="margin-top: 3rem;">
+        <button class="btn btn-primary" onclick="startOnboarding()">INITIIERUNG STARTEN</button>
+        <button class="btn" style="margin-top: 1rem; border: none; color: var(--c-steel-dim);" onclick="skipOnboarding()">Überspringen</button>
+      </div>
+    </div>
+  </div>
 
-                    <g transform="translate(150, 150)">
-                        <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                            <g transform="translate(0, -35)">
-                                 <svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-                            </g>
-                        </g>
-                        <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                            <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2.69l5.74 5.88a6 6 0 0 1-8.48 8.48A6 6 0 0 1 5.26 8.57L12 2.69z"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></g>
-                        </g>
-                         <g class="mech-petal">
-                            <path class="petal-plate-path" d="M0,-60 C-15,-50 -20,-20 0,0 C20,-20 15,-50 0,-60 Z" />
-                             <g transform="translate(0, -35)"><svg class="petal-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></g>
-                        </g>
-                    </g>
-                </svg>
+  <!-- View: Onboarding -->
+  <div class="view" id="viewOnboarding">
+    <div style="padding-top: 1.5rem;" id="onboardingContainer"></div>
+  </div>
 
-                <div class="lotus-core">
-                    <div class="core-glass"></div>
-                    <span class="text-label core-label">Kohärenz</span>
-                    <div class="core-value" id="coreValueDisplay">94%</div>
-                </div>
+  <!-- View: Home -->
+  <div class="view active" id="viewHome">
+    <div style="padding-top: 1.5rem;">
+      <h1>Synchronisation</h1>
+      <p class="sub" id="dailyImpulse">System bereit.</p>
 
-            </div>
-        </section>
-        <section class="biometrics-grid">
-            <div class="module-card bio-panel">
-                <div style="display:flex; justify-content: space-between; align-items: baseline;"><span class="text-label">HRV Status</span><span class="text-value" style="color:var(--c-accent-amber);">65 ms</span></div>
-                <div class="analog-gauge-container"><svg class="gauge-svg-layer" viewBox="0 0 100 50"><path d="M10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--c-surface-light)" stroke-width="2" stroke-linecap="round"/><path d="M10 50 A 40 40 0 0 1 60 15" fill="none" stroke="var(--c-accent-amber)" stroke-width="3" stroke-linecap="round" opacity="0.6"/><line x1="10" y1="50" x2="5" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/><line x1="50" y1="10" x2="50" y2="5" stroke="var(--c-text-tertiary)" stroke-width="1"/><line x1="90" y1="50" x2="95" y2="50" stroke="var(--c-text-tertiary)" stroke-width="1"/><g class="gauge-needle" style="transform: rotate(15deg);"><line x1="50" y1="50" x2="50" y2="15" stroke="var(--c-accent-amber)" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="50" r="4" fill="var(--c-surface-mid)" stroke="var(--c-accent-amber)" stroke-width="2"/></g></svg></div>
-            </div>
-            <div class="module-card bio-panel">
-                 <div style="display:flex; justify-content: space-between; align-items: baseline;"><span class="text-label">Energie</span><span class="text-value">72%</span></div>
-                <div class="slider-container" style="padding: 10px 0;"><div style="position:relative; height: 16px;"><div class="mech-slider-track"><div class="mech-slider-fill" style="width: 72%;"></div></div><div class="mech-slider-handle" style="left: 72%;"></div></div><div style="display:flex; justify-content: space-between; align-items: center; margin-top: 8px;"><span class="text-label" style="font-size: 0.6rem;">Load</span><div style="position:relative; height: 12px; width: 60%;"><div class="mech-slider-track" style="height: 6px;"><div class="mech-slider-fill" style="width: 45%; height: 6px; opacity: 0.4;"></div></div><div class="mech-slider-handle" style="left: 45%; width: 16px; height: 12px;"></div></div></div></div>
-            </div>
-        </section>
+      <!-- Level & XP -->
+      <div style="margin-bottom: 2rem;">
+        <div class="xp-track">
+          <div class="xp-fill" id="homeXpFill"></div>
+        </div>
+        <span class="xp-text" id="homeXpText">LEVEL 1 // 0 XP</span>
+      </div>
 
-        <section class="module-card">
-             <div style="margin-bottom: 12px;"><span class="text-label">System Aktionen</span></div>
-            <div class="controls-grid">
-                <button class="haptic-switch engaged">Scan Starten</button>
-                <button class="haptic-switch">Kalibrieren</button>
-                <button class="haptic-switch">Reset</button>
-            </div>
-        </section>
+      <!-- Recommendation HUD -->
+      <div id="recContainer"></div>
+      
+      <!-- Algorithm Insights (Dynamic) -->
+      <div id="algoWidget" style="display:none; margin-bottom: 1rem;">
+        <div class="hud-label">PATTERN RECOGNITION</div>
+        <div id="algoList"></div>
+      </div>
 
+      <!-- Dimensions Grid -->
+      <div class="dimension-grid" id="dimGrid"></div>
+
+      <!-- Activity Heatmap -->
+      <div class="hud-card" style="padding: 1rem;">
+        <div class="hud-label">
+            <span>ACTIVITY LOG (40 CYCLES)</span>
+            <span id="streakDisplay">STREAK: 0</span>
+        </div>
+        <div id="heatmap" style="display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View: Dimension Detail -->
+  <div class="view" id="viewDimension">
+    <div style="padding-top: 1.5rem;">
+      <button class="btn btn-sm" onclick="goHome()" style="margin-bottom: 1.5rem;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Rückkehr
+      </button>
+
+      <h1 id="dimTitle">Dimension</h1>
+      <p class="sub" id="dimDesc">Description</p>
+
+      <div id="skillList"></div>
+    </div>
+  </div>
+
+  <!-- View: Profile -->
+  <div class="view" id="viewProfile">
+    <div style="padding-top: 1.5rem;">
+       <button class="btn btn-sm" onclick="goHome()" style="margin-bottom: 1.5rem;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Zurück
+      </button>
+      <h1>Nutzerprofil</h1>
+      <p class="sub">Konfiguration & Status</p>
+      
+      <div class="hud-card">
+        <div class="hud-label">BADGES</div>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+
+      <div class="hud-card">
+        <div class="hud-label">SYSTEM STATUS</div>
+        <div id="profileData"></div>
+      </div>
+      
+      <button class="btn" onclick="resetData()" style="border-color: var(--c-alert); color: var(--c-alert);">System Reset</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Overlay: Skill Detail -->
+<div class="overlay" id="skillOverlay" onclick="closeSheet(event)">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-header">
+      <div class="rec-icon-box" id="sheetIcon" style="border-color: var(--c-amber); color: var(--c-amber);"></div>
+      <div>
+        <div class="sheet-title" id="sheetTitle">Skill Name</div>
+        <div class="rec-meta" id="sheetMeta">2 MIN // BIO-MODULATION</div>
+      </div>
     </div>
 
-    <script>
-        // DEMO INTERACTION: Click center to toggle bloom state
-        const lotusController = document.getElementById('lotusController');
-        const coreValueDisplay = document.getElementById('coreValueDisplay');
-        const lotusCore = document.querySelector('.lotus-core');
+    <div id="sheetContent"></div>
 
-        lotusCore.addEventListener('click', function() {
-            // Toggle between high and low state classes
-            lotusController.classList.toggle('state-low');
+    <div style="margin-top: 2rem;">
+      <button class="btn btn-primary" onclick="completeCurrentSkill()">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Ausführen
+      </button>
+    </div>
+  </div>
+</div>
 
-            // Update text to reflect state
-            if (lotusController.classList.contains('state-low')) {
-                coreValueDisplay.textContent = "42%";
-                if (navigator.vibrate) navigator.vibrate([30, 50, 30]); // Mechanical "power down" feel
-            } else {
-                coreValueDisplay.textContent = "94%";
-                if (navigator.vibrate) navigator.vibrate([20, 100, 40]); // Mechanical "power up" feel
-            }
-        });
+<!-- Overlay: Resonance Feedback -->
+<div class="overlay" id="resonanceOverlay">
+  <div class="resonance-modal">
+    <div style="margin: 0 auto 1rem; width: 48px; height: 48px; color: var(--c-amber);" id="resIcon"></div>
+    <h3 style="color: #fff; font-weight: 500; margin-bottom: 0.5rem;">Resonanz-Check</h3>
+    <p class="sub">Veränderung im System?</p>
 
-        // Basic Haptic Switch Toggle (same as before)
-        document.querySelectorAll('.haptic-switch').forEach(sw => {
-            sw.addEventListener('click', function() { this.classList.toggle('engaged'); });
-        });
-    </script>
+    <div class="qualia-grid" id="qualiaGrid"></div>
+
+    <button class="btn" style="border:none; color: #666;" onclick="closeResonance()">Keine Änderung</button>
+  </div>
+</div>
+
+<div id="toast" style="position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); background: var(--c-signal); color: #000; padding: 8px 16px; border-radius: 2px; font-weight: 600; font-family: var(--font-tech); font-size: 0.8rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 200;">
+  SYSTEM UPDATE
+</div>
+
+<canvas id="confetti" style="position: fixed; inset: 0; pointer-events: none; z-index: 999;"></canvas>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// ICON LIBRARY (SVG PATHS)
+// Precision Engineering Style
+// ═══════════════════════════════════════════════════════════════════════════
+
+const ICONS = {
+  // General
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  activity: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  
+  // Dimensions
+  bio: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>', 
+  structure: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+  social: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+  identity: '<path d="M12 2a10 10 0 1 0 10 10 0.5 0.5 0 0 1-0.5-0.5V2"/>',
+  growth: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  meaning: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+
+  // Skills
+  water: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+  breath: '<path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>',
+  movement: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+  nap: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  stretch: '<circle cx="12" cy="5" r="1"/><path d="M9 20l-1-8 2-3 2 3-1 8"/><path d="M6 8l4 2 3-2 3 2 4-2"/>',
+  snack: '<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>',
+  sun: '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+  cleanup: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  message: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  listen: '<path d="M2 12a10 10 0 0 1 10-10 10 10 0 0 1 10 10v8a2 2 0 0 1-2 2h-4v-8h6"/><path d="M2 14h6v8H4a2 2 0 0 1-2-2v-6z"/>',
+  heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  trophy: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  microscope: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  bulb: '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.9.93-1.54 1.86-1.54.96 0 1.74.8 1.8 1.76.08 1.1-.9 2.1-2.01 2.1H7.26c-1.11 0-2.09-1-2.01-2.1.06-.96.84-1.76 1.8-1.76.93 0 1.68.64 1.86 1.54"/>',
+  gratitude: '<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
+  mail: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+  
+  // Badges
+  rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.48-.56.18-1.48.5-1.99A7 7 0 0 0 12 9c0 0 8.75 8.5 8.5 8.75 4-4 .25-8.5.25-8.5a7 7 0 0 0-3.5-3.5c-.5-.32-1.43-.02-1.99.5-1.5 1.25-2 5-2 5z"/>',
+  fire: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.1.2-2.2.6-3.3.3.4.6.7.9 1.8z"/>',
+  zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  gem: '<polygon points="6 3 18 3 22 9 12 22 2 9 6 3"/>',
+  star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  dna: '<path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/><path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/><path d="M17 12c-5.667 4-11.333-2-17 2"/><path d="M17 12c4.762-3.387 8.51-4.226 11.244-2.518"/>',
+  message_circle: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  award: '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>'
+};
+
+function getIcon(name, size = '') {
+  const path = ICONS[name] || ICONS.activity;
+  return `<svg class="icon ${size}" viewBox="0 0 24 24">${path}</svg>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA CONSTANTS (Deep Science Edition)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const HOME_IMPULSES = [
+  "System Ready. Awaiting Input.",
+  "Biologische Synchronisation.",
+  "Homeostase wird justiert.",
+  "Mikro-Intervention: Bereit.",
+  "Reguliere Genexpression.",
+  "Abstimmung: Physiologie.",
+  "Sende Signal an Zellen.",
+  "Wähle den Impuls.",
+  "Optimiere neuronalen Status.",
+  "Resonanz prüfen."
+];
+
+const DIMENSIONS = [
+  { id: 0, name: 'Biologie', icon: 'bio', category: 'PHYSIOLOGIE' },
+  { id: 1, name: 'Struktur', icon: 'structure', category: 'SICHERHEIT' },
+  { id: 2, name: 'Soziales', icon: 'social', category: 'BINDUNG' },
+  { id: 3, name: 'Identität', icon: 'identity', category: 'STATUS' },
+  { id: 4, name: 'Entwicklung', icon: 'growth', category: 'KOGNITION' },
+  { id: 5, name: 'Bedeutung', icon: 'meaning', category: 'TRANSZENDENZ' }
+];
+
+const SKILLS = {
+  dim0: [ 
+    { 
+      id: 'water', 
+      icon: 'water', 
+      name: 'Hydration', 
+      desc: 'Zellulärer Turgor', 
+      time: '2 Min', 
+      validTime: 'any', 
+      epigenetic: 'Aquaporin-Genexpression', 
+      category: 'Körper', 
+      qualia: ['Klarer', 'Wacher', 'Reaktiver'], 
+      why: 'Dehydration von nur 1-2% reduziert die kognitive Leistung signifikant. Wasseraufnahme moduliert die Expression von Aquaporin-Genen, was die intrazelluläre Kommunikation und den Abtransport von Stoffwechselprodukten beschleunigt.', 
+      how: 'Trinke ein großes Glas Wasser (300-500ml). Achte auf die physische Empfindung der Kühle im Ösophagus als Signal an den Vagusnerv.' 
+    },
+    { 
+      id: 'breath', 
+      icon: 'breath', 
+      name: 'Physiologischer Seufzer', 
+      desc: 'CO2-Abatmung', 
+      time: '90 Sek', 
+      validTime: 'any', 
+      epigenetic: 'Stress-Achsen-Downregulation', 
+      category: 'Körper', 
+      qualia: ['Ruhiger', 'Zentrierter', 'Präsenter'], 
+      why: 'Doppeltes Einatmen öffnet kollabierte Lungenbläschen (Alveolen). Das lange Ausatmen maximiert die CO2-Abgabe, aktiviert den Parasympathikus sofort und senkt die Herzfrequenzvariabilität (HRV) in den kohärenten Bereich.', 
+      how: '2x kurz durch die Nase einatmen (ohne auszuatmen). Dann 1x lang und langsam durch den Mund ausatmen. Wiederhole dies 5-10 Mal.' 
+    },
+    { 
+      id: 'move', 
+      icon: 'movement', 
+      name: 'Optischer Fluss', 
+      desc: 'Amygdala-Beruhigung', 
+      time: '10 Min', 
+      validTime: 'day', 
+      epigenetic: 'BDNF- & Myokin-Ausschüttung', 
+      category: 'Körper', 
+      qualia: ['Lebendiger', 'Klarer', 'Weicher'], 
+      why: 'Vorwärtsbewegung erzeugt "optischen Fluss" auf der Netzhaut, was neuronale Schaltkreise aktiviert, die die Amygdala (Angstzentrum) hemmen. Muskelaktivität setzt Myokine frei, die systemische Entzündungen reduzieren.', 
+      how: 'Gehe 10 Minuten spazieren. Fokussiere dich nicht auf das Handy, sondern lass die Umgebung visuell an dir vorbeiziehen (Panoramablick).' 
+    },
+    { 
+      id: 'nap', 
+      icon: 'nap', 
+      name: 'NSDR Protocol', 
+      desc: 'Adenosin-Clearance', 
+      time: '10 Min', 
+      validTime: 'day', 
+      epigenetic: 'Dopamin-Rezeptor-Sensitivität', 
+      category: 'Körper', 
+      qualia: ['Regeneriert', 'Frischer', 'Reset'], 
+      why: 'Non-Sleep Deep Rest (NSDR) simuliert Tiefschlaf-Gehirnwellen, beschleunigt den Abbau von Adenosin (Müdigkeitsmolekül) und stellt die Dopamin-Reserven im Striatum wieder her.', 
+      how: 'Lege dich flach hin. Schließe die Augen. Scanne deinen Körper mental von den Füßen zum Kopf. Keine Bewegung, reiner sensorischer Input.' 
+    },
+    { 
+      id: 'stretch', 
+      icon: 'stretch', 
+      name: 'Faszien-Release', 
+      desc: 'Interozeption', 
+      time: '5 Min', 
+      validTime: 'any', 
+      epigenetic: 'Mechanotransduktion', 
+      category: 'Körper', 
+      qualia: ['Gelockert', 'Freier', 'Durchlässiger'], 
+      why: 'Mechanische Dehnung signalisiert Fibroblasten, die extrazelluläre Matrix umzubauen (Mechanotransduktion). Dies verbessert die Propriozeption und senkt den Sympathikotonus.', 
+      how: 'Wähle eine verspannte Stelle. Dehne sanft für 60 Sekunden. Atme tief in den Widerstand hinein, um den Dehnreflex zu überwinden.' 
+    },
+    { 
+      id: 'sun', 
+      icon: 'sun', 
+      name: 'Photonen-Input', 
+      desc: 'SCN-Aktivierung', 
+      time: '5 Min', 
+      validTime: 'morning', 
+      epigenetic: 'Circadiane Clock-Gene (PER/CRY)', 
+      category: 'Körper', 
+      qualia: ['Wacher', 'Ausgerichteter', 'Synchron'], 
+      why: 'Blaues Licht auf der Netzhaut (Melanopsin-Zellen) signalisiert dem Suprachiasmatischen Nucleus (SCN), den Cortisol-Peak für den Tag zu setzen. Dies ist der wichtigste Zeitgeber für alle Organuhren.', 
+      how: 'Gehe vor 10:00 Uhr raus. Schau Richtung Himmel (nicht direkt in die Sonne), ohne Sonnenbrille, für 5-10 Minuten.' 
+    }
+  ],
+  dim1: [
+    { 
+      id: 'cleanup', 
+      icon: 'cleanup', 
+      name: 'Visuelle Reduktion', 
+      desc: 'Kognitive Entlastung', 
+      time: '10 Min', 
+      validTime: 'any', 
+      epigenetic: 'Cortisol-Modulation', 
+      category: 'Umfeld', 
+      qualia: ['Klarer', 'Ruhiger', 'Kontrollierter'], 
+      why: 'Das Gehirn verarbeitet Unordnung als konstanten, ungelösten visuellen Reiz, was kognitive Ressourcen bindet und den Cortisolspiegel chronisch erhöht. Ordnung reduziert diese neuronale Hintergrundlast.', 
+      how: 'Wähle EINE sichtbare Oberfläche (Schreibtisch, Küchentheke). Entferne alles, was dort nicht hingehört. Nichts sortieren, nur entfernen.' 
+    },
+    { 
+      id: 'top3', 
+      icon: 'list', 
+      name: 'Prioritäts-Filter', 
+      desc: 'Exekutive Funktionen', 
+      time: '5 Min', 
+      validTime: 'morning', 
+      epigenetic: 'Präfrontale Effizienz', 
+      category: 'Umfeld', 
+      qualia: ['Fokussierter', 'Klarer', 'Zielgerichtet'], 
+      why: 'Entscheidungsmüdigkeit (Decision Fatigue) entsteht durch zu viele Optionen. Das Festlegen von max. 3 Zielen entlastet das Arbeitsgedächtnis und schützt die Glukose-Reserven des präfrontalen Cortex.', 
+      how: 'Identifiziere die 3 Aufgaben, die heute den größten Impact haben. Schreibe sie analog auf. Alles andere ist heute optional.' 
+    },
+    { 
+      id: 'calendar', 
+      icon: 'calendar', 
+      name: 'Zeit-Blocking', 
+      desc: 'Arbeitsgedächtnis-Externalisierung', 
+      time: '5 Min', 
+      validTime: 'any', 
+      epigenetic: 'Stress-Antizipations-Senkung', 
+      category: 'Umfeld', 
+      qualia: ['Organisierter', 'Freier', 'Sicher'], 
+      why: 'Ungewissheit über den Zeitablauf triggert das Angstzentrum. Durch das "Parken" von Aufgaben im Kalender (Time Boxing) schließt das Gehirn "offene Loops" (Zeigarnik-Effekt).', 
+      how: 'Blocke feste Zeiten für deine Top-3 Aufgaben im Kalender. Behandle diese Blöcke wie unverschiebbare Arzttermine.' 
+    }
+  ],
+  dim2: [
+    { 
+      id: 'message', 
+      icon: 'message', 
+      name: 'Mikro-Connection', 
+      desc: 'Oxytocin-Puls', 
+      time: '2 Min', 
+      validTime: 'any', 
+      epigenetic: 'Soziale Pufferung', 
+      category: 'Beziehungen', 
+      qualia: ['Verbundener', 'Wärmer', 'Menschlich'], 
+      why: 'Positive soziale Interaktion, selbst digital, löst Oxytocin aus. Oxytocin dämpft die Amygdala-Reaktivität und fördert physiologische Regeneration (Vagusnerv-Aktivierung).', 
+      how: 'Sende einer Person eine Nachricht der Wertschätzung oder einfach ein ehrliches "Ich denke an dich". Erwarte keine Antwort.' 
+    },
+    { 
+      id: 'listen', 
+      icon: 'listen', 
+      name: 'Resonantes Zuhören', 
+      desc: 'Neuronale Synchronisation', 
+      time: '10 Min', 
+      validTime: 'any', 
+      epigenetic: 'Spiegelneuronen-Aktivität', 
+      category: 'Beziehungen', 
+      qualia: ['Präsenter', 'Verbundener', 'Still'], 
+      why: 'Tiefes Zuhören ohne die Absicht zu antworten synchronisiert die Gehirnwellen von Sprecher und Zuhörer (Neural Coupling). Dies stärkt Vertrauen auf biologischer Ebene.', 
+      how: 'Höre jemandem 5-10 Minuten zu. Stelle nur Verständnisfragen. Gib keine Ratschläge. Achte auf den Tonfall (Prosodie).' 
+    }
+  ],
+  dim3: [
+    { 
+      id: 'wins', 
+      icon: 'trophy', 
+      name: 'Dopamin-Accounting', 
+      desc: 'Belohnungspfad-Reinforcement', 
+      time: '2 Min', 
+      validTime: 'evening', 
+      epigenetic: 'Neuroplastizität (LTP)', 
+      category: 'Selbst', 
+      qualia: ['Stolzer', 'Stärker', 'Wirksamer'], 
+      why: 'Das Gehirn speichert negative Ereignisse stärker ab (Negativity Bias). Das bewusste Abrufen von Erfolgen stärkt synaptische Verbindungen im Belohnungssystem und erhöht die Selbstwirksamkeitserwartung.', 
+      how: 'Notiere 3 kleine Siege des Tages. Spüre kurz den Erfolgssinn nach, um das Ereignis emotional (und damit biochemisch) zu verankern.' 
+    },
+    { 
+      id: 'pause', 
+      icon: 'pause', 
+      name: 'Default Mode Network', 
+      desc: 'Kreative Inkubation', 
+      time: '5 Min', 
+      validTime: 'any', 
+      epigenetic: 'Homöostase', 
+      category: 'Selbst', 
+      qualia: ['Erlaubter', 'Ruhiger', 'Leer'], 
+      why: 'Pausen ohne Input aktivieren das Default Mode Network (DMN), das für Kreativität, Selbstreflexion und langfristige Planung zuständig ist. Dauerbeschallung unterdrückt diesen wichtigen Modus.', 
+      how: 'Setze dich hin. Tue nichts. Kein Handy, kein Buch, keine Musik. Starre aus dem Fenster oder an die Wand. Halte die Langeweile aus.' 
+    }
+  ],
+  dim4: [
+    { 
+      id: 'learn', 
+      icon: 'book', 
+      name: 'Neuroplastische Trigger', 
+      desc: 'Acetylcholin-Fokus', 
+      time: '15 Min', 
+      validTime: 'any', 
+      epigenetic: 'BDNF-Promoter-Aktivierung', 
+      category: 'Wachstum', 
+      qualia: ['Wachsender', 'Neugieriger', 'Schärfer'], 
+      why: 'Fokussierte Aufmerksamkeit erhöht Acetylcholin. Fehler beim Lernen erhöhen Noradrenalin. Diese chemische Kombination markiert Synapsen für Veränderung (Neuroplastizität), die im Schlaf konsolidiert wird.', 
+      how: 'Lerne oder übe etwas intensiv für 15 Minuten. Es muss leicht frustrierend/schwierig sein, damit das Gehirn den Reiz zur Anpassung erhält.' 
+    },
+    { 
+      id: 'experiment', 
+      icon: 'microscope', 
+      name: 'Novelty Exposure', 
+      desc: 'Explorations-Verhalten', 
+      time: '10 Min', 
+      validTime: 'any', 
+      epigenetic: 'Hippocampale Neurogenese', 
+      category: 'Wachstum', 
+      qualia: ['Lebendiger', 'Mutiger', 'Wach'], 
+      why: 'Neue Umgebungen oder Handlungen aktivieren den Locus Coeruleus und stimulieren die Bildung neuer Neuronen im Hippocampus. Routine lässt das Gehirn in den Energiesparmodus fallen.', 
+      how: 'Nimm einen neuen Weg, iss etwas Unbekanntes, schreibe mit der anderen Hand. Durchbrich ein festes Muster.' 
+    }
+  ],
+  dim5: [
+    { 
+      id: 'values', 
+      icon: 'meaning', 
+      name: 'Core Alignment', 
+      desc: 'Identitäts-Konsistenz', 
+      time: '10 Min', 
+      validTime: 'any', 
+      epigenetic: 'Psychoneuroimmunologie', 
+      category: 'Sinn', 
+      qualia: ['Ausgerichteter', 'Sinnvoller', 'Klar'], 
+      why: 'Handeln entgegen eigener Werte erzeugt kognitive Dissonanz, was physiologischen Stress bedeutet. Werte-Klarheit reduziert diesen Stress und stärkt das Immunsystem (eudiämonisches Wohlbefinden).', 
+      how: 'Definiere einen Kernwert (z.B. Freiheit, Wahrheit). Frage dich: Wo habe ich diesen Wert heute gelebt? Wo habe ich ihn verraten?' 
+    },
+    { 
+      id: 'letter', 
+      icon: 'mail', 
+      name: 'Future Self Connection', 
+      desc: 'Temporale Distanzierung', 
+      time: '5 Min', 
+      validTime: 'any', 
+      epigenetic: 'Telomer-Erhaltung', 
+      category: 'Sinn', 
+      qualia: ['Verbundener', 'Weiter', 'Hoffnungsvoll'], 
+      why: 'Sich mit dem eigenen zukünftigen Ich zu verbinden, aktiviert den medialen präfrontalen Cortex. Dies erhöht die Fähigkeit zum Belohnungsaufschub und fördert langfristig gesundes Verhalten.', 
+      how: 'Schreibe eine kurze Nachricht an dein Ich in 5 Jahren. Was soll es wissen? Wofür wird es dir danken? Sieh dein Leben aus der Vogelperspektive.' 
+    }
+  ]
+};
+
+const ONBOARDING_QUESTIONS = [
+  {
+    id: 'phase',
+    question: 'STATUS: LEBENSPHASE',
+    subtitle: 'Kalibrierung des Systems',
+    type: 'single',
+    options: [
+      { value: 'student', label: 'Student / Ausbildung' },
+      { value: 'early', label: 'Berufsstart (< 30)' },
+      { value: 'established', label: 'Etabliert (30-45)' },
+      { value: 'midlife', label: 'Mitte des Lebens (45-60)' },
+      { value: 'senior', label: 'Erfahren (60+)' }
+    ]
+  },
+  {
+    id: 'state',
+    question: 'SYSTEM ZUSTAND',
+    subtitle: 'Aktuelle Parameter',
+    type: 'multiple',
+    options: [
+      { value: 'exhausted', label: 'Erschöpft / Low Energy' },
+      { value: 'energized', label: 'Energiegeladen' },
+      { value: 'stressed', label: 'Hohe Stressbelastung' },
+      { value: 'calm', label: 'Ausgeglichen' },
+      { value: 'lonely', label: 'Isoliert' },
+      { value: 'connected', label: 'Verbunden' }
+    ]
+  }
+];
+
+const BADGES = [
+  { id: 'first_step', name: 'INITIATION', icon: 'rocket', desc: 'Erstes Skill', condition: (stats) => stats.total >= 1 },
+  { id: 'streak_3', name: 'MOMENTUM', icon: 'fire', desc: '3 Tage Streak', condition: (stats) => stats.streak >= 3 },
+  { id: 'streak_7', name: 'UNSTOPPABLE', icon: 'zap', desc: '7 Tage Streak', condition: (stats) => stats.streak >= 7 },
+  { id: 'bio_master', name: 'BIO-HACKER', icon: 'dna', desc: '10 Bio Skills', condition: (stats) => stats.bioCount >= 10 },
+  { id: 'social_master', name: 'CONNECTOR', icon: 'message_circle', desc: '10 Social Skills', condition: (stats) => stats.socialCount >= 10 },
+  { id: 'centurion', name: 'CENTURION', icon: 'award', desc: '100 Skills', condition: (stats) => stats.total >= 100 }
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CORE ENGINE
+// ═══════════════════════════════════════════════════════════════════════════
+
+let db = null;
+let state = {
+  view: 'viewWelcome',
+  level: 1,
+  xp: 0,
+  streak: 0,
+  lastLogin: null,
+  history: [], 
+  onboardingStep: 0,
+  onboardingAnswers: {},
+  currentSkill: null,
+  unlockedBadges: []
+};
+
+async function init() {
+  const SQL = await initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}` });
+  
+  const saved = localStorage.getItem('humaneed_v10_db');
+  if (saved) {
+    db = new SQL.Database(new Uint8Array(JSON.parse(saved)));
+  } else {
+    db = new SQL.Database();
+    db.run(`
+      CREATE TABLE IF NOT EXISTS progress (id INTEGER PRIMARY KEY, xp INTEGER, level INTEGER, streak INTEGER, last_login TEXT, has_profile INTEGER);
+      CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, skill_id TEXT, dim_id INTEGER, timestamp INTEGER);
+      CREATE TABLE IF NOT EXISTS badges (id TEXT PRIMARY KEY);
+      CREATE TABLE IF NOT EXISTS profile (key TEXT PRIMARY KEY, value TEXT);
+      INSERT INTO progress (id, xp, level, streak, last_login, has_profile) VALUES (1, 0, 1, 0, '', 0);
+    `);
+  }
+
+  loadState();
+  
+  // Route view based on profile
+  const hasProfile = db.exec("SELECT has_profile FROM progress WHERE id=1")[0].values[0][0];
+  if(hasProfile) {
+    navigate('viewHome');
+    renderHome();
+  } else {
+    navigate('viewWelcome');
+  }
+
+  updateProfileBtn();
+  checkBadges();
+}
+
+function saveDB() {
+  const data = db.export();
+  localStorage.setItem('humaneed_v10_db', JSON.stringify(Array.from(data)));
+  loadState();
+}
+
+function loadState() {
+  const prog = db.exec("SELECT xp, level, streak, last_login FROM progress WHERE id=1")[0].values[0];
+  state.xp = prog[0];
+  state.level = prog[1];
+  state.streak = prog[2];
+  state.lastLogin = prog[3];
+
+  // Load history
+  try {
+    const hist = db.exec("SELECT timestamp, skill_id, dim_id FROM history ORDER BY timestamp DESC LIMIT 200");
+    if (hist.length > 0) {
+      state.history = hist[0].values.map(r => ({ ts: r[0], skillId: r[1], dimId: r[2] }));
+    } else {
+      state.history = [];
+    }
+  } catch(e) { state.history = []; }
+  
+  // Load badges
+  try {
+    const bdgs = db.exec("SELECT id FROM badges");
+    state.unlockedBadges = bdgs.length > 0 ? bdgs[0].values.map(r => r[0]) : [];
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UI RENDERING
+// ═══════════════════════════════════════════════════════════════════════════
+
+function renderHome() {
+  // Update Header Impulse
+  document.getElementById('dailyImpulse').textContent = HOME_IMPULSES[Math.floor(Math.random() * HOME_IMPULSES.length)];
+
+  // XP Bar
+  const xpInLevel = state.xp % 100;
+  document.getElementById('homeXpFill').style.width = `${xpInLevel}%`;
+  document.getElementById('homeXpText').textContent = `LEVEL ${state.level} // ${state.xp} XP`;
+  
+  // Streak
+  document.getElementById('streakDisplay').textContent = `STREAK: ${state.streak}`;
+
+  // Dimensions
+  const grid = document.getElementById('dimGrid');
+  grid.innerHTML = DIMENSIONS.map(dim => {
+    // Count history for this dim
+    const count = state.history.filter(h => h.dimId === dim.id).length;
+    const progress = Math.min(100, (count % 10) * 10);
+    
+    // Check if critical (simplified logic based on history)
+    // In a real app, this would use the profile data + last skill time
+    let cssClass = '';
+    if (count < 2) cssClass = 'critical';
+    else if (count < 5) cssClass = 'low';
+
+    return `
+      <div class="dim-card ${cssClass}" onclick="openDimension(${dim.id})">
+        <div class="dim-header">
+          <div class="dim-icon">${getIcon(dim.icon)}</div>
+          <div style="text-align: right;">
+            <div style="font-family: var(--font-tech); font-size: 0.6rem; color: var(--c-steel-dim);">${dim.category}</div>
+            <div class="dim-name">${dim.name}</div>
+          </div>
+        </div>
+        <div>
+          <div class="dim-progress-track">
+            <div class="dim-progress-fill" style="width: ${progress}%"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Algorithm Recommendation
+  renderSmartRecommendation();
+
+  // Heatmap
+  const heatmap = document.getElementById('heatmap');
+  heatmap.innerHTML = '';
+  const now = new Date();
+  for(let i=19; i>=0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toDateString();
+    // Check if active on this date
+    const active = state.history.some(h => new Date(h.ts).toDateString() === dateStr);
+    
+    heatmap.innerHTML += `<div style="width: 100%; padding-top: 100%; background: ${active ? 'var(--c-amber)' : 'rgba(255,255,255,0.05)'}; border-radius: 1px; opacity: ${active ? 1 : 0.3}"></div>`;
+  }
+  
+  // Algo Widget
+  renderAlgoWidget();
+}
+
+function renderSmartRecommendation() {
+  // Simple "Smart" logic: Pick a skill from the least used dimension, matching time of day
+  const hour = new Date().getHours();
+  let timeContext = 'any';
+  if (hour < 10) timeContext = 'morning';
+  else if (hour > 19) timeContext = 'evening';
+  else timeContext = 'day';
+
+  // Find dim with least history
+  const dimCounts = [0,0,0,0,0,0];
+  state.history.forEach(h => dimCounts[h.dimId]++);
+  const minDim = dimCounts.indexOf(Math.min(...dimCounts));
+  
+  // Find skill in that dim matching time
+  let skills = SKILLS[`dim${minDim}`];
+  let skill = skills.find(s => s.validTime === timeContext || s.validTime === 'any');
+  if(!skill) skill = skills[0]; // Fallback
+
+  document.getElementById('recContainer').innerHTML = `
+    <div class="hud-card" onclick="openSkill('${skill.id}', ${minDim})">
+      <div class="hud-label">
+        <span>SYSTEM EMPFEHLUNG</span>
+        <span>${timeContext.toUpperCase()}</span>
+      </div>
+      <div class="rec-content">
+        <div class="rec-icon-box" style="border-color: var(--c-amber); color: var(--c-amber);">
+          ${getIcon(skill.icon)}
+        </div>
+        <div class="rec-info">
+          <div class="rec-title">${skill.name}</div>
+          <div class="rec-meta">${skill.time} // ${DIMENSIONS[minDim].category}</div>
+          <div class="rec-reason">${skill.why}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAlgoWidget() {
+  const qualia = JSON.parse(localStorage.getItem('humaneed_qualia') || '[]');
+  if(qualia.length < 3) return;
+
+  const widget = document.getElementById('algoWidget');
+  const list = document.getElementById('algoList');
+  widget.style.display = 'block';
+  
+  // Analyze last 3 qualia
+  const recent = qualia.slice(-3).reverse();
+  list.innerHTML = recent.map(q => `
+    <div class="algo-item">
+      <div class="algo-time">${new Date(q.ts).getHours()}:00</div>
+      <div class="algo-text">
+        <span style="color:var(--c-amber)">${q.skill}</span> → ${q.val}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ONBOARDING FLOW
+// ═══════════════════════════════════════════════════════════════════════════
+
+function startOnboarding() {
+  state.onboardingStep = 0;
+  state.onboardingAnswers = {};
+  navigate('viewOnboarding');
+  renderOnboardingQuestion();
+}
+
+function renderOnboardingQuestion() {
+  const container = document.getElementById('onboardingContainer');
+  const q = ONBOARDING_QUESTIONS[state.onboardingStep];
+
+  if (!q) {
+    finishOnboarding();
+    return;
+  }
+
+  const optionsHTML = q.options.map(opt => {
+    const selected = (state.onboardingAnswers[q.id] || []).includes(opt.value);
+    return `
+      <div class="onboarding-option ${selected ? 'selected' : ''}" 
+           onclick="selectOption('${q.id}', '${opt.value}', '${q.type}')">
+        <div style="display:flex; align-items:center;">
+          <div class="onboarding-checkbox">${selected ? getIcon('check', 'icon-sm') : ''}</div>
+          <span>${opt.label}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <h1 style="font-size: 1.2rem; margin-bottom: 0.5rem;">${q.question}</h1>
+    <p class="sub">${q.subtitle}</p>
+    <div style="margin-bottom: 2rem;">${optionsHTML}</div>
+    <button class="btn btn-primary" onclick="nextQuestion()">
+      ${state.onboardingStep === ONBOARDING_QUESTIONS.length - 1 ? 'SYSTEM INITIALISIEREN' : 'WEITER'}
+    </button>
+  `;
+}
+
+function selectOption(qid, val, type) {
+  if (!state.onboardingAnswers[qid]) state.onboardingAnswers[qid] = [];
+  
+  if (type === 'single') {
+    state.onboardingAnswers[qid] = [val];
+  } else {
+    if (state.onboardingAnswers[qid].includes(val)) {
+      state.onboardingAnswers[qid] = state.onboardingAnswers[qid].filter(v => v !== val);
+    } else {
+      state.onboardingAnswers[qid].push(val);
+    }
+  }
+  renderOnboardingQuestion();
+}
+
+function nextQuestion() {
+  state.onboardingStep++;
+  renderOnboardingQuestion();
+}
+
+function finishOnboarding() {
+  // Save profile
+  db.run("UPDATE progress SET has_profile = 1 WHERE id=1");
+  Object.keys(state.onboardingAnswers).forEach(key => {
+    const val = JSON.stringify(state.onboardingAnswers[key]);
+    db.run(`INSERT OR REPLACE INTO profile (key, value) VALUES ('${key}', '${val}')`);
+  });
+  saveDB();
+  navigate('viewHome');
+  renderHome();
+  updateProfileBtn();
+}
+
+function skipOnboarding() {
+  db.run("UPDATE progress SET has_profile = 0 WHERE id=1");
+  saveDB();
+  navigate('viewHome');
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SKILL & DIMENSION LOGIC
+// ═══════════════════════════════════════════════════════════════════════════
+
+function openDimension(dimId) {
+  const dim = DIMENSIONS[dimId];
+  document.getElementById('dimTitle').textContent = dim.name;
+  document.getElementById('dimDesc').textContent = `Subsystem: ${dim.category}`;
+  
+  const skills = SKILLS[`dim${dimId}`];
+  const list = document.getElementById('skillList');
+  
+  list.innerHTML = skills.map(skill => {
+    // Check if completed today
+    const doneToday = state.history.some(h => 
+      h.skillId === skill.id && 
+      new Date(h.ts).toDateString() === new Date().toDateString()
+    );
+
+    return `
+      <div class="skill-row ${doneToday ? 'completed' : ''}" onclick="openSkill('${skill.id}', ${dimId})">
+        <div class="skill-icon-wrap">${getIcon(skill.icon)}</div>
+        <div class="skill-content">
+          <div class="skill-name">${skill.name}</div>
+          <div class="skill-meta">${skill.time} // ${skill.desc}</div>
+        </div>
+        <div>${doneToday ? getIcon('check', 'icon-sm') : getIcon('activity', 'icon-sm')}</div>
+      </div>
+    `;
+  }).join('');
+
+  navigate('viewDimension');
+}
+
+function openSkill(skillId, dimId) {
+  const skill = SKILLS[`dim${dimId}`].find(s => s.id === skillId);
+  state.currentSkill = { ...skill, dimId };
+
+  document.getElementById('sheetIcon').innerHTML = getIcon(skill.icon);
+  document.getElementById('sheetTitle').textContent = skill.name;
+  document.getElementById('sheetMeta').textContent = `${skill.time} // ${skill.desc.toUpperCase()}`;
+  
+  document.getElementById('sheetContent').innerHTML = `
+    ${skill.epigenetic ? `<div style="border: 1px solid var(--c-steel-dim); border-radius: 4px; padding: 12px; margin-bottom: 1.5rem;"><span class="section-label" style="color:var(--c-signal)">🧬 ${skill.epigenetic}</span></div>` : ''}
+    
+    <span class="section-label">Mechanismus</span>
+    <p class="section-text">${skill.why}</p>
+    <span class="section-label">Protokoll</span>
+    <p class="section-text">${skill.how}</p>
+  `;
+
+  document.getElementById('skillOverlay').classList.add('active');
+}
+
+function completeCurrentSkill() {
+  if(!state.currentSkill) return;
+
+  // Haptics
+  if (navigator.vibrate) navigator.vibrate([40, 20, 40]);
+  spawnConfetti();
+
+  // DB Update
+  const timestamp = Date.now();
+  db.run("INSERT INTO history (skill_id, dim_id, timestamp) VALUES (?, ?, ?)", [state.currentSkill.id, state.currentSkill.dimId, timestamp]);
+  
+  // Streak Logic
+  const today = new Date().toDateString();
+  if (state.lastLogin !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (state.lastLogin === yesterday.toDateString()) {
+      state.streak++;
+    } else {
+      state.streak = 1;
+    }
+    db.run(`UPDATE progress SET streak = ${state.streak}, last_login = '${today}' WHERE id=1`);
+  }
+
+  // XP & Level
+  db.run("UPDATE progress SET xp = xp + 10 WHERE id=1");
+  const newXp = state.xp + 10;
+  const newLevel = Math.floor(newXp / 100) + 1;
+  if (newLevel > state.level) {
+    db.run(`UPDATE progress SET level = ${newLevel} WHERE id=1`);
+    showToast(`LEVEL UP: ${newLevel}`);
+  } else {
+    showToast("SYNC COMPLETE: +10 XP");
+  }
+
+  saveDB();
+  closeSheet();
+  checkBadges();
+
+  // Show Resonance Check if qualia avail
+  if(state.currentSkill.qualia) {
+    setTimeout(() => openResonance(state.currentSkill), 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BADGES & PROFILE
+// ═══════════════════════════════════════════════════════════════════════════
+
+function checkBadges() {
+  // Calculate Stats
+  const bioCount = state.history.filter(h => h.dimId === 0).length;
+  const socialCount = state.history.filter(h => h.dimId === 2).length;
+  const total = state.history.length;
+  
+  const stats = { bioCount, socialCount, total, streak: state.streak };
+  
+  let newBadges = false;
+  BADGES.forEach(b => {
+    if (!state.unlockedBadges.includes(b.id) && b.condition(stats)) {
+      state.unlockedBadges.push(b.id);
+      db.run(`INSERT INTO badges (id) VALUES ('${b.id}')`);
+      showToast(`BADGE ACQUIRED: ${b.name}`);
+      newBadges = true;
+    }
+  });
+  
+  if(newBadges) saveDB();
+}
+
+function openProfile() {
+  // Render Badges
+  document.getElementById('badgeGrid').innerHTML = BADGES.map(b => {
+    const unlocked = state.unlockedBadges.includes(b.id);
+    return `
+      <div class="badge ${unlocked ? 'unlocked' : ''}" title="${b.desc}">
+        <div class="badge-icon">${getIcon(b.icon)}</div>
+      </div>
+    `;
+  }).join('');
+  
+  // Render Stats
+  const hasProfile = db.exec("SELECT has_profile FROM progress WHERE id=1")[0].values[0][0];
+  document.getElementById('profileData').innerHTML = `
+    <div style="margin-bottom: 8px; font-size: 0.85rem; color: #ccc;">LEVEL: <span style="color:var(--c-amber)">${state.level}</span></div>
+    <div style="margin-bottom: 8px; font-size: 0.85rem; color: #ccc;">TOTAL CYCLES: <span style="color:var(--c-amber)">${state.history.length}</span></div>
+    <div style="font-size: 0.85rem; color: #ccc;">PROFILE: <span style="color:var(--c-amber)">${hasProfile ? 'ACTIVE' : 'INACTIVE'}</span></div>
+  `;
+
+  navigate('viewProfile');
+}
+
+function updateProfileBtn() {
+  const hasProfile = db.exec("SELECT has_profile FROM progress WHERE id=1")[0].values[0][0];
+  const btn = document.getElementById('profileBtn');
+  if(hasProfile) btn.classList.add('has-profile');
+  else btn.classList.remove('has-profile');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESONANCE / QUALIA
+// ═══════════════════════════════════════════════════════════════════════════
+
+function openResonance(skill) {
+  document.getElementById('resIcon').innerHTML = getIcon(skill.icon, 'icon-lg');
+  const grid = document.getElementById('qualiaGrid');
+  
+  grid.innerHTML = skill.qualia.map(opt => `
+    <button class="qualia-btn" onclick="logQualia('${skill.name}', '${opt}')">${opt}</button>
+  `).join('');
+
+  document.getElementById('resonanceOverlay').classList.add('active');
+}
+
+function logQualia(skillName, val) {
+  const entry = { ts: Date.now(), skill: skillName, val: val };
+  const history = JSON.parse(localStorage.getItem('humaneed_qualia') || '[]');
+  history.push(entry);
+  localStorage.setItem('humaneed_qualia', JSON.stringify(history));
+  
+  closeResonance();
+  showToast("DATEN GESPEICHERT");
+  renderAlgoWidget(); // Update immediately
+}
+
+function closeResonance() {
+  document.getElementById('resonanceOverlay').classList.remove('active');
+  // Only nav home if not already there (technically overlay sits on top)
+  if(state.view !== 'viewHome') goHome();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════════
+
+function navigate(viewId) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  state.view = viewId;
+  window.scrollTo(0,0);
+}
+
+function goHome() {
+  renderHome();
+  navigate('viewHome');
+}
+
+function closeSheet(e) {
+  document.getElementById('skillOverlay').classList.remove('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = 1;
+  setTimeout(() => t.style.opacity = 0, 2500);
+}
+
+function resetData() {
+  if(confirm('System Reset?')) {
+    localStorage.removeItem('humaneed_v10_db');
+    localStorage.removeItem('humaneed_qualia');
+    location.reload();
+  }
+}
+
+// Confetti
+function spawnConfetti() {
+  const canvas = document.getElementById('confetti');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = Array.from({length: 40}, () => ({
+    x: window.innerWidth / 2, y: window.innerHeight / 2,
+    vx: (Math.random() - 0.5) * 10, vy: (Math.random() - 0.5) * 10 - 2,
+    life: 1.0, color: '#d4a574'
+  }));
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.life > 0) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life -= 0.02;
+        ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
+        alive = true;
+      }
+    });
+    if (alive) requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+init();
+
+</script>
 </body>
 </html>
