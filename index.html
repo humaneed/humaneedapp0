@@ -1,838 +1,981 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>HUMANEED — Engine Demo</title>
-  <style>
-    :root{
-      --metal-void:#0a0b0d; --metal-dark:#111315; --metal-base:#17191c; --metal-light:#1e2024;
-      --teal:#2dd4bf; --amber:#fbbf24; --green:#34d399;
-      --text:#e2e6e4; --muted:#6e8280; --dim:#454a52;
-      --hair:rgba(45,212,191,0.12);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--metal-void);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    .wrap{max-width:520px;margin:0 auto;min-height:100%}
-    header{
-      position:sticky;top:0;z-index:10;
-      background:linear-gradient(180deg,var(--metal-base),var(--metal-dark));
-      border-bottom:1px solid var(--hair);
-      padding:14px 14px 12px;
-      display:flex;justify-content:space-between;align-items:center;
-      box-shadow:0 10px 40px rgba(0,0,0,.45);
-    }
-    .brand{letter-spacing:4px;font-weight:300;text-transform:uppercase;font-size:13px;border:0;background:none;color:var(--text);cursor:pointer}
-    .actions{display:flex;gap:10px}
-    .icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--hair);background:linear-gradient(135deg,var(--metal-base),var(--metal-dark));color:var(--text);cursor:pointer}
-    main{padding:16px 14px 40px}
-    .eyebrow{font-size:11px;letter-spacing:4px;font-weight:800;text-transform:uppercase;color:var(--muted)}
-    .sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:4px}
-    .card{
-      margin-top:14px;
-      background:var(--metal-dark);
-      border:1px solid rgba(45,212,191,.22);
-      border-radius:14px;
-      padding:16px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 18px 42px rgba(0,0,0,.5);
-    }
-    .labelrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
-    .label{
-      display:inline-flex;gap:8px;align-items:center;
-      font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
-      color:var(--muted);
-      border:1px solid rgba(45,212,191,.20);
-      background:rgba(45,212,191,.06);
-      padding:6px 10px;border-radius:8px;
-    }
-    .chip{
-      font-size:10px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;
-      color:rgba(45,212,191,1);
-      border:1px solid rgba(45,212,191,.22);
-      background:rgba(45,212,191,.05);
-      padding:6px 10px;border-radius:999px;
-    }
-    .title{display:flex;gap:10px;align-items:baseline;font-weight:900;font-size:18px;letter-spacing:-.01em;margin:4px 0 10px}
-    .mini{font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin:10px 0 8px}
-    .desc{color:var(--muted);font-size:13px;line-height:1.6}
-    ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.7}
-    li{margin:3px 0}
-    .alt{margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px;color:var(--dim);font-style:italic;font-size:12px}
-    .btn{
-      width:100%;margin-top:12px;padding:13px 14px;border:0;border-radius:999px;cursor:pointer;
-      font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#0a0b0d;
-      background:linear-gradient(180deg,#d4a055,#c49040);
-      box-shadow:0 10px 26px rgba(212,160,32,.28);
-    }
-    .btn2{
-      width:100%;margin-top:10px;padding:12px 14px;border-radius:999px;cursor:pointer;
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg,var(--metal-light),var(--metal-base));
-      color:var(--text);
-      font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;
-    }
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-    .gcard{
-      border:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(145deg,rgba(23,25,28,.92),rgba(17,19,21,.98));
-      border-radius:14px;padding:12px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 14px 32px rgba(0,0,0,.45);
-    }
-    .ghead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;gap:10px}
-    .gname{display:flex;gap:8px;align-items:center;font-weight:900;font-size:12px}
-    .gval{font-weight:900;font-size:12px;color:rgba(226,230,228,.92)}
-    .bar{height:6px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
-    .fill{height:100%;border-radius:999px}
-    .foot{display:flex;justify-content:space-between;margin-top:8px;font-size:10px;letter-spacing:.9px;text-transform:uppercase;color:var(--dim)}
-    .warn{color:rgba(251,191,36,.95)}
-    .pulse{animation:pulse 2.8s ease-in-out infinite;border-color:rgba(251,191,36,.35)}
-    @keyframes pulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HUMANEED - Biologische Abstimmung</title>
+    <meta name="description" content="HUMANEED – dein täglicher Kompass für biologische Balance. Tracke 6 Kerndimensionen: Körper, Emotionen, Kognition, Kompetenz, Bedeutung und Soziales.">
+    
+    <!-- PWA Meta-Tags (Statisch) -->
+    <meta name="theme-color" content="#070c11">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HUMANEED">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="HUMANEED">
+    <meta property="og:title" content="HUMANEED – Biologische Abstimmung">
 
-    .why{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.6}
-    .divider{height:1px;background:rgba(255,255,255,.06);margin:12px 0}
-    .row{display:flex;gap:10px}
-    .small{flex:1}
-    .input{
-      width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.22);color:var(--text);outline:none;
-    }
-    .hint{font-size:11px;color:var(--dim);margin-top:6px}
-    .sheet{
-      position:fixed;inset:0;background:rgba(0,0,0,.72);
-      display:none;align-items:flex-end;justify-content:center;z-index:99;
-      backdrop-filter:blur(10px);
-    }
-    .sheet.open{display:flex}
-    .panel{
-      width:100%;max-width:520px;
-      background:linear-gradient(180deg,var(--metal-base),var(--metal-dark));
-      border-top:1px solid rgba(45,212,191,.20);
-      border-radius:24px 24px 0 0;
-      padding:14px 14px 18px;
-      box-shadow:0 -18px 70px rgba(0,0,0,.75);
-      transform:translateY(0);
-    }
-    .handle{width:44px;height:4px;border-radius:999px;background:rgba(255,255,255,.15);margin:4px auto 12px}
-    .slabel{font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:rgba(45,212,191,1);margin-bottom:10px}
-    .qrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .qbtn{
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg,var(--metal-light),var(--metal-base));
-      border-radius:14px;padding:12px;cursor:pointer;color:var(--text);
-      font-weight:900;font-size:12px;letter-spacing:.6px;
-    }
-    .qbtn:active{transform:translateY(1px)}
-    @media (max-width:420px){.grid{grid-template-columns:1fr}}
-  </style>
+    <!-- PWA Manifest wird dynamisch per JS injiziert (Single-File-App) -->
+    <script>
+        (function injectManifest() {
+            const manifest = {
+                name: "HUMANEED - Biologische Abstimmung",
+                short_name: "HUMANEED",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#070c11",
+                theme_color: "#070c11",
+                icons: [{
+                    src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23151b2b'/%3E%3Ctext y='50%25' x='50%25' dominant-baseline='middle' text-anchor='middle' font-size='50' font-family='sans-serif' fill='%2338bdf8'%3EH%3C/text%3E%3C/svg%3E",
+                    sizes: "192x192",
+                    type: "image/svg+xml"
+                }]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestURL = URL.createObjectURL(blob);
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = manifestURL;
+            document.head.appendChild(link);
+        })();
+    </script>
+
+    <style>
+        /* --- CSS Variablen & Reset --- */
+        :root {
+            --bg-color: #070c11;
+            --card-bg: #151b2b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --sheet-bg: #1e293b;
+            --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+            --app-max-width: 600px; /* Für Desktop/Tablet Zentrierung */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* Verhindert Scrollen der ganzen Seite (App-Feeling) */
+            overscroll-behavior-y: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- Layout & Views --- */
+        .app-container {
+            width: 100%;
+            max-width: var(--app-max-width);
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Home View */
+        #viewHome {
+            padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: calc(80px + var(--safe-area-bottom));
+            z-index: 1;
+        }
+
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Grid für die 6 Dimensionen */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .card:active {
+            transform: scale(0.96);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 50%; /* Default */
+            border-radius: 4px;
+            transition: width 0.4s ease, background-color 0.4s ease;
+        }
+
+        /* --- Bottom Sheet --- */
+        #sheetBackdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #sheetBackdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sheet {
+            position: fixed; /* Fix für Desktop/Tablet Zentrierung */
+            top: auto;
+            bottom: 0;
+            left: 50%;
+            width: 100%;
+            max-width: var(--app-max-width);
+            height: auto;
+            max-height: 85vh;
+            background-color: var(--sheet-bg);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            z-index: 20;
+            /* Zentriert durch translateX und versteckt durch translateY */
+            transform: translateX(-50%) translateY(100%);
+            padding: 20px;
+            padding-bottom: calc(20px + var(--safe-area-bottom));
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+
+        .sheet.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 5px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 0 auto 20px auto;
+        }
+
+        .sheet-content {
+            text-align: center;
+        }
+
+        .sheet-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .sheet-title {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sheet-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        /* Custom Range Slider */
+        .slider-container {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .value-display {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .impuls-box {
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-left: 4px solid var(--accent);
+            min-height: 80px;
+        }
+
+        .impuls-box strong {
+            display: block;
+            color: var(--accent);
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .impuls-box p {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--text-main);
+        }
+
+        .btn-save {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        
+        .btn-save:active {
+            opacity: 0.8;
+        }
+
+        /* --- Skilltree & Toast CSS --- */
+        .btn-skilltree {
+            background-color: var(--card-bg);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .skilltree-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .skill-category {
+            margin-bottom: 25px;
+        }
+        
+        .skill-category h3 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .skill-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid #333;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .skill-card.unlocked {
+            opacity: 1;
+            filter: grayscale(0%);
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.05);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .skill-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+        }
+
+        .skill-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 100;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+        }
+
+        #toast.show {
+            bottom: max(30px, env(safe-area-inset-bottom));
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <button class="brand" id="homeBtn">HUMANEED</button>
-    <div class="actions">
-      <button class="icon" id="langBtn" title="Language"><span id="langBadge" style="font-weight:900;color:var(--teal);font-size:11px">DE</span></button>
-      <button class="icon" id="resetBtn" title="Reset">↺</button>
-      <button class="icon" id="whyBtnTop" title="Why">?</button>
-    </div>
-  </header>
 
-  <main id="app"></main>
+<div class="app-container">
+    <!-- Main View: Dashboard -->
+    <div id="viewHome" class="view active">
+        <header>
+            <h1>HUMANEED</h1>
+            <p>Biologische Abstimmung</p>
+        </header>
+
+        <div class="grid" id="dimensionGrid">
+            <!-- Cards werden per JS generiert -->
+        </div>
+
+        <!-- Skilltree Button -->
+        <button class="btn-skilltree" onclick="openSkilltree()">
+            <span>🌳</span> Fähigkeiten-Baum ansehen
+        </button>
+    </div>
+
+    <!-- Backdrop für Bottom Sheet -->
+    <div id="sheetBackdrop" onclick="goHome()"></div>
+
+    <!-- Bottom Sheet View (für Eingabe) -->
+    <div id="viewSheet" class="view sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-content">
+            <div id="sheetIcon" class="sheet-icon">🏃</div>
+            <h2 id="sheetTitle" class="sheet-title">Körper</h2>
+            <p id="sheetDesc" class="sheet-desc">Wie fühlst du dich physisch?</p>
+            
+            <div class="slider-container">
+                <div id="sheetValue" class="value-display">50</div>
+                <input type="range" id="levelSlider" min="0" max="100" value="50">
+            </div>
+
+            <!-- Die Impuls Box -->
+            <div id="impulsBox" class="impuls-box">
+                <strong>Dein Impuls</strong>
+                <p id="sheetImpuls">Bewege den Regler für einen passenden Impuls.</p>
+            </div>
+
+            <button class="btn-save" onclick="saveCurrentDimension()">Aktualisieren</button>
+        </div>
+    </div>
+
+    <!-- Skilltree View -->
+    <div id="viewSkilltree" class="view" style="padding: 20px; padding-top: max(20px, env(safe-area-inset-top)); padding-bottom: calc(40px + var(--safe-area-bottom)); background: var(--bg-color); transform: translateX(100%); z-index: 5;">
+        <div class="skilltree-header">
+            <button class="btn-back" onclick="closeSkilltree()">←</button>
+            <h2>Dein Skilltree</h2>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+            Balanciere deine biologischen Dimensionen, um neue Fähigkeiten und mächtige Synergien freizuschalten.
+        </p>
+        <div id="skilltreeContent">
+            <!-- Wird per JS befüllt -->
+        </div>
+    </div>
 </div>
 
-<!-- Qualia sheet -->
-<div class="sheet" id="sheet">
-  <div class="panel" role="dialog" aria-label="Qualia feedback">
-    <div class="handle"></div>
-    <div class="slabel" id="sheetTitle">RESONANZ</div>
-    <div class="desc" id="sheetPrompt">Wie hat sich das angefühlt?</div>
-    <div class="divider"></div>
-    <div class="qrow">
-      <button class="qbtn" data-q="3">😌 Gut</button>
-      <button class="qbtn" data-q="2">🙂 Okay</button>
-      <button class="qbtn" data-q="1">😕 Schwer</button>
-      <button class="qbtn" data-q="0">⛔ Abgebrochen</button>
+    <!-- Toast Notification (außerhalb Container für Overlay) -->
+    <div id="toast">
+        <span id="toastIcon">✨</span>
+        <span id="toastText">Fähigkeit freigeschaltet!</span>
     </div>
-    <button class="btn2" id="closeSheet">Schließen</button>
-  </div>
-</div>
-
-<script>
-(() => {
-  // =========================
-  // HUMANEED ENGINE (HTML)
-  // =========================
-  const STORE_KEY = "humaneed_engine_v1";
-
-  // --- Time/Decay
-  const BASELINE = 50;
-  const DECAY_HOURS = 8;
-
-  // --- Core signals + 6 dimensions (tiers)
-  const CORE_KEYS = ["energy","mood","focus","connection"];
-  const DIM_KEYS = ["biology","emotion","social","cognition","competence","meaning"];
-  const DIM_TIER = { biology:0, emotion:1, social:2, cognition:3, competence:4, meaning:5 };
-
-  const CORE_META = {
-    energy:{de:"Energie",en:"Energy",icon:"⚡",color:"rgba(251,191,36,1)"},
-    mood:{de:"Stimmung",en:"Mood",icon:"🌡️",color:"rgba(226,230,228,0.85)"},
-    focus:{de:"Fokus",en:"Focus",icon:"🎯",color:"rgba(45,212,191,1)"},
-    connection:{de:"Verbindung",en:"Connection",icon:"🤝",color:"rgba(52,211,153,1)"}
-  };
-
-  const I18N = {
-    de:{
-      headline:"TODAY'S MEANINGFUL STEP",
-      sub:"Biological Attunement Navigation",
-      primary:"PRIMARY ACTION CLUSTER",
-      protocol:"EXECUTION PROTOCOL",
-      alt:"ALT OPTION:",
-      complete:"MARK AS COMPLETE",
-      why:"WHY THIS TODAY?",
-      signals:"SIGNALS",
-      moment:"MOMENT READOUT",
-      diagnosis:"Diagnose",
-      signal:"Signal",
-      baseline:"baseline",
-      critical:"critical",
-      qualiaTitle:"RESONANZ",
-      qualiaPrompt:"Wie hat sich das angefühlt?",
-      close:"Schließen",
-      resetAsk:"Wirklich alles zurücksetzen?"
-    },
-    en:{
-      headline:"TODAY'S MEANINGFUL STEP",
-      sub:"Biological Attunement Navigation",
-      primary:"PRIMARY ACTION CLUSTER",
-      protocol:"EXECUTION PROTOCOL",
-      alt:"ALT OPTION:",
-      complete:"MARK AS COMPLETE",
-      why:"WHY THIS TODAY?",
-      signals:"SIGNALS",
-      moment:"MOMENT READOUT",
-      diagnosis:"Diagnosis",
-      signal:"Signal",
-      baseline:"baseline",
-      critical:"critical",
-      qualiaTitle:"RESONANCE",
-      qualiaPrompt:"How did that feel?",
-      close:"Close",
-      resetAsk:"Reset everything?"
-    }
-  };
-
-  // --- Skill Library (extend as you like)
-  // Effects: expected deltas to core + dimensions (small numbers)
-  // requirements: minimum base stability for tiered skills (synergy gating)
-  const SKILLS = [
-    {
-      id:"bio_water",
-      tier:"biology",
-      mins:2, emoji:"💧",
-      name:{de:"Wasser + Salz", en:"Water + pinch of salt"},
-      desc:{de:"Kurz stabilisieren, bevor du Leistung erwartest.", en:"Stabilize first before demanding performance."},
-      protocol:{de:["200–300ml Wasser","Optional: kleine Prise Salz","60 Sekunden ruhig atmen"], en:["200–300ml water","Optional: pinch of salt","60 seconds calm breathing"]},
-      alt:{de:"5x tiefes Einatmen am Fenster.", en:"5 deep breaths by a window."},
-      effects:{
-        core:{energy:+3, mood:+1, focus:+1, connection:0},
-        dims:{biology:+4}
-      },
-      tags:["hydration","reset"],
-      safety:{ note:{de:"Kein medizinischer Rat.", en:"Not medical advice."} }
-    },
-    {
-      id:"bio_walk10",
-      tier:"biology",
-      mins:10, emoji:"🚶",
-      name:{de:"10 Min Spaziergang", en:"10 min walk"},
-      desc:{de:"Bewegung senkt Stresslast und verbessert Regulation.", en:"Movement reduces stress load and improves regulation."},
-      protocol:{de:["Schuhe an","10 Min steady","Wasser danach"], en:["Shoes on","10 min steady","Water after"]},
-      alt:{de:"3 Min 4-7-8 Atmung.", en:"3 min 4-7-8 breathing."},
-      effects:{ core:{energy:-1, mood:+2, focus:+2, connection:0}, dims:{biology:+3, emotion:+1} },
-      tags:["movement","regulation"]
-    },
-    {
-      id:"emo_breath3",
-      tier:"emotion",
-      mins:3, emoji:"🌬️",
-      name:{de:"3 Min Downshift", en:"3 min downshift"},
-      desc:{de:"Parasympathischer Reset: Spannung runter.", en:"Parasympathetic reset: reduce tension."},
-      protocol:{de:["Nase ein 4","halten 2","aus 6","wiederholen"], en:["In 4","hold 2","out 6","repeat"]},
-      alt:{de:"30 Sek Schulter lösen.", en:"30 sec shoulder release."},
-      effects:{ core:{energy:+1, mood:+3, focus:+1, connection:0}, dims:{emotion:+4} },
-      tags:["calm","breath"]
-    },
-    {
-      id:"soc_call5",
-      tier:"social",
-      mins:5, emoji:"📞",
-      name:{de:"5 Min Kontakt", en:"5 min connection"},
-      desc:{de:"Kurzer Call/Text: Verbindung stabilisiert Systeme.", en:"A quick call/text stabilizes the system."},
-      protocol:{de:["1 Person wählen","5 Min ehrlicher Check-in","kurz bedanken"], en:["Choose 1 person","5 min honest check-in","thank them"]},
-      alt:{de:"Voice-Note senden.", en:"Send a voice note."},
-      effects:{ core:{energy:0, mood:+2, focus:+1, connection:+4}, dims:{social:+5, emotion:+1} },
-      tags:["connection"]
-    },
-    {
-      id:"cog_deep45",
-      tier:"cognition",
-      mins:45, emoji:"🎯",
-      name:{de:"Deep Work: Single Task", en:"Deep Work: single task"},
-      desc:{de:"Ein Fokusblock, ohne Tabs, ohne Split.", en:"One focused block: no tabs, no split."},
-      protocol:{de:["Desk clear","Phone silent","Timer 45","nur 1 Task"], en:["Clear desk","Silence phone","Timer 45","single task only"]},
-      alt:{de:"15 Min Mindful Walk.", en:"15 min mindful walk."},
-      effects:{ core:{energy:-4, mood:+1, focus:+5, connection:0}, dims:{cognition:+6} },
-      tags:["focus","work"],
-      requirements:{ minBiology:45 } // synergy gating
-    },
-    {
-      id:"mea_reflect7",
-      tier:"meaning",
-      mins:7, emoji:"🧭",
-      name:{de:"7 Min Richtung", en:"7 min direction"},
-      desc:{de:"Kurzschrift: Was zählt heute wirklich?", en:"Short writing: what truly matters today?" },
-      protocol:{de:["1 Satz: Ziel","1 Satz: warum","1 nächster Schritt"], en:["1 sentence: goal","1: why","1 next step"]},
-      alt:{de:"3 Min Notizen.", en:"3 min notes."},
-      effects:{ core:{energy:0, mood:+2, focus:+2, connection:0}, dims:{meaning:+6, cognition:+1} },
-      tags:["meaning"],
-      requirements:{ minBiology:50, minEmotion:45 }
-    }
-  ];
-
-  // --- Engine knobs (calm, non-gamified)
-  const ENGINE = {
-    // how much we care about deficits per dimension and signal
-    deficitWeight: 1.0,
-    // penalty for doing high-tier when base is low
-    synergyPenalty: 0.65,
-    // discourage repeating same skill too soon
-    cooldownHours: 12,
-    // exploration vs exploitation for learning
-    exploration: 0.20, // 0..1 (higher = more variety)
-    // how strongly qualia shifts personal preference
-    qualiaLearningRate: 0.22
-  };
-
-  // =========================
-  // State (Event Log)
-  // =========================
-  function now(){ return Date.now(); }
-  function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-  function lerp(a,b,t){ return a + (b-a)*t; }
-
-  function load(){
-    try{ return JSON.parse(localStorage.getItem(STORE_KEY)||"null"); }catch{ return null; }
-  }
-  function save(s){
-    localStorage.setItem(STORE_KEY, JSON.stringify(s));
-  }
-
-  function initialState(){
-    const isDE = (navigator.language||"en").toLowerCase().startsWith("de");
-    return {
-      lang: isDE ? "de" : "en",
-      // canonical current values (derived from events + decay)
-      core: { energy:62, mood:56, focus:66, connection:52 },
-      dims: { biology:70, emotion:60, social:56, cognition:72, competence:60, meaning:52 },
-      coreUpdatedAt: now(),
-      dimsUpdatedAt: now(),
-
-      // learning per skill id: {mean, n, lastQualia}
-      skillModel: {},
-
-      // event log
-      events: [
-        // {type:"complete"|"qualia"|"checkin", ts, skillId?, payload?}
-      ],
-
-      // current recommendation cache
-      rec: { primary:null, alt:null, why:null, computedAt:0 }
-    };
-  }
-
-  let state = load() || initialState();
-  state = migrateState(state);
-  save(state);
-
-  function migrateState(s){
-    // gentle forward-compat
-    s.events ||= [];
-    s.skillModel ||= {};
-    s.core ||= {energy:50,mood:50,focus:50,connection:50};
-    s.dims ||= {biology:50,emotion:50,social:50,cognition:50,competence:50,meaning:50};
-    s.coreUpdatedAt ||= now();
-    s.dimsUpdatedAt ||= now();
-    s.rec ||= {primary:null,alt:null,why:null,computedAt:0};
-    return s;
-  }
-
-  // =========================
-  // Decay towards baseline
-  // =========================
-  function applyDecayToCore(){
-    const tNow = now();
-    const hours = Math.max(0, (tNow - state.coreUpdatedAt) / (1000*60*60));
-    const t = clamp(hours / DECAY_HOURS, 0, 1);
-    const next = {...state.core};
-    for(const k of CORE_KEYS){
-      next[k] = Math.round(lerp(state.core[k], BASELINE, t));
-    }
-    const changed = CORE_KEYS.some(k => next[k] !== state.core[k]);
-    if(changed){ state.core = next; }
-    // do NOT move coreUpdatedAt; it is the anchor of decay from last real update
-  }
-
-  function applyDecayToDims(){
-    const tNow = now();
-    const hours = Math.max(0, (tNow - state.dimsUpdatedAt) / (1000*60*60));
-    const t = clamp(hours / DECAY_HOURS, 0, 1);
-    const next = {...state.dims};
-    for(const k of DIM_KEYS){
-      next[k] = Math.round(lerp(state.dims[k], BASELINE, t));
-    }
-    const changed = DIM_KEYS.some(k => next[k] !== state.dims[k]);
-    if(changed){ state.dims = next; }
-  }
-
-  // =========================
-  // Moment inference (transparent)
-  // =========================
-  function inferMoment(){
-    const lastComplete = [...state.events].reverse().find(e => e.type==="complete");
-    const hoursSince = lastComplete ? (now()-lastComplete.ts)/(1000*60*60) : 999;
-
-    const c = state.core;
-    const low = (v)=>v<38;
-    let label = state.lang==="de" ? "Stabil" : "Stable";
-    let reason = state.lang==="de" ? "Signale im Normbereich" : "Signals within normal range";
-
-    if(hoursSince >= 14){
-      label = state.lang==="de" ? "Neblig" : "Foggy";
-      reason = state.lang==="de"
-        ? `${Math.round(hoursSince)}h ohne Aktivität (Long Gap)`
-        : `${Math.round(hoursSince)}h without activity (Long gap)`;
-    }
-    if(low(c.energy)){ label = state.lang==="de" ? "Erschöpft" : "Drained"; reason = state.lang==="de" ? "Energie kritisch" : "Energy critical"; }
-    else if(low(c.connection)){ label = state.lang==="de" ? "Getrennt" : "Disconnected"; reason = state.lang==="de" ? "Verbindung niedrig" : "Connection low"; }
-    else if(low(c.focus)){ label = state.lang==="de" ? "Fragmentiert" : "Fragmented"; reason = state.lang==="de" ? "Fokus niedrig" : "Focus low"; }
-    else if(low(c.mood)){ label = state.lang==="de" ? "Gedämpft" : "Muted"; reason = state.lang==="de" ? "Stimmung niedrig" : "Mood low"; }
-
-    return { label, reason };
-  }
-
-  // =========================
-  // Learning model (Qualia)
-  // =========================
-  // We keep a per-skill preference mean in [-1..+1], initialized at 0.
-  // Qualia input q: 0..3 -> map to [-1..+1] => -1, -0.33, +0.33, +1
-  function qualiaToScore(q){
-    const map = {0:-1,1:-0.33,2:0.33,3:1};
-    return map[q] ?? 0;
-  }
-
-  function updateSkillModel(skillId, q){
-    const x = qualiaToScore(q);
-    const m = state.skillModel[skillId] || { mean:0, n:0, lastQualia:null };
-    const lr = ENGINE.qualiaLearningRate;
-    // exponential moving average + count
-    const nextMean = (m.n===0) ? x : (1-lr)*m.mean + lr*x;
-    state.skillModel[skillId] = { mean: clamp(nextMean,-1,1), n: m.n+1, lastQualia:q };
-  }
-
-  // =========================
-  // Synergy gating
-  // =========================
-  function synergyMultiplier(skill){
-    // If higher tier and base dims low -> penalize
-    const tier = DIM_TIER[skill.tier];
-    if(tier <= 0) return 1;
-
-    // base dims: biology is foundation, then emotion, then social
-    const bio = state.dims.biology;
-    const emo = state.dims.emotion;
-
-    // hard-ish gate if required minimum not met
-    const req = skill.requirements || {};
-    if(req.minBiology != null && bio < req.minBiology) return 0.25;
-    if(req.minEmotion != null && emo < req.minEmotion) return 0.35;
-
-    // soft penalty: if biology low and tier high
-    const basePressure = clamp((50 - bio)/50, 0, 1); // 0..1
-    const tierFactor = clamp(tier/5, 0, 1); // 0..1
-    const penalty = 1 - ENGINE.synergyPenalty * basePressure * tierFactor;
-    return clamp(penalty, 0.25, 1);
-  }
-
-  // =========================
-  // Cooldown / anti-repeat
-  // =========================
-  function cooldownPenalty(skillId){
-    const last = [...state.events].reverse().find(e => e.type==="complete" && e.skillId===skillId);
-    if(!last) return 1;
-    const hours = (now()-last.ts)/(1000*60*60);
-    if(hours >= ENGINE.cooldownHours) return 1;
-    // penalize recent repeats
-    const t = clamp(hours/ENGINE.cooldownHours, 0, 1);
-    return 0.4 + 0.6*t; // from 0.4 up to 1
-  }
-
-  // =========================
-  // Need estimation (deficits)
-  // =========================
-  function deficit(v){ return clamp((BASELINE - v)/50, 0, 1); } // 0..1 below baseline
-  function surplus(v){ return clamp((v - BASELINE)/50, 0, 1); }
-
-  function computeNeeds(){
-    // combine core deficits and dimension deficits
-    const c = state.core, d = state.dims;
-
-    const needs = {
-      biology: deficit(d.biology) + deficit(c.energy)*0.8,
-      emotion: deficit(d.emotion) + deficit(c.mood)*0.8,
-      social: deficit(d.social) + deficit(c.connection)*0.8,
-      cognition: deficit(d.cognition) + deficit(c.focus)*0.8,
-      competence: deficit(d.competence),
-      meaning: deficit(d.meaning)
-    };
-
-    // normalize-ish
-    for(const k of Object.keys(needs)){
-      needs[k] = clamp(needs[k], 0, 2);
-    }
-    return needs;
-  }
-
-  // =========================
-  // Score a skill (objective + personal + constraints)
-  // =========================
-  function scoreSkill(skill, needs){
-    // 1) match needs: if skill improves a dimension with high deficit, good
-    let needScore = 0;
-
-    // Dimension impact
-    for(const [k, delta] of Object.entries(skill.effects.dims || {})){
-      if(delta > 0) needScore += needs[k] * (delta/6);
-    }
-
-    // Core impact (prefer raising deficits, avoid draining already-low energy)
-    for(const [k, delta] of Object.entries(skill.effects.core || {})){
-      if(delta > 0) needScore += deficit(state.core[k]) * (delta/6);
-      if(delta < 0) needScore -= deficit(state.core[k]) * (Math.abs(delta)/6);
-    }
-
-    needScore *= ENGINE.deficitWeight;
-
-    // 2) personal learning preference (qualia mean in [-1..1] mapped to 0.7..1.3)
-    const model = state.skillModel[skill.id] || {mean:0,n:0};
-    const personal = 1 + (model.mean * 0.25); // subtle
-    const explore = ENGINE.exploration * (1 / Math.sqrt(1 + model.n)); // more explore for less-tried
-
-    // 3) synergy + cooldown
-    const syn = synergyMultiplier(skill);
-    const cd = cooldownPenalty(skill.id);
-
-    // 4) time cost penalty (very small, but helps choose micro-actions when depleted)
-    const timePenalty = 1 - clamp((skill.mins - 10)/60, 0, 0.25); // up to -25%
-
-    // final
-    const base = needScore * personal * syn * cd * timePenalty;
-
-    // exploration bonus (variety)
-    const final = base + explore * 0.06;
-
-    return { final, breakdown:{needScore, personal, syn, cd, timePenalty, explore, mean:model.mean, n:model.n} };
-  }
-
-  // =========================
-  // Pick recommendation (primary + alternative)
-  // =========================
-  function pickRecommendation(){
-    applyDecayToCore();
-    applyDecayToDims();
-
-    const needs = computeNeeds();
-    const scored = SKILLS.map(s => {
-      const r = scoreSkill(s, needs);
-      return { skill:s, score:r.final, breakdown:r.breakdown, needs };
-    }).sort((a,b)=>b.score-a.score);
-
-    const primary = scored[0] || null;
-    // alt: pick next different tier if possible
-    let alt = null;
-    if(primary){
-      alt = scored.find(x => x.skill.id !== primary.skill.id && x.skill.tier !== primary.skill.tier) || scored[1] || null;
-    }
-
-    const why = buildWhy(primary, alt, scored.slice(0,5));
-    state.rec = { primary: primary?.skill?.id || null, alt: alt?.skill?.id || null, why, computedAt: now() };
-    save(state);
-
-    return { primary, alt, why };
-  }
-
-  // =========================
-  // Explainability (“Why this today?”)
-  // =========================
-  function topNeed(needs){
-    return Object.entries(needs).sort((a,b)=>b[1]-a[1])[0];
-  }
-
-  function buildWhy(primary, alt, topList){
-    const L = I18N[state.lang];
-    const m = inferMoment();
-    const needs = primary?.needs || computeNeeds();
-    const [needKey, needVal] = topNeed(needs);
-
-    // short, instrument-like trace
-    const parts = [];
-    parts.push(`${L.moment}: ${m.label}`);
-    parts.push(`${L.signal}: ${m.reason}`);
-
-    // synergy note if applied
-    if(primary){
-      const syn = primary.breakdown.syn;
-      if(syn < 0.8){
-        parts.push(state.lang==="de"
-          ? `Synergy: Basis reduziert höhere Tier-Effektivität (×${syn.toFixed(2)})`
-          : `Synergy: base reduces higher-tier effectiveness (×${syn.toFixed(2)})`);
-      }
-    }
-
-    parts.push(state.lang==="de"
-      ? `Primärer Bedarf: ${needKey.toUpperCase()} (${needVal.toFixed(2)})`
-      : `Primary need: ${needKey.toUpperCase()} (${needVal.toFixed(2)})`);
-
-    if(primary){
-      const b = primary.breakdown;
-      parts.push(state.lang==="de"
-        ? `Match: need=${b.needScore.toFixed(2)}, personal=${b.personal.toFixed(2)}, cooldown=${b.cd.toFixed(2)}`
-        : `Match: need=${b.needScore.toFixed(2)}, personal=${b.personal.toFixed(2)}, cooldown=${b.cd.toFixed(2)}`);
-    }
-
-    // keep it short
-    return parts.join(" · ");
-  }
-
-  // =========================
-  // Apply completion (effects) + open qualia
-  // =========================
-  function applySkill(skill){
-    // apply effects immediately as "calibration"
-    const tNow = now();
-    // core
-    const nextCore = {...state.core};
-    for(const [k, delta] of Object.entries(skill.effects.core || {})){
-      nextCore[k] = clamp(nextCore[k] + delta, 0, 100);
-    }
-    state.core = nextCore;
-    state.coreUpdatedAt = tNow; // anchor decay from new state
-
-    // dims
-    const nextDims = {...state.dims};
-    for(const [k, delta] of Object.entries(skill.effects.dims || {})){
-      nextDims[k] = clamp(nextDims[k] + delta, 0, 100);
-    }
-    state.dims = nextDims;
-    state.dimsUpdatedAt = tNow;
-
-    state.events.push({ type:"complete", ts:tNow, skillId: skill.id, payload:{ mins: skill.mins, tier: skill.tier } });
-    save(state);
-  }
-
-  // =========================
-  // UI rendering (minimal)
-  // =========================
-  const app = document.getElementById("app");
-  const langBadge = document.getElementById("langBadge");
-  const langBtn = document.getElementById("langBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const whyBtnTop = document.getElementById("whyBtnTop");
-  const homeBtn = document.getElementById("homeBtn");
-
-  const sheet = document.getElementById("sheet");
-  const sheetTitle = document.getElementById("sheetTitle");
-  const sheetPrompt = document.getElementById("sheetPrompt");
-  const closeSheet = document.getElementById("closeSheet");
-
-  function t(k){ return I18N[state.lang][k] || k; }
-
-  function render(){
-    langBadge.textContent = state.lang.toUpperCase();
-
-    const rec = pickRecommendation();
-    const primary = rec.primary?.skill || null;
-    const alt = rec.alt?.skill || null;
-    const why = rec.why;
-
-    const moment = inferMoment();
-
-    // Signals cards
-    const signals = CORE_KEYS.map(k => {
-      const meta = CORE_META[k];
-      const v = state.core[k];
-      const critical = v < 35;
-      return `
-        <div class="gcard ${critical ? "pulse" : ""}">
-          <div class="ghead">
-            <div class="gname"><span>${meta.icon}</span><span>${state.lang==="de"?meta.de:meta.en}</span></div>
-            <div class="gval">${v}%</div>
-          </div>
-          <div class="bar"><div class="fill" style="width:${v}%;background:${meta.color}"></div></div>
-          <div class="foot"><span>${t("baseline")} ${BASELINE}%</span>${critical?`<span class="warn">${t("critical")}</span>`:`<span></span>`}</div>
-        </div>
-      `;
-    }).join("");
-
-    const protocol = primary ? primary.protocol[state.lang].map(x=>`<li>${esc(x)}</li>`).join("") : "";
-    const altText = alt ? `${esc(alt.emoji)} ${esc(alt.name[state.lang])} (${alt.mins} ${state.lang==="de"?"Min":"min"})` : "—";
-
-    app.innerHTML = `
-      <div class="eyebrow">${t("headline")}</div>
-      <div class="sub">${t("sub")}</div>
-
-      <div class="card" style="margin-top:12px">
-        <div class="labelrow">
-          <div class="label">${t("moment")}</div>
-          <div class="chip">${t("diagnosis")}: ${esc(moment.label)}</div>
-        </div>
-        <div class="desc">${t("signal")}: ${esc(moment.reason)}</div>
-      </div>
-
-      <div class="card">
-        <div class="labelrow">
-          <div class="label">${t("signals")}</div>
-          <div class="chip">decay ${DECAY_HOURS}h → ${BASELINE}%</div>
-        </div>
-        <div class="grid">${signals}</div>
-      </div>
-
-      <div class="card">
-        <div class="labelrow">
-          <div class="label">${t("primary")}</div>
-          <div class="chip">${primary ? `${primary.mins} ${state.lang==="de"?"Min":"min"}` : "—"}</div>
-        </div>
-
-        <div class="title">${primary ? `${esc(primary.emoji)} <span>${esc(primary.name[state.lang])}</span>` : "—"}</div>
-        <div class="mini">${t("protocol")}</div>
-        <div class="desc">${primary ? esc(primary.desc[state.lang]) : "—"}</div>
-        <ul>${protocol}</ul>
-
-        <div class="alt"><b>${t("alt")}</b> ${altText}</div>
-
-        <button class="btn2" id="whyBtn">${t("why")}</button>
-        <button class="btn" id="completeBtn">${t("complete")}</button>
-
-        <div class="why" id="whyText" style="display:none">${esc(why)}</div>
-      </div>
-
-      <div class="card">
-        <div class="label">Engine Debug (Top 5)</div>
-        <div class="desc" style="margin-top:6px">${renderTop5(rec.primary, rec.alt)}</div>
-      </div>
-    `;
-
-    document.getElementById("whyBtn").onclick = () => {
-      const el = document.getElementById("whyText");
-      el.style.display = (el.style.display==="none") ? "block" : "none";
-    };
-
-    document.getElementById("completeBtn").onclick = () => {
-      if(!primary) return;
-      applySkill(primary);
-      openQualia(primary.id);
-      render();
-    };
-  }
-
-  function renderTop5(primaryWrap, altWrap){
-    // show scores + multipliers (compact)
-    const needs = computeNeeds();
-    const scored = SKILLS.map(s => ({ s, r: scoreSkill(s, needs) }))
-      .sort((a,b)=>b.r.final-a.r.final)
-      .slice(0,5);
-
-    return scored.map(x => {
-      const m = state.skillModel[x.s.id] || {mean:0,n:0};
-      return `${x.s.emoji} ${esc(x.s.name[state.lang])}: ${x.r.final.toFixed(3)} (syn×${x.r.breakdown.syn.toFixed(2)}, cd×${x.r.breakdown.cd.toFixed(2)}, pref=${m.mean.toFixed(2)}/${m.n})`;
-    }).join("<br>");
-  }
-
-  function esc(s){
-    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-  }
-
-  // =========================
-  // Qualia sheet controls
-  // =========================
-  let pendingSkillId = null;
-
-  function openQualia(skillId){
-    pendingSkillId = skillId;
-    sheetTitle.textContent = t("qualiaTitle");
-    sheetPrompt.textContent = t("qualiaPrompt");
-    closeSheet.textContent = t("close");
-    sheet.classList.add("open");
-  }
-
-  function closeQualia(){
-    sheet.classList.remove("open");
-    pendingSkillId = null;
-  }
-
-  sheet.addEventListener("click", (e) => { if(e.target === sheet) closeQualia(); });
-  closeSheet.onclick = closeQualia;
-
-  sheet.querySelectorAll(".qbtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const q = Number(btn.getAttribute("data-q"));
-      if(!pendingSkillId) return;
-      // log + learn
-      state.events.push({ type:"qualia", ts: now(), skillId: pendingSkillId, payload:{ q } });
-      updateSkillModel(pendingSkillId, q);
-      save(state);
-      closeQualia();
-      render();
-    });
-  });
-
-  // =========================
-  // Header actions
-  // =========================
-  langBtn.onclick = () => { state.lang = (state.lang==="de"?"en":"de"); save(state); render(); };
-  whyBtnTop.onclick = () => { // toggle why section
-    const el = document.getElementById("whyText");
-    if(el) el.style.display = (el.style.display==="none") ? "block" : "none";
-  };
-  homeBtn.onclick = () => render();
-
-  resetBtn.onclick = () => {
-    if(confirm(t("resetAsk"))){
-      localStorage.removeItem(STORE_KEY);
-      state = initialState();
-      save(state);
-      render();
-    }
-  };
-
-  // =========================
-  // Passive decay tick (quiet)
-  // =========================
-  setInterval(() => {
-    // only rerender if something actually changes
-    const before = JSON.stringify(state.core) + JSON.stringify(state.dims);
-    applyDecayToCore();
-    applyDecayToDims();
-    const after = JSON.stringify(state.core) + JSON.stringify(state.dims);
-    if(before !== after){
-      save(state);
-      render();
-    }
-  }, 15000);
-
-  // Initial paint
-  render();
-
-})();
-</script>
+
+    <script>
+        // --- Konfiguration der Dimensionen ---
+        const dimensions = [
+            { id: 'body', label: 'Körper', icon: '🏃', color: '#ef4444', desc: 'Energie, Schlaf, Physische Verfassung' },
+            { id: 'emotions', label: 'Emotionen', icon: '❤️', color: '#f59e0b', desc: 'Stimmung, Gelassenheit, Gefühle' },
+            { id: 'cognition', label: 'Kognition', icon: '🧠', color: '#3b82f6', desc: 'Fokus, Klarheit, Gedankliche Schärfe' },
+            { id: 'competence', label: 'Kompetenz', icon: '⚡', color: '#8b5cf6', desc: 'Wirksamkeit, Fähigkeiten, Erledigungen' },
+            { id: 'meaning', label: 'Bedeutung', icon: '✨', color: '#ec4899', desc: 'Sinnhaftigkeit, Werte, Motivation' },
+            { id: 'social', label: 'Soziales', icon: '🤝', color: '#10b981', desc: 'Verbindung, Gemeinschaft, Beziehungen' }
+        ];
+
+        // Lokaler Status (Standardwerte 50%)
+        let appState = {
+            body: 50, emotions: 50, cognition: 50, competence: 50, meaning: 50, social: 50
+        };
+
+        // --- Die riesige Skilltree-Datenbank ---
+        const skillDatabase = [
+            // Körper
+            { id: 'b1', cat: 'Körper', name: 'Grundruhe', desc: 'Du erkennst Erschöpfung rechtzeitig.', icon: '🔋', reqs: { body: 20 } },
+            { id: 'b2', cat: 'Körper', name: 'Zelluläre Erholung', desc: 'Verbesserte Schlafarchitektur.', icon: '🛏️', reqs: { body: 40 } },
+            { id: 'b3', cat: 'Körper', name: 'Kinetische Effizienz', desc: 'Bewegung fällt dir extrem leicht.', icon: '🏃', reqs: { body: 60 } },
+            { id: 'b4', cat: 'Körper', name: 'Physische Resilienz', desc: 'Hohe Widerstandskraft gegen Stress.', icon: '🛡️', reqs: { body: 80 } },
+            { id: 'b5', cat: 'Körper', name: 'Somatische Meisterschaft', desc: 'Perfekte Körperkontrolle und Energie.', icon: '⚡', reqs: { body: 95 } },
+            // Emotionen
+            { id: 'e1', cat: 'Emotionen', name: 'Affektkontrolle', desc: 'Du lässt dich nicht sofort triggern.', icon: '😌', reqs: { emotions: 20 } },
+            { id: 'e2', cat: 'Emotionen', name: 'Emotionale Agilität', desc: 'Schnelles Anpassen an Gefühlslagen.', icon: '🍃', reqs: { emotions: 40 } },
+            { id: 'e3', cat: 'Emotionen', name: 'Empathische Tiefe', desc: 'Du fühlst dich selbst und andere klar.', icon: '❤️', reqs: { emotions: 60 } },
+            { id: 'e4', cat: 'Emotionen', name: 'Innere Alchemie', desc: 'Verwandelt negative in positive Energie.', icon: '✨', reqs: { emotions: 80 } },
+            { id: 'e5', cat: 'Emotionen', name: 'Zen-Zustand', desc: 'Absolute innere Unerschütterlichkeit.', icon: '🧘', reqs: { emotions: 95 } },
+            // Kognition
+            { id: 'c1', cat: 'Kognition', name: 'Fokus-Initiierung', desc: 'Leichterer Start in schwere Aufgaben.', icon: '👀', reqs: { cognition: 20 } },
+            { id: 'c2', cat: 'Kognition', name: 'Kognitive Flexibilität', desc: 'Schneller Wechsel zwischen Themen.', icon: '🔄', reqs: { cognition: 40 } },
+            { id: 'c3', cat: 'Kognition', name: 'Deep Work State', desc: 'Anhaltende, tiefe Konzentration.', icon: '🧠', reqs: { cognition: 60 } },
+            { id: 'c4', cat: 'Kognition', name: 'Mustererkennung', desc: 'Du siehst Zusammenhänge sofort.', icon: '🧩', reqs: { cognition: 80 } },
+            { id: 'c5', cat: 'Kognition', name: 'Mentale Brillanz', desc: 'Maximale neuronale Leistungsausbeute.', icon: '💎', reqs: { cognition: 95 } },
+            // Kompetenz
+            { id: 'co1', cat: 'Kompetenz', name: 'Mikrogewohnheiten', desc: 'Kleine Dinge konsequent erledigen.', icon: '🌱', reqs: { competence: 20 } },
+            { id: 'co2', cat: 'Kompetenz', name: 'Effizienz-Rhythmus', desc: 'Guter Flow in der Abarbeitung.', icon: '⏱️', reqs: { competence: 40 } },
+            { id: 'co3', cat: 'Kompetenz', name: 'Systemisches Denken', desc: 'Du baust Prozesse, nicht nur To-Dos.', icon: '⚙️', reqs: { competence: 60 } },
+            { id: 'co4', cat: 'Kompetenz', name: 'Exekutive Kontrolle', desc: 'Meister der Selbststeuerung.', icon: '🎯', reqs: { competence: 80 } },
+            { id: 'co5', cat: 'Kompetenz', name: 'Architekt der Realität', desc: 'Du setzt Visionen mühelos um.', icon: '🏗️', reqs: { competence: 95 } },
+            // Bedeutung
+            { id: 'm1', cat: 'Bedeutung', name: 'Alltags-Sinn', desc: 'Du findest Wert in kleinen Dingen.', icon: '🕯️', reqs: { meaning: 20 } },
+            { id: 'm2', cat: 'Bedeutung', name: 'Werte-Alignment', desc: 'Dein Handeln entspricht deinen Werten.', icon: '🧭', reqs: { meaning: 40 } },
+            { id: 'm3', cat: 'Bedeutung', name: 'Intrinsischer Antrieb', desc: 'Motivation kommt von tief innen.', icon: '🔥', reqs: { meaning: 60 } },
+            { id: 'm4', cat: 'Bedeutung', name: 'Visionäre Klarheit', desc: 'Du kennst dein Lebensziel genau.', icon: '👁️', reqs: { meaning: 80 } },
+            { id: 'm5', cat: 'Bedeutung', name: 'Transzendenz', desc: 'Du bist Teil von etwas Größerem.', icon: '🌌', reqs: { meaning: 95 } },
+            // Soziales
+            { id: 's1', cat: 'Soziales', name: 'Aktives Zuhören', desc: 'Du bist wirklich präsent im Gespräch.', icon: '👂', reqs: { social: 20 } },
+            { id: 's2', cat: 'Soziales', name: 'Soziale Kalibrierung', desc: 'Du liest den Raum und die Stimmung.', icon: '🌡️', reqs: { social: 40 } },
+            { id: 's3', cat: 'Soziales', name: 'Authentischer Ausdruck', desc: 'Du zeigst dein wahres Selbst.', icon: '🎭', reqs: { social: 60 } },
+            { id: 's4', cat: 'Soziales', name: 'Tribe-Magnet', desc: 'Du ziehst die richtigen Menschen an.', icon: '🧲', reqs: { social: 80 } },
+            { id: 's5', cat: 'Soziales', name: 'Kollektive Resonanz', desc: 'Tiefste Verbundenheit mit allen.', icon: '🌐', reqs: { social: 95 } },
+            // Synergien (Die wahren Skill-Kombinationen)
+            { id: 'syn1', cat: 'Synergien', name: 'Flow State', desc: 'Körper & Geist verschmelzen.', icon: '🌊', reqs: { body: 70, cognition: 70 } },
+            { id: 'syn2', cat: 'Synergien', name: 'Emotionale Intelligenz', desc: 'Meister der Zwischenmenschlichkeit.', icon: '🤝', reqs: { emotions: 70, social: 70 } },
+            { id: 'syn3', cat: 'Synergien', name: 'Berufung', desc: 'Kompetenz trifft auf Lebenssinn.', icon: '⚒️', reqs: { competence: 70, meaning: 70 } },
+            { id: 'syn4', cat: 'Synergien', name: 'Unerschütterlich', desc: 'Physisch und mental wie ein Fels.', icon: '🪨', reqs: { body: 80, emotions: 80 } },
+            { id: 'syn5', cat: 'Synergien', name: 'Mastermind', desc: 'Genialität in der perfekten Ausführung.', icon: '👑', reqs: { cognition: 80, competence: 80 } },
+            { id: 'syn6', cat: 'Synergien', name: 'Charismatische Aura', desc: 'Menschen folgen deiner klaren Vision.', icon: '🌟', reqs: { emotions: 80, social: 80, meaning: 80 } },
+            { id: 'syn7', cat: 'Synergien', name: 'Biologische Homöostase', desc: 'Das perfekte biologische Gleichgewicht!', icon: '💠', reqs: { body: 85, emotions: 85, cognition: 85, competence: 85, meaning: 85, social: 85 } }
+        ];
+
+        let previouslyUnlockedSkills = new Set(); 
+
+        // Prüft, welche Skills freigeschaltet sind
+        function checkSkillUnlocks(silentInit = false) {
+            let newlyUnlocked = [];
+            skillDatabase.forEach(skill => {
+                let unlocked = true;
+                for (let dim in skill.reqs) {
+                    if (appState[dim] < skill.reqs[dim]) {
+                        unlocked = false;
+                        break;
+                    }
+                }
+                
+                if (unlocked) {
+                    if (!previouslyUnlockedSkills.has(skill.id)) {
+                        previouslyUnlockedSkills.add(skill.id);
+                        if (!silentInit) newlyUnlocked.push(skill);
+                    }
+                } else {
+                    previouslyUnlockedSkills.delete(skill.id);
+                }
+            });
+
+            if (newlyUnlocked.length > 0 && !silentInit) {
+                const latest = newlyUnlocked[newlyUnlocked.length - 1]; 
+                showToast(`Freigeschaltet: ${latest.name}`, latest.icon);
+            }
+            renderSkilltree();
+        }
+
+        // Generiert die visuelle Liste
+        function renderSkilltree() {
+            const container = document.getElementById('skilltreeContent');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const categories = [...new Set(skillDatabase.map(s => s.cat))];
+
+            categories.forEach(cat => {
+                const catSkills = skillDatabase.filter(s => s.cat === cat);
+                
+                const catDiv = document.createElement('div');
+                catDiv.className = 'skill-category';
+                catDiv.innerHTML = `<h3>${cat}</h3><div class="skill-grid"></div>`;
+                const grid = catDiv.querySelector('.skill-grid');
+
+                catSkills.forEach(skill => {
+                    const isUnlocked = previouslyUnlockedSkills.has(skill.id);
+                    const color = isUnlocked ? 'var(--accent)' : '#555';
+                    
+                    const card = document.createElement('div');
+                    card.className = `skill-card ${isUnlocked ? 'unlocked' : ''}`;
+                    
+                    let reqText = '';
+                    if (!isUnlocked) {
+                        const reqsArr = Object.entries(skill.reqs).map(([k, v]) => `${dimensions.find(d=>d.id===k).label} ${v}`);
+                        reqText = `<p style="color: #ef4444; font-size: 0.7rem; margin-top: 5px;">Benötigt: ${reqsArr.join(', ')}</p>`;
+                    }
+
+                    card.innerHTML = `
+                        <div class="skill-icon" style="${isUnlocked ? 'background: rgba(56, 189, 248, 0.2); color: var(--accent);' : ''}">${skill.icon}</div>
+                        <div class="skill-info">
+                            <h4 style="color: ${color}">${skill.name}</h4>
+                            <p>${skill.desc}</p>
+                            ${reqText}
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                container.appendChild(catDiv);
+            });
+        }
+
+        function openSkilltree() {
+            document.getElementById('viewSkilltree').style.transform = 'translateX(0)';
+            checkSkillUnlocks(true); 
+        }
+
+        function closeSkilltree() {
+            document.getElementById('viewSkilltree').style.transform = 'translateX(100%)';
+        }
+
+        let toastTimeout;
+        function showToast(text, icon) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastIcon').innerText = icon;
+            document.getElementById('toastText').innerText = text;
+            
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // --- DER KLUGE ALGORITHMUS (Multidimensionale Analyse) ---
+        const SmartImpulsEngine = {
+            analyze: function(dimId, currentVal, fullState) {
+                const level = currentVal < 33 ? 'low' : currentVal < 66 ? 'med' : 'high';
+                let impuls = "";
+                
+                switch(dimId) {
+                    case 'body':
+                        if (level === 'low' && fullState.cognition > 65) {
+                            impuls = "🧠⚡ Kognitive Übersteuerung: Dein Kopf ist hellwach, aber der Körper streikt. Das ist ein klassisches Setup für das Ausbrennen des Nervensystems. Zwinge deinen Geist zur Ruhe, damit der Körper heilen kann.";
+                        } else if (level === 'high' && fullState.emotions < 35) {
+                            impuls = "🏃‍♂️💔 Physisches Ventil nutzen: Körperlich bist du fit, emotional aber im Tief. Nutze die physische Energie (Sport, Laufen), um Cortisol abzubauen und den Kopf frei zu bekommen.";
+                        } else if (level === 'low') {
+                            impuls = "🔋 Akku leer: Dein biologisches Fundament wackelt. Alles andere ist jetzt zweitrangig. Priorisiere Schlaf, Hydration und absolute Reizreduktion.";
+                        } else if (level === 'high') {
+                            impuls = "⚡ Volle Kapazität: Dein Körper ist bereit für Herausforderungen. Ein exzellenter Moment für hartes Training oder physisch anspruchsvolle Aufgaben.";
+                        } else {
+                            impuls = "⚖️ Stabile Basis: Erhalte diesen Zustand durch eine gute Mischung aus Bewegung und regelmäßigen Mikropausen aufrecht.";
+                        }
+                        break;
+                    case 'emotions':
+                        if (level === 'low' && fullState.competence > 65) {
+                            impuls = "🤖 Funktionale Kälte: Du funktionierst wie eine Maschine, fühlst dich aber leer oder gereizt. Pass auf, dass du nicht in einen 'Roboter-Modus' fällst. Erlaube dir Weichheit.";
+                        } else if (level === 'low' && fullState.social < 35) {
+                            impuls = "🛡️ Rückzug: Emotionale und soziale Batterien sind leer. Das ist okay. Sag Termine ab, zieh dich zurück und praktiziere radikale Selbstfürsorge.";
+                        } else if (level === 'high') {
+                            impuls = "☀️ Resonanz: Du bist in einem emotionalen Hoch. Das ist der beste Zustand, um schwierige Gespräche zu führen oder kreative Dinge zu erschaffen.";
+                        } else if (level === 'low') {
+                            impuls = "🌧️ Emotionale Dämpfung: Akzeptiere die heutige Schwere. Versuche nicht, sie wegzudrücken. Beobachte deine Gefühle wie Wolken, die vorbeiziehen.";
+                        } else {
+                            impuls = "🌊 Ruhiges Fahrwasser: Du bist emotional ausgeglichen. Ein guter Zustand für objektive Entscheidungen.";
+                        }
+                        break;
+                    case 'cognition':
+                        if (level === 'high' && fullState.body < 35) {
+                            impuls = "🚨 Hyperfokus-Warnung: Geistige Brillanz bei körperlicher Erschöpfung führt oft zum Crash. Setze dir strikte Timer für deine geistige Arbeit!";
+                        } else if (level === 'low' && fullState.emotions > 65) {
+                            impuls = "🎨 Intuitive Phase: Der Kopf ist langsam, aber das Herz ist weit. Verlasse dich heute auf dein Bauchgefühl statt auf harte Logik und Analysen.";
+                        } else if (level === 'low') {
+                            impuls = "🌫️ Brain Fog: Dein präfrontaler Kortex braucht Pause. Keine wichtigen Entscheidungen treffen. Mache monotone, einfache Aufgaben.";
+                        } else if (level === 'high') {
+                            impuls = "💎 Kristallklar: Deine neuronalen Netze feuern optimal. Nutze dieses Zeitfenster für 'Deep Work', komplexe Problemlösungen oder strategische Planung.";
+                        } else {
+                            impuls = "🧭 Klarer Kurs: Gute geistige Aufnahmefähigkeit. Fokussiere dich auf eine Sache (Singletasking), um diesen Zustand zu halten.";
+                        }
+                        break;
+                    case 'competence':
+                        if (level === 'low' && fullState.meaning > 65) {
+                            impuls = "🌱 Wachstums-Mindset: Du fühlst dich heute inkompetent, kennst aber dein 'Warum'. Nutze das! Es ist ein Tag zum Lernen, nicht zum Performen.";
+                        } else if (level === 'high' && fullState.meaning < 35) {
+                            impuls = "🐹 Hamsterrad-Gefahr: Du kriegst extrem viel erledigt, aber siehst den Sinn nicht. Vorsicht vor Entfremdung! Frag dich: Arbeite ich an den RICHTIGEN Dingen?";
+                        } else if (level === 'low') {
+                            impuls = "🐢 Schildkröten-Modus: Du fühlst dich überfordert oder ineffektiv. Reduziere deine To-Do-Liste auf genau EINE einzige, winzige Aufgabe.";
+                        } else if (level === 'high') {
+                            impuls = "🚀 Flow-State: Du hast die Dinge voll im Griff! Zerstöre diese Produktivität jetzt nicht durch Multitasking. Bleib im Tunnel.";
+                        } else {
+                            impuls = "✅ Solider Fortschritt: Du bist wirksam. Arbeite deine Prioritätenliste stetig von oben nach unten ab.";
+                        }
+                        break;
+                    case 'meaning':
+                        if (level === 'low' && fullState.social > 65) {
+                            impuls = "🪞 Spiegelung suchen: Dir fehlt gerade der innere Kompass. Nutze deine guten sozialen Verbindungen: Sprich mit einem Mentor oder Freund über deine Ziele.";
+                        } else if (level === 'low') {
+                            impuls = "🌑 Sinnkrise im Kleinen: Wenn das große Ganze sinnlos erscheint, fokussiere dich aufs Mikroskopische: Was ist EINE kleine Sache, die heute schön oder gut war?";
+                        } else if (level === 'high') {
+                            impuls = "🌟 Alignment: Du bist tief mit deinen Werten verbunden. Halte diesen Zustand fest – schreibe auf, was dir genau jetzt dieses Sinngefühl gibt!";
+                        } else {
+                            impuls = "🧭 Auf Kurs: Du weißt, wofür du aufstehst. Verbinde heute eine lästige Pflicht gedanklich mit deinem großen, übergeordneten Ziel.";
+                        }
+                        break;
+                    case 'social':
+                        if (level === 'low' && fullState.emotions > 65) {
+                            impuls = "🧘‍♀️ Solitäre Stärke: Du brauchst keine anderen, um dich gut zu fühlen. Genieße diese autarke, friedliche Zeit mit dir selbst.";
+                        } else if (level === 'high' && fullState.body < 35) {
+                            impuls = "🎭 Soziale Erschöpfung droht: Du sehnst dich nach Menschen, aber dein Körper ist schwach. Wähle ruhige Interaktionen statt einer anstrengenden Party.";
+                        } else if (level === 'low') {
+                            impuls = "🛑 Soziale Batterie leer: Zieh die Grenze. 'Nein' ist ein vollständiger Satz. Du musst heute für niemanden da sein, außer für dich selbst.";
+                        } else if (level === 'high') {
+                            impuls = "🤝 Tribe-Energie: Du hast viel zu geben und zu nehmen. Verbinde dich mit anderen, netzwerke, oder hilf jemandem, der Unterstützung braucht.";
+                        } else {
+                            impuls = "💬 In Verbindung: Eine gute Balance aus Nähe und Distanz. Ein kurzes Check-in bei einem geliebten Menschen passt heute perfekt.";
+                        }
+                        break;
+                }
+                
+                return impuls;
+            }
+        };
+
+        function updateImpuls(dimId, value) {
+            const impulsEl = document.getElementById('sheetImpuls');
+            if (!impulsEl || !dimId) return;
+            const tempState = { ...appState };
+            tempState[dimId] = parseInt(value, 10);
+            impulsEl.innerText = SmartImpulsEngine.analyze(dimId, parseInt(value, 10), tempState);
+        }
+
+        let currentActiveDim = null;
+
+        // --- ROBUSTE SPEICHERLOGIK (IndexedDB + LocalStorage Fallback) ---
+        let db;
+        
+        function _openIDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('HumaneedDB', 1);
+                request.onupgradeneeded = e => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains('state')) {
+                        db.createObjectStore('state');
+                    }
+                };
+                request.onsuccess = e => {
+                    db = e.target.result;
+                    resolve();
+                };
+                request.onerror = e => reject(e);
+            });
+        }
+
+        function _restoreFromIDB() {
+            return new Promise((resolve) => {
+                if(!db) return resolve();
+                const tx = db.transaction('state', 'readonly');
+                const store = tx.objectStore('state');
+                const req = store.get('appState');
+                req.onsuccess = () => {
+                    if (req.result) {
+                        appState = req.result;
+                        console.log('[HUMANEED] Daten aus IndexedDB geladen.');
+                        renderGrid();
+                        checkSkillUnlocks(true);
+                    }
+                    resolve();
+                };
+                req.onerror = () => resolve();
+            });
+        }
+
+        function _saveToIDB() {
+            if(!db) return;
+            const tx = db.transaction('state', 'readwrite');
+            const store = tx.objectStore('state');
+            store.put(appState, 'appState');
+        }
+
+        function loadState() {
+            // Schneller Fallback: LocalStorage zuerst
+            try {
+                const saved = localStorage.getItem('humaneed_state');
+                if (saved) {
+                    appState = JSON.parse(saved);
+                    renderGrid();
+                    checkSkillUnlocks(true);
+                }
+            } catch (e) { console.warn("LocalStorage Fehler:", e); }
+
+            // IndexedDB init & überschreiben falls vorhanden
+            _openIDB().then(_restoreFromIDB).then(() => {
+                console.log('[HUMANEED] Storage ready (IDB + localStorage)');
+            }).catch(e => console.warn("IDB nicht verfügbar", e));
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('humaneed_state', JSON.stringify(appState));
+                _saveToIDB();
+                renderGrid();
+            } catch (e) {
+                console.error('Fehler beim Speichern', e);
+            }
+        }
+
+        // --- Initialisierung & UI Aufbau ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderGrid();
+            initSheetSwipe();
+            
+            // Slider Event Listener für Live-Update der Zahl
+            const slider = document.getElementById('levelSlider');
+            const valDisplay = document.getElementById('sheetValue');
+            slider.addEventListener('input', (e) => {
+                const currentVal = e.target.value;
+                valDisplay.innerText = currentVal;
+                valDisplay.style.color = getGradientColor(currentVal);
+                if (currentActiveDim) {
+                    updateImpuls(currentActiveDim.id, currentVal);
+                }
+            });
+        });
+
+        function renderGrid() {
+            const grid = document.getElementById('dimensionGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            dimensions.forEach(dim => {
+                const value = appState[dim.id];
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openSheet(dim);
+                
+                card.innerHTML = `
+                    <div class="card-icon">${dim.icon}</div>
+                    <div class="card-title">${dim.label}</div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="bar-${dim.id}" 
+                             style="width: ${value}%; background-color: ${getGradientColor(value)};">
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- Sheet Navigation & Logik ---
+        function openSheet(dim) {
+            currentActiveDim = dim;
+            document.getElementById('sheetIcon').innerText = dim.icon;
+            document.getElementById('sheetTitle').innerText = dim.label;
+            document.getElementById('sheetTitle').style.color = dim.color;
+            document.getElementById('sheetDesc').innerText = dim.desc;
+            
+            const val = appState[dim.id];
+            const slider = document.getElementById('levelSlider');
+            slider.value = val;
+            
+            const valDisplay = document.getElementById('sheetValue');
+            valDisplay.innerText = val;
+            valDisplay.style.color = getGradientColor(val);
+
+            updateImpuls(dim.id, val);
+
+            document.getElementById('sheetBackdrop').classList.add('active');
+            document.getElementById('viewSheet').classList.add('active');
+        }
+
+        function goHome() {
+            document.getElementById('sheetBackdrop').classList.remove('active');
+            const sheet = document.getElementById('viewSheet');
+            // WICHTIG: Reset auf zentrierte X-Achse und 100% Y-Achse
+            sheet.style.transform = 'translateX(-50%) translateY(100%)'; 
+            sheet.classList.remove('active');
+            setTimeout(() => { sheet.style.transform = ''; }, 300); // Aufräumen nach Transition
+            currentActiveDim = null;
+        }
+
+        function saveCurrentDimension() {
+            if (currentActiveDim) {
+                const val = parseInt(document.getElementById('levelSlider').value, 10);
+                appState[currentActiveDim.id] = val;
+                saveState();
+                checkSkillUnlocks();
+                goHome();
+            }
+        }
+
+        function getGradientColor(value) {
+            if (value < 33) return '#ef4444'; // Rot
+            if (value < 66) return '#f59e0b'; // Gelb
+            return '#10b981'; // Grün
+        }
+
+        // ── Swipe-to-dismiss for bottom sheets (Original zentrierte Logik) ──
+        function initSheetSwipe() {
+            document.querySelectorAll('.view:not(#viewHome):not(#viewSkilltree)').forEach(sheet => {
+                let startY = 0, curY = 0, dragging = false;
+
+                sheet.addEventListener('touchstart', e => {
+                    if (sheet.scrollTop > 4) return;
+                    startY = e.touches[0].clientY;
+                    dragging = true;
+                    sheet.style.transition = 'none';
+                }, { passive: true });
+
+                sheet.addEventListener('touchmove', e => {
+                    if (!dragging) return;
+                    curY = e.touches[0].clientY;
+                    const dy = Math.max(0, curY - startY);
+                    
+                    // Exakter Original-Code für zentriertes Layout!
+                    sheet.style.transform = `translateX(-50%) translateY(${dy}px)`;
+                    
+                    const bd = document.getElementById('sheetBackdrop');
+                    if (bd) bd.style.opacity = Math.max(0, 1 - dy / 280);
+                }, { passive: true });
+
+                sheet.addEventListener('touchend', () => {
+                    if (!dragging) return;
+                    dragging = false;
+                    sheet.style.transition = ''; 
+                    
+                    const dy = curY - startY;
+                    if (dy > 110) {
+                        goHome();
+                    } else {
+                        // Zurückschnappen auf aktiven zentrierten Zustand
+                        sheet.style.transform = 'translateX(-50%) translateY(0)';
+                        const bd = document.getElementById('sheetBackdrop');
+                        if (bd) bd.style.opacity = '1';
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 </html>
