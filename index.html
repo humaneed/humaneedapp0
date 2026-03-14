@@ -3,143 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Humaneed v6 – Philosophical Life Navigation</title>
+<title>Humaneed v7 – Cybernetic Life Navigation</title>
 
 <style>
-body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f1115;
-    color: white;
-    display: flex;
-    justify-content: center;
-    margin: 0;
-}
-
-.app {
-    width: 390px;
-    padding: 24px;
-    padding-bottom: 50px;
-}
-
-h1 {
-    font-size: 18px;
-    letter-spacing: 2px;
-    opacity: .8;
-    margin-bottom: 10px;
-}
-
-.card {
-    background: #1b1f27;
-    padding: 20px;
-    border-radius: 14px;
-    margin-top: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,.4);
-    transition: all 0.3s ease;
-}
-
-.flow-state {
-    box-shadow: 0 0 20px rgba(0, 194, 168, 0.4);
-    border: 1px solid rgba(0, 194, 168, 0.3);
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    background: #00c2a8;
-    color: #0f1115;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: opacity 0.2s;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-button.alt {
-    background: #2c3442;
-    color: white;
-}
-
-button.danger {
-    background: #4a2c2c;
-    color: #ff8888;
-    margin-top: 24px;
-}
-
-.dimension {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-size: 14px;
-}
-
-.bar {
-    height: 6px;
-    background: #333;
-    border-radius: 6px;
-    margin-top: 4px;
-    overflow: hidden;
-}
-
-.fill {
-    height: 100%;
-    background: #00c2a8;
-    border-radius: 6px;
-    transition: width 0.4s ease;
-}
-
-.trait {
-    background: #2c3442;
-    padding: 8px;
-    border-radius: 8px;
-    margin-top: 6px;
-    font-size: 13px;
-    display: inline-block;
-    margin-right: 6px;
-}
-
-textarea {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    background: #2c3442;
-    color: white;
-    resize: vertical;
-    box-sizing: border-box;
-    font-family: inherit;
-}
-
-.small {
-    opacity: .7;
-    font-size: 13px;
-    margin-top: 4px;
-}
-
-.status-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    opacity: 0.8;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #333;
-}
+    body { font-family: system-ui, -apple-system, sans-serif; background: #0f1115; color: white; display: flex; justify-content: center; margin: 0; }
+    .app { width: 390px; padding: 24px; padding-bottom: 50px; }
+    h1 { font-size: 18px; letter-spacing: 2px; opacity: .8; margin-bottom: 10px; }
+    .card { background: #1b1f27; padding: 20px; border-radius: 14px; margin-top: 16px; box-shadow: 0 6px 18px rgba(0,0,0,.4); transition: all 0.3s ease; }
+    .flow-state { box-shadow: 0 0 20px rgba(0, 194, 168, 0.4); border: 1px solid rgba(0, 194, 168, 0.3); }
+    .entropy-warning { border: 1px solid rgba(255, 85, 85, 0.4); box-shadow: 0 0 15px rgba(255, 85, 85, 0.2); }
+    
+    button { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #00c2a8; color: #0f1115; font-weight: bold; cursor: pointer; margin-top: 10px; transition: opacity 0.2s; }
+    button:hover { opacity: 0.9; }
+    button.alt { background: #2c3442; color: white; }
+    button.danger { background: #4a2c2c; color: #ff8888; margin-top: 24px; }
+    
+    .dimension { display: flex; justify-content: space-between; margin-top: 8px; font-size: 14px; }
+    .bar { height: 6px; background: #333; border-radius: 6px; margin-top: 4px; overflow: hidden; }
+    .fill { height: 100%; background: #00c2a8; border-radius: 6px; transition: width 0.4s ease; }
+    .fill.critical { background: #ff5555; }
+    
+    textarea { width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: none; background: #2c3442; color: white; resize: vertical; box-sizing: border-box; font-family: inherit; }
+    .small { opacity: .7; font-size: 13px; margin-top: 4px; }
+    .status-row { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; }
+    
+    /* Shadow Work Modal */
+    #shadowModal { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #555; }
+    .shadow-btn { background: #3a2a2a; color: #ffaaaa; font-size: 12px; padding: 8px; margin-top: 6px; }
 </style>
 </head>
 
 <body>
-
 <div class="app">
+    <h1>THE OODA LOOP</h1>
 
-    <h1>TODAY'S MEANINGFUL STEP</h1>
-
-    <div class="card">
+    <div class="card" id="actionCard">
         <div id="actionTitle" style="font-weight: bold; font-size: 16px;"></div>
         <div id="actionDesc" class="small"></div>
         
@@ -148,12 +46,19 @@ textarea {
             <span id="sysTime">Time: 30m</span>
         </div>
 
-        <button onclick="completeAction()">Mark as complete</button>
-        <button class="alt" onclick="generateAction()">Alternative action</button>
+        <button onclick="executeAction()">Execute (Kausalität)</button>
+        <button class="alt" onclick="openShadowWork()">Skip (Schattenarbeit)</button>
+        
+        <div id="shadowModal">
+            <div class="small" style="margin-bottom: 8px; color: #ffaaaa;">Welcher Widerstand blockiert dich? (Ohne Wertung)</div>
+            <button class="shadow-btn" onclick="logShadow('Angst / Überforderung')">Angst vor Versagen / Überforderung</button>
+            <button class="shadow-btn" onclick="logShadow('Erschöpfung')">Absolute Erschöpfung (Entropie)</button>
+            <button class="shadow-btn" onclick="logShadow('Ablenkung')">Reizüberflutung / Ablenkung</button>
+        </div>
     </div>
 
     <div class="card" id="harmonyCard">
-        <h3>System Harmony (Logos)</h3>
+        <h3>System Resonance</h3>
         <div id="harmony" style="font-weight: bold; color: #00c2a8;"></div>
         <div id="harmonyDesc" class="small"></div>
     </div>
@@ -164,260 +69,199 @@ textarea {
     </div>
 
     <div class="card">
-        <h3>Identity Traits</h3>
-        <div id="traits">No traits unlocked yet.</div>
+        <h3>Qualia & Observer</h3>
+        <div class="small">Wie hat sich die Kausalität angefühlt? (>20 Zeichen formen das System)</div>
+        <textarea id="reflection" placeholder="Dein Framing der Realität..."></textarea>
+        <button onclick="saveReflection()">Reflexion speichern</button>
     </div>
 
-    <div class="card">
-        <h3>Reflection (Observer Effect)</h3>
-        <div class="small">Give meaning to the structure. Reflections > 20 characters shape your reality.</div>
-        <textarea id="reflection" placeholder="What mattered today? How did it feel? (Qualia)"></textarea>
-        <button onclick="saveReflection()">Save Reflection & Shape Reality</button>
-    </div>
-
-    <button class="danger" onclick="applyEntropy()">Simulate Time Passing (Entropy)</button>
-
+    <button class="danger" onclick="applyEntropy()">Force Entropy (Simulate Time)</button>
 </div>
 
 <script>
-// --- KONSTANTEN (Best Practice) ---
-const POINTS_PER_ACTION = 5;
-const FLOW_TOLERANCE = 15; // Max. Abweichung für den perfekten Flow
-const ENTROPY_DECAY = 2; // Punkteverlust durch Zeit
+// --- 1. THE DATA MODEL (Persistence & History) ---
+const STORAGE_KEY = "humaneed_v7_master";
+let state, context, actionHistory;
+let currentDimension = null;
+let currentAction = null;
 
-// --- STATE & CONTEXT ---
-let state = {
-    body: 60,
-    mind: 50,
-    emotion: 55,
-    social: 40,
-    skill: 50,
-    meaning: 65
-};
+const defaultState = { body: 60, mind: 50, emotion: 55, social: 40, skill: 50, meaning: 65 };
+const defaultContext = { energy: 60, timeAvailable: 60 };
 
-let context = {
-    energy: 60,
-    timeAvailable: 30
-};
-
-let traits = [];
-
-const actions = {
+// Die Bibliothek aller möglichen Handlungen (inkl. Micro-Habits für Entropie-Notfälle)
+const actionLibrary = {
     mind: [
-        {title: "Deep Work Session", desc: "30 minutes single-task focus", duration: 30, energy: 50},
-        {title: "Focused Reading", desc: "20 minutes learning", duration: 20, energy: 30}
+        {id: "m1", title: "Deep Work", desc: "30 Min Fokus", duration: 30, energy: 40, isMicro: false},
+        {id: "m2", title: "1-Minuten-Fokus", desc: "Augen schließen, auf Geräusche achten", duration: 1, energy: 1, isMicro: true}
     ],
     body: [
-        {title: "Movement Break", desc: "15 minute walk", duration: 15, energy: 20},
-        {title: "Stretch Session", desc: "10 minutes mobility", duration: 10, energy: 15}
-    ],
-    social: [
-        {title: "Reach Out", desc: "Send a message to a friend", duration: 5, energy: 10},
-        {title: "Short Call", desc: "10 minute connection", duration: 10, energy: 20}
+        {id: "b1", title: "Intense Workout", desc: "30 Min Bewegung", duration: 30, energy: 50, isMicro: false},
+        {id: "b2", title: "Micro Stretch", desc: "1 Minute aufstehen und strecken", duration: 1, energy: 1, isMicro: true}
     ],
     emotion: [
-        {title: "Mindful Breathing", desc: "5 minute reset", duration: 5, energy: 10},
-        {title: "Gratitude Note", desc: "Write one gratitude", duration: 10, energy: 15}
+        {id: "e1", title: "Shadow Journaling", desc: "15 Min Ängste aufschreiben", duration: 15, energy: 20, isMicro: false},
+        {id: "e2", title: "Ein bewusster Atemzug", desc: "Einatmen. Ausatmen. Fertig.", duration: 1, energy: 0, isMicro: true}
     ],
-    skill: [
-        {title: "Skill Practice", desc: "20 minutes improvement", duration: 20, energy: 30},
-        {title: "Micro Learning", desc: "Watch a tutorial", duration: 15, energy: 20}
-    ],
-    meaning: [
-        {title: "Purpose Reflection", desc: "Write about your goals", duration: 15, energy: 15},
-        {title: "Journal", desc: "Reflect on today's direction", duration: 10, energy: 10}
-    ]
+    // Fülle soziale, skill, meaning für dein echtes Setup weiter auf...
+    social: [{id: "s1", title: "Freund anrufen", desc: "10 Min", duration: 10, energy: 15, isMicro: false}],
+    skill: [{id: "k1", title: "Tutorial schauen", desc: "20 Min", duration: 20, energy: 20, isMicro: false}],
+    meaning: [{id: "n1", title: "Ziele ausrichten", desc: "10 Min", duration: 10, energy: 10, isMicro: false}]
 };
 
-let currentDimension = null;
-
-// --- PHILOSOPHISCHE MECHANIKEN ---
-
-// 1. Kausale Brücke (Funktionalismus)
-// Körper und Geist bedingen sich gegenseitig.
-function applyCausalEffects(completedDimension) {
-    if (completedDimension === 'body') {
-        context.energy = Math.min(100, context.energy + 15);
-    } else if (completedDimension === 'emotion') {
-        context.timeAvailable += 10; // Fühlt sich an wie mehr Zeit durch innere Ruhe
-    } else if (completedDimension === 'mind') {
-        context.energy = Math.max(0, context.energy - 10); // Geistige Arbeit kostet Systemenergie
-    }
-    updateContextUI();
-}
-
-// 2. Entropie (Der universelle Verfall)
-function applyEntropy() {
-    for (let key in state) {
-        state[key] = Math.max(0, state[key] - ENTROPY_DECAY);
-    }
-    
-    // Energie regeneriert sich durch Zeit minimal, Zeitfenster resettet sich
-    context.energy = Math.min(100, context.energy + 20);
-    context.timeAvailable = 30;
-    
-    updateDimensions();
-    updateHarmony();
-    updateContextUI();
-    generateAction();
-    
-    alert("Entropie: Die Zeit ist vergangen. Die Struktur erfordert neue Energie, um nicht zu zerfallen.");
-}
-
-// 3. Das Teilnehmer-Universum (Beobachter-Paradoxon / Qualia)
-function saveReflection() {
-    let text = document.getElementById("reflection").value;
-    
-    if (text.length > 20) {
-        // Echtes Bewusstsein formt die Materie (Werte steigen)
-        state.meaning = Math.min(100, state.meaning + 5);
-        state.mind = Math.min(100, state.mind + 3);
-        alert("Qualia erfasst: Dein Bewusstsein hat der Struktur Sinn verliehen (+Meaning, +Mind).");
-    } else if (text.length > 0) {
-        alert("Flüchtiger Gedanke gespeichert. Keine systemische Resonanz.");
+// --- 2. INITIALIZATION ---
+function initSystem() {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) {
+        state = saved.state; context = saved.context; actionHistory = saved.actionHistory;
     } else {
-        alert("Das System bleibt ohne bewusstes Erleben unverändert.");
+        state = { ...defaultState }; context = { ...defaultContext }; actionHistory = {};
     }
-
-    localStorage.setItem("humaneed_reflection", text);
-    document.getElementById("reflection").value = ""; // Clear after save
     
-    updateDimensions();
-    updateHarmony();
+    // Fallback History füllen
+    Object.values(actionLibrary).flat().forEach(act => {
+        if (!actionHistory[act.id]) actionHistory[act.id] = { completions: 0, skips: 0, friction: 0 };
+    });
+
+    calculateOODALoop();
+    updateUI();
 }
 
-// --- KERN-LOGIK ---
-
-function lowestDimension() {
-    let lowest = Object.keys(state)[0];
-    for(let key in state) {
-        if(state[key] < state[lowest]) {
-            lowest = key;
-        }
-    }
-    return lowest;
+function saveSystem() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, context, actionHistory }));
 }
 
-function generateAction() {
-    currentDimension = lowestDimension();
-    let options = actions[currentDimension];
+// --- 3. THE REINFORCEMENT ALGORITHM ---
+function getWeakestDimension() {
+    return Object.keys(state).reduce((a, b) => state[a] < state[b] ? a : b);
+}
+
+function calculateOODALoop() {
+    currentDimension = getWeakestDimension();
+    let options = actionLibrary[currentDimension] || actionLibrary["body"];
     
-    let filtered = options.filter(a => 
-        a.duration <= context.timeAvailable && 
-        a.energy <= context.energy
-    );
-
-    if (filtered.length === 0) {
-        filtered = options; // Fallback, falls keine Aktion passt
+    // Entropie-Notfall (Micro-Habit Protokoll)
+    if (context.energy <= 20) {
+        options = Object.values(actionLibrary).flat().filter(a => a.isMicro);
+        document.getElementById("actionCard").classList.add("entropy-warning");
+    } else {
+        document.getElementById("actionCard").classList.remove("entropy-warning");
+        options = options.filter(a => !a.isMicro && a.duration <= context.timeAvailable && a.energy <= context.energy);
     }
 
-    let action = filtered[Math.floor(Math.random() * filtered.length)];
+    // Wenn trotzdem nichts passt (Zeitlimit), erzwinge ein Micro-Habit
+    if (options.length === 0) options = Object.values(actionLibrary).flat().filter(a => a.isMicro);
 
-    document.getElementById("actionTitle").innerText = `[${currentDimension.toUpperCase()}] ${action.title}`;
-    document.getElementById("actionDesc").innerText = `${action.desc} (-${action.energy} Energy, -${action.duration}m Time)`;
+    // Algorithmus sortiert nach geringstem Friction-Score
+    options.sort((a, b) => actionHistory[a.id].friction - actionHistory[b.id].friction);
+    
+    currentAction = options[0]; // Wähle die Handlung mit dem wenigsten Widerstand
+    
+    document.getElementById("actionTitle").innerText = `[${currentAction.isMicro ? 'MICRO' : currentDimension.toUpperCase()}] ${currentAction.title}`;
+    document.getElementById("actionDesc").innerText = `${currentAction.desc} (-${currentAction.energy} NRG, -${currentAction.duration}m Time) | Friction: ${actionHistory[currentAction.id].friction.toFixed(1)}`;
 }
 
-function completeAction() {
-    // 1. Aktion ausführen
-    state[currentDimension] += POINTS_PER_ACTION;
-    if (state[currentDimension] > 100) state[currentDimension] = 100;
+// --- 4. EXECUTION (Kausalität) ---
+function executeAction() {
+    // Belohnung & Ressourcen-Kosten
+    state[currentDimension] = Math.min(100, state[currentDimension] + (currentAction.isMicro ? 2 : 10));
+    context.energy = Math.max(0, context.energy - currentAction.energy);
+    context.timeAvailable = Math.max(0, context.timeAvailable - currentAction.duration);
 
-    // 2. Kontext anpassen (Kosten der Aktion)
-    let act = actions[currentDimension].find(a => document.getElementById("actionTitle").innerText.includes(a.title));
-    if (act) {
-        context.energy = Math.max(0, context.energy - act.energy);
-        context.timeAvailable = Math.max(0, context.timeAvailable - act.duration);
+    // RL-Lernen: Erfolgreiche Ausführung senkt den Reibungswert
+    actionHistory[currentAction.id].completions++;
+    actionHistory[currentAction.id].friction = Math.max(0, actionHistory[currentAction.id].friction - 0.5);
+
+    // Kausale Brücke (Bewegung erzeugt neue Energie)
+    if (currentDimension === 'body' && !currentAction.isMicro) context.energy = Math.min(100, context.energy + 20);
+
+    resetShadowWork();
+    calculateOODALoop();
+    updateUI();
+    saveSystem();
+}
+
+// --- 5. CBT & SHADOW WORK (Der Beobachter-Knoten) ---
+function openShadowWork() {
+    document.getElementById("shadowModal").style.display = "block";
+}
+
+function logShadow(reason) {
+    // RL-Lernen: Abbruch erhöht den Reibungswert für diese spezifische Aufgabe
+    actionHistory[currentAction.id].skips++;
+    actionHistory[currentAction.id].friction += 1.5;
+
+    alert(`Schatten erkannt: "${reason}".\nDas System hat diesen Widerstand gelernt und passt sich an. Kein Druck.`);
+    
+    // Entropie strafen (Widerstand kostet mentale Energie)
+    context.energy = Math.max(0, context.energy - 5);
+
+    resetShadowWork();
+    calculateOODALoop(); // Neu berechnen, System wählt nun wahrsch. leichtere Aufgabe
+    updateUI();
+    saveSystem();
+}
+
+function resetShadowWork() {
+    document.getElementById("shadowModal").style.display = "none";
+}
+
+function saveReflection() {
+    let text = document.getElementById("reflection").value.trim();
+    if (text.length > 20) {
+        state.meaning = Math.min(100, state.meaning + 8);
+        alert("Qualia integriert: Beobachter-Effekt hat Systembedeutung gestärkt.");
+        document.getElementById("reflection").value = "";
+        updateUI();
+        saveSystem();
     }
-
-    // 3. Philosophische Kausalität anwenden
-    applyCausalEffects(currentDimension);
-
-    // 4. UI updaten
-    unlockTrait();
-    updateHarmony();
-    updateDimensions();
-    generateAction();
 }
 
-function updateHarmony() {
+// --- 6. ENTROPY (Der universelle Verfall) ---
+function applyEntropy() {
+    for (let key in state) state[key] = Math.max(0, state[key] - 5);
+    context.energy = 100; // Neuer Tag = neue Energie
+    context.timeAvailable = 60;
+    calculateOODALoop();
+    updateUI();
+    saveSystem();
+}
+
+// --- 7. RENDER UI ---
+function updateUI() {
+    let html = "";
     let values = Object.values(state);
-    let sum = values.reduce((acc, val) => acc + val, 0);
-    let avg = Math.round(sum / values.length);
-    
-    let max = Math.max(...values);
-    let min = Math.min(...values);
-    let isFlowState = (max - min) <= FLOW_TOLERANCE;
+    let avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    let variance = Math.max(...values) - Math.min(...values);
 
-    let harmonyText = avg + "% System Balance";
-    let descText = `Variance: ${max - min} (Aim for < ${FLOW_TOLERANCE})`;
-    
+    // Logos / Flow-State Berechnung
     let card = document.getElementById("harmonyCard");
-
-    // Der Logos manifestiert sich
-    if (isFlowState) {
-        harmonyText += " ✦ LOGOS ACHIEVED";
-        descText = "Perfect architectural resonance. Energy drain is mitigated.";
+    if (variance <= 15 && avg > 40) {
         card.classList.add("flow-state");
-        context.energy = 100; // Bonus für Flow State
-        updateContextUI();
+        document.getElementById("harmony").innerText = `${avg}% Balance | ✦ LOGOS ACHIEVED`;
+        document.getElementById("harmonyDesc").innerText = "Strukturelle Resonanz. Reibungsverlust minimiert.";
     } else {
         card.classList.remove("flow-state");
+        document.getElementById("harmony").innerText = `${avg}% Balance`;
+        document.getElementById("harmonyDesc").innerText = `Variance: ${variance} (Ziel < 15 zur Resonanz)`;
     }
 
-    document.getElementById("harmony").innerText = harmonyText;
-    document.getElementById("harmonyDesc").innerText = descText;
-}
-
-function updateDimensions() {
-    let html = "";
+    // Dimensionen rendern
     for (let key in state) {
+        let isCrit = state[key] < 30;
         html += `
         <div class="dimension">
-            <div style="text-transform: capitalize;">${key}</div>
+            <div style="text-transform: capitalize; ${isCrit ? 'color: #ff5555;' : ''}">${key}</div>
             <div>${state[key]}</div>
         </div>
-        <div class="bar">
-            <div class="fill" style="width:${state[key]}%"></div>
-        </div>
+        <div class="bar"><div class="fill ${isCrit ? 'critical' : ''}" style="width:${state[key]}%"></div></div>
         `;
     }
     document.getElementById("dimensions").innerHTML = html;
+    document.getElementById("sysEnergy").innerText = `Energy: ${context.energy}`;
+    document.getElementById("sysTime").innerText = `Time: ${context.timeAvailable}m`;
 }
 
-function unlockTrait() {
-    let added = false;
-    if (state.mind > 70 && !traits.includes("Focus Builder")) { traits.push("Focus Builder"); added = true; }
-    if (state.social > 70 && !traits.includes("Connector")) { traits.push("Connector"); added = true; }
-    if (state.meaning > 70 && !traits.includes("Seeker")) { traits.push("Seeker"); added = true; }
-    
-    // Neues Traits für Systemdenker (Logos)
-    let values = Object.values(state);
-    if (Math.min(...values) > 60 && !traits.includes("Architect")) { traits.push("Architect"); added = true; }
-
-    if (added) renderTraits();
-}
-
-function renderTraits() {
-    if (traits.length === 0) return;
-    let html = "";
-    traits.forEach(t => {
-        html += `<div class="trait">${t}</div>`;
-    });
-    document.getElementById("traits").innerHTML = html;
-}
-
-function updateContextUI() {
-    document.getElementById("sysEnergy").innerText = `System Energy: ${context.energy}`;
-    document.getElementById("sysTime").innerText = `Time Available: ${context.timeAvailable}m`;
-}
-
-// --- INITIALISIERUNG ---
-generateAction();
-updateDimensions();
-updateHarmony();
-updateContextUI();
-renderTraits();
-
+initSystem();
 </script>
 </body>
 </html>
