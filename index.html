@@ -1,267 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Humaneed v7 – Cybernetic Life Navigation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Humaneed · Ontological Loop</title>
+  <style>
+    :root {
+      --bg:          #1a1b1e;
+      --bg-card:     #222427;
+      --bg-elevated: #2a2c30;
+      --bg-surface:  #32353a;
+      --teal:        #4ECCA3;
+      --amber:       #F5A623;
+      --coral:       #FF6B7A;
+      --purple:      #A78BFA;
+      --text-primary:   #e2e8f0;
+      --text-secondary: #9ba3af;
+      --text-muted:     #6b7280;
+      --border:         rgba(255,255,255,0.08);
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+    #app { max-width: 480px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 
-<style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #0f1115; color: white; display: flex; justify-content: center; margin: 0; }
-    .app { width: 390px; padding: 24px; padding-bottom: 50px; }
-    h1 { font-size: 18px; letter-spacing: 2px; opacity: .8; margin-bottom: 10px; }
-    .card { background: #1b1f27; padding: 20px; border-radius: 14px; margin-top: 16px; box-shadow: 0 6px 18px rgba(0,0,0,.4); transition: all 0.3s ease; }
-    .flow-state { box-shadow: 0 0 20px rgba(0, 194, 168, 0.4); border: 1px solid rgba(0, 194, 168, 0.3); }
-    .entropy-warning { border: 1px solid rgba(255, 85, 85, 0.4); box-shadow: 0 0 15px rgba(255, 85, 85, 0.2); }
-    
-    button { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #00c2a8; color: #0f1115; font-weight: bold; cursor: pointer; margin-top: 10px; transition: opacity 0.2s; }
-    button:hover { opacity: 0.9; }
-    button.alt { background: #2c3442; color: white; }
-    button.danger { background: #4a2c2c; color: #ff8888; margin-top: 24px; }
-    
-    .dimension { display: flex; justify-content: space-between; margin-top: 8px; font-size: 14px; }
-    .bar { height: 6px; background: #333; border-radius: 6px; margin-top: 4px; overflow: hidden; }
-    .fill { height: 100%; background: #00c2a8; border-radius: 6px; transition: width 0.4s ease; }
-    .fill.critical { background: #ff5555; }
-    
-    textarea { width: 100%; margin-top: 10px; padding: 10px; border-radius: 8px; border: none; background: #2c3442; color: white; resize: vertical; box-sizing: border-box; font-family: inherit; }
-    .small { opacity: .7; font-size: 13px; margin-top: 4px; }
-    .status-row { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; }
-    
-    /* Shadow Work Modal */
-    #shadowModal { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #555; }
-    .shadow-btn { background: #3a2a2a; color: #ffaaaa; font-size: 12px; padding: 8px; margin-top: 6px; }
-</style>
+    /* ── LOOP BAR ── */
+    .loop-bar { flex-shrink: 0; padding: 10px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; position: relative; z-index: 10; }
+    .loop-bar::before { content: ''; position: absolute; left: 28px; right: 28px; top: 20px; height: 1.5px; background: var(--bg-surface); z-index: 0; }
+    .loop-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; z-index: 1; }
+    .loop-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg-surface); border: 2px solid var(--text-muted); transition: all 0.35s var(--ease); }
+    .loop-step.active .loop-dot { background: var(--teal); border-color: var(--teal); box-shadow: 0 0 0 4px rgba(78,204,163,0.18); }
+    .loop-step.done .loop-dot { background: rgba(78,204,163,0.45); border-color: var(--teal); }
+    .loop-label { font-size: 0.48rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .loop-step.active .loop-label { color: var(--teal); font-weight: 700; }
+
+    /* ── SCREENS ── */
+    .screen { flex: 1; overflow-y: auto; display: none; flex-direction: column; }
+    .screen.active { display: flex; }
+    .screen-inner { padding: 1.5rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; animation: slideIn 0.32s var(--ease); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .screen-tag { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); font-weight: 700; margin-bottom: 0.3rem; }
+    .screen-title { font-size: 1.55rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.4rem; }
+    .screen-subtitle { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.5rem; }
+
+    /* ── BUTTONS ── */
+    .btn { width: 100%; padding: 0.95rem; border: none; border-radius: var(--r-lg); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #111; }
+    .btn-primary { background: var(--teal); }
+    .btn-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .cta-area { flex-shrink: 0; padding: 0.75rem 1rem 1.5rem; background: linear-gradient(to top, var(--bg) 80%, transparent); display: flex; flex-direction: column; gap: 0.5rem; }
+
+    /* ── S0: BIO STATE ── */
+    .stat-grid { display: flex; gap: 0.6rem; margin-bottom: 1.25rem; }
+    .stat-card { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.7rem 0.5rem; text-align: center; }
+    .stat-value { font-size: 1.25rem; font-weight: 800; color: var(--coral); }
+    .stat-label { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
+    .dim-row { margin-bottom: 0.9rem; }
+    .dim-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+    .dim-name { font-size: 0.8rem; font-weight: 600; }
+    .dim-track { height: 5px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; }
+    .dim-fill { height: 100%; width: 0; transition: width 0.9s var(--ease); }
+
+    /* ── S1 & S2: ALGO & ACTION ── */
+    .algo-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
+    .algo-status { font-size: 0.82rem; color: var(--text-muted); text-align: center; min-height: 1.4em; }
+    .skill-card { background: linear-gradient(140deg, var(--bg-card) 0%, var(--bg-elevated) 100%); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 1.4rem; margin-bottom: 1rem; text-align: center;}
+    .skill-emoji { font-size: 2.8rem; display: block; margin-bottom: 0.6rem; }
+    .skill-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.55rem; }
+    .why-box { background: rgba(78,204,163,0.05); border: 1px solid rgba(78,204,163,0.14); border-radius: var(--r-md); padding: 0.85rem 1rem; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.65; }
+
+    /* ── S3 & S4: EXEC & QUALIA ── */
+    textarea { width: 100%; height: 80px; margin-top: 10px; padding: 12px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-elevated); color: white; resize: none; font-family: inherit; font-size: 0.85rem;}
+    textarea:focus { outline: none; border-color: var(--teal); }
+    .qualia-hint { font-size: 0.7rem; color: var(--coral); margin-top: 5px; text-align: right; transition: color 0.3s;}
+
+    /* ── S5: INSIGHT ── */
+    .insight-box { background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.18); border-radius: var(--r-lg); padding: 1.2rem; margin-top: 20px;}
+    .insight-title { color: var(--purple); font-weight: bold; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
+    .insight-text { font-size: 0.9rem; color: var(--text-primary); line-height: 1.6; font-style: italic;}
+  </style>
 </head>
-
 <body>
-<div class="app">
-    <h1>THE OODA LOOP</h1>
+<div id="app">
 
-    <div class="card" id="actionCard">
-        <div id="actionTitle" style="font-weight: bold; font-size: 16px;"></div>
-        <div id="actionDesc" class="small"></div>
-        
-        <div class="status-row">
-            <span id="sysEnergy">Energy: 60</span>
-            <span id="sysTime">Time: 30m</span>
+  <div class="loop-bar" id="loopBar">
+    <div class="loop-step active" data-p="0"><div class="loop-dot"></div><span class="loop-label">Bio-State</span></div>
+    <div class="loop-step"        data-p="1"><div class="loop-dot"></div><span class="loop-label">Logos</span></div>
+    <div class="loop-step"        data-p="2"><div class="loop-dot"></div><span class="loop-label">Aktion</span></div>
+    <div class="loop-step"        data-p="3"><div class="loop-dot"></div><span class="loop-label">Vollzug</span></div>
+    <div class="loop-step"        data-p="4"><div class="loop-dot"></div><span class="loop-label">Qualia</span></div>
+    <div class="loop-step"        data-p="5"><div class="loop-dot"></div><span class="loop-label">Erkenntnis</span></div>
+  </div>
+
+  <div class="screen active" id="s0">
+    <div class="screen-inner">
+      <span class="screen-tag">Physisches Fundament</span>
+      <h1 class="screen-title" id="greeting">System Check</h1>
+      <p class="screen-subtitle">Wearable-Daten synchronisiert. Der Körper formt den Geist.</p>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="hrvDisplay">38ms</div>
+          <div class="stat-label">HRV (Niedrig)</div>
         </div>
-
-        <button onclick="executeAction()">Execute (Kausalität)</button>
-        <button class="alt" onclick="openShadowWork()">Skip (Schattenarbeit)</button>
-        
-        <div id="shadowModal">
-            <div class="small" style="margin-bottom: 8px; color: #ffaaaa;">Welcher Widerstand blockiert dich? (Ohne Wertung)</div>
-            <button class="shadow-btn" onclick="logShadow('Angst / Überforderung')">Angst vor Versagen / Überforderung</button>
-            <button class="shadow-btn" onclick="logShadow('Erschöpfung')">Absolute Erschöpfung (Entropie)</button>
-            <button class="shadow-btn" onclick="logShadow('Ablenkung')">Reizüberflutung / Ablenkung</button>
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--amber)">5.2h</div>
+          <div class="stat-label">Schlaf</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color: var(--coral)">Alarm</div>
+          <div class="stat-label">Nervensystem</div>
+        </div>
+      </div>
+      <div id="dimBars"></div>
     </div>
-
-    <div class="card" id="harmonyCard">
-        <h3>System Resonance</h3>
-        <div id="harmony" style="font-weight: bold; color: #00c2a8;"></div>
-        <div id="harmonyDesc" class="small"></div>
+    <div class="cta-area">
+      <button class="btn btn-primary" onclick="goPhase(1)">Algorithmus starten →</button>
     </div>
+  </div>
 
-    <div class="card">
-        <h3>Life Dimensions</h3>
-        <div id="dimensions"></div>
+  <div class="screen" id="s1">
+    <div class="screen-inner">
+      <span class="screen-tag">Der Logos</span>
+      <h1 class="screen-title">Analyse läuft</h1>
+      <div class="algo-center">
+        <div class="algo-status" id="algoStatus">Lese Wearable-Daten...</div>
+      </div>
     </div>
-
-    <div class="card">
-        <h3>Qualia & Observer</h3>
-        <div class="small">Wie hat sich die Kausalität angefühlt? (>20 Zeichen formen das System)</div>
-        <textarea id="reflection" placeholder="Dein Framing der Realität..."></textarea>
-        <button onclick="saveReflection()">Reflexion speichern</button>
+    <div class="cta-area">
+      <button class="btn btn-primary" id="algoNextBtn" onclick="goPhase(2)" disabled>Kausale Brücke bauen →</button>
     </div>
+  </div>
 
-    <button class="danger" onclick="applyEntropy()">Force Entropy (Simulate Time)</button>
+  <div class="screen" id="s2">
+    <div class="screen-inner">
+      <span class="screen-tag">Ontologische Intervention</span>
+      <h1 class="screen-title">Das Bio-Veto greift</h1>
+      <p class="screen-subtitle">Deine Entropie ist zu hoch für kognitive Leistung. Das System erzwingt Regulation.</p>
+
+      <div class="skill-card">
+        <span class="skill-emoji">🫁</span>
+        <div class="skill-title">4-7-8 Atmung</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">3 Minuten · Parasympathikus-Aktivierung</div>
+      </div>
+      <div class="why-box">
+        💡 <b>Warum jetzt?</b> Dein Cortisol-Spiegel ist laut HRV-Muster zu hoch. Willenskraft ist jetzt eine Illusion. Wir müssen zuerst die Biologie regulieren.
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn btn-primary" onclick="goPhase(3)">Ich bin bereit →</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s3">
+    <div class="screen-inner" style="align-items: center; justify-content: center;">
+      <span class="screen-tag">Kausalität</span>
+      <h1 class="screen-title" style="margin-bottom: 40px;">Atme.</h1>
+      
+      <div style="font-size: 4rem; font-weight: bold; color: var(--teal); margin-bottom: 40px;">03:00</div>
+      <p class="screen-subtitle" style="text-align: center;">Schließe die Augen. Das System wartet auf dich.</p>
+    </div>
+    <div class="cta-area">
+      <button class="btn btn-primary" onclick="goPhase(4)">Meditation beendet</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s4">
+    <div class="screen-inner">
+      <span class="screen-tag">Der Beobachter</span>
+      <h1 class="screen-title">Was spürst du?</h1>
+      <p class="screen-subtitle">Keine Checkboxen. Gib dem physischen Vorgang eine Bedeutung.</p>
+
+      <textarea id="qualiaText" placeholder="Wo im Körper spürst du den Effekt? (z.B. Druck, Weite, ruhigerer Puls...)" oninput="checkQualia()"></textarea>
+      <div id="qualiaHint" class="qualia-hint">Der Algorithmus wartet auf echte Qualia...</div>
+      
+    </div>
+    <div class="cta-area">
+      <button class="btn btn-primary" id="feedbackBtn" onclick="goPhase(5)" disabled>Resonanz speichern →</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s5">
+    <div class="screen-inner">
+      <span class="screen-tag">Selbsterkenntnis</span>
+      <h1 class="screen-title">Logos aktualisiert</h1>
+      <p class="screen-subtitle">Dein psychologischer Spiegel hat sich geschärft.</p>
+
+      <div class="insight-box">
+        <div class="insight-title">👁️ System Insight</div>
+        <div class="insight-text">
+          "Wir haben heute das Bio-Veto genutzt. Anstatt bei hoher Entropie durch falschen Ehrgeiz (Schatten) in den Burnout zu steuern, hast du radikale Akzeptanz geübt. Dein Herzschlag hat sich synchronisiert. Die wahre Leistung von heute war das Nicht-Leisten."
+        </div>
+      </div>
+      
+    </div>
+    <div class="cta-area">
+      <button class="btn btn-primary" onclick="goPhase(0)">Zurück zur Struktur</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// --- 1. THE DATA MODEL (Persistence & History) ---
-const STORAGE_KEY = "humaneed_v7_master";
-let state, context, actionHistory;
-let currentDimension = null;
-let currentAction = null;
+const DIMS = [
+  { id:'dim0', emoji:'🫀', name:'Biologie',   color:'#FF6B35' },
+  { id:'dim1', emoji:'🎭', name:'Emotion',    color:'#FFB84D' },
+  { id:'dim3', emoji:'🧠', name:'Kognition',  color:'#95E1D3' }
+];
 
-const defaultState = { body: 60, mind: 50, emotion: 55, social: 40, skill: 50, meaning: 65 };
-const defaultContext = { energy: 60, timeAvailable: 60 };
+let phase = 0;
+const scores = { dim0:28, dim1:45, dim3:60 }; // Low Biology forces Veto
 
-// Die Bibliothek aller möglichen Handlungen (inkl. Micro-Habits für Entropie-Notfälle)
-const actionLibrary = {
-    mind: [
-        {id: "m1", title: "Deep Work", desc: "30 Min Fokus", duration: 30, energy: 40, isMicro: false},
-        {id: "m2", title: "1-Minuten-Fokus", desc: "Augen schließen, auf Geräusche achten", duration: 1, energy: 1, isMicro: true}
-    ],
-    body: [
-        {id: "b1", title: "Intense Workout", desc: "30 Min Bewegung", duration: 30, energy: 50, isMicro: false},
-        {id: "b2", title: "Micro Stretch", desc: "1 Minute aufstehen und strecken", duration: 1, energy: 1, isMicro: true}
-    ],
-    emotion: [
-        {id: "e1", title: "Shadow Journaling", desc: "15 Min Ängste aufschreiben", duration: 15, energy: 20, isMicro: false},
-        {id: "e2", title: "Ein bewusster Atemzug", desc: "Einatmen. Ausatmen. Fertig.", duration: 1, energy: 0, isMicro: true}
-    ],
-    // Fülle soziale, skill, meaning für dein echtes Setup weiter auf...
-    social: [{id: "s1", title: "Freund anrufen", desc: "10 Min", duration: 10, energy: 15, isMicro: false}],
-    skill: [{id: "k1", title: "Tutorial schauen", desc: "20 Min", duration: 20, energy: 20, isMicro: false}],
-    meaning: [{id: "n1", title: "Ziele ausrichten", desc: "10 Min", duration: 10, energy: 10, isMicro: false}]
-};
+function goPhase(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  document.querySelectorAll('.loop-step').forEach((el,i) => {
+    el.classList.toggle('done',   i < n);
+    el.classList.toggle('active', i === n);
+  });
+  phase = n;
+  if(n === 0) initBioState();
+  if(n === 1) initAlgo();
+}
 
-// --- 2. INITIALIZATION ---
-function initSystem() {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved) {
-        state = saved.state; context = saved.context; actionHistory = saved.actionHistory;
+function initBioState() {
+  document.getElementById('qualiaText').value = '';
+  const c = document.getElementById('dimBars');
+  c.innerHTML = DIMS.map(d => `
+    <div class="dim-row">
+      <div class="dim-header">
+        <span class="dim-name">${d.emoji} ${d.name}</span>
+        <span class="dim-score" style="color: ${scores[d.id] < 30 ? 'var(--coral)' : 'var(--text-muted)'}">${scores[d.id]}/100</span>
+      </div>
+      <div class="dim-track"><div class="dim-fill" id="bar-${d.id}" style="background:${scores[d.id] < 30 ? 'var(--coral)' : d.color};"></div></div>
+    </div>`).join('');
+  setTimeout(() => DIMS.forEach(d => { document.getElementById('bar-'+d.id).style.width = scores[d.id]+'%'; }), 60);
+}
+
+function initAlgo() {
+  const status = document.getElementById('algoStatus');
+  const btn = document.getElementById('algoNextBtn');
+  btn.disabled = true;
+  const steps = [
+    [500,  'Lese Apple Health / Google Fit...'],
+    [1200, 'HRV kritisch niedrig (Entropie hoch)...'],
+    [2000, 'Kognitive Skills werden gesperrt...'],
+    [2800, 'Berechne parasympathische Not-Regulation...']
+  ];
+  steps.forEach(([t,txt]) => setTimeout(() => status.textContent = txt, t));
+  setTimeout(() => { btn.disabled = false; status.textContent = 'Bio-Veto bestätigt.'; status.style.color = "var(--coral)"; }, 3500);
+}
+
+// THE QUALIA FILTER
+function checkQualia() {
+    const text = document.getElementById('qualiaText').value.toLowerCase();
+    const emotionWords = ['spüre', 'fühle', 'druck', 'angst', 'wut', 'trauer', 'erschöpft', 'leer', 'schwer', 'leicht', 'puls', 'ruhe', 'weite', 'herz', 'bauch', 'brust', 'entspannt', 'kalt', 'warm'];
+    
+    let score = 0;
+    emotionWords.forEach(w => { if(text.includes(w)) score++; });
+
+    const btn = document.getElementById('feedbackBtn');
+    const hint = document.getElementById('qualiaHint');
+    
+    if(text.length > 15 && score >= 1) {
+        btn.disabled = false;
+        hint.style.color = 'var(--teal)';
+        hint.innerText = 'Qualia erkannt. Kausalität wird geschlossen.';
     } else {
-        state = { ...defaultState }; context = { ...defaultContext }; actionHistory = {};
-    }
-    
-    // Fallback History füllen
-    Object.values(actionLibrary).flat().forEach(act => {
-        if (!actionHistory[act.id]) actionHistory[act.id] = { completions: 0, skips: 0, friction: 0 };
-    });
-
-    calculateOODALoop();
-    updateUI();
-}
-
-function saveSystem() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, context, actionHistory }));
-}
-
-// --- 3. THE REINFORCEMENT ALGORITHM ---
-function getWeakestDimension() {
-    return Object.keys(state).reduce((a, b) => state[a] < state[b] ? a : b);
-}
-
-function calculateOODALoop() {
-    currentDimension = getWeakestDimension();
-    let options = actionLibrary[currentDimension] || actionLibrary["body"];
-    
-    // Entropie-Notfall (Micro-Habit Protokoll)
-    if (context.energy <= 20) {
-        options = Object.values(actionLibrary).flat().filter(a => a.isMicro);
-        document.getElementById("actionCard").classList.add("entropy-warning");
-    } else {
-        document.getElementById("actionCard").classList.remove("entropy-warning");
-        options = options.filter(a => !a.isMicro && a.duration <= context.timeAvailable && a.energy <= context.energy);
-    }
-
-    // Wenn trotzdem nichts passt (Zeitlimit), erzwinge ein Micro-Habit
-    if (options.length === 0) options = Object.values(actionLibrary).flat().filter(a => a.isMicro);
-
-    // Algorithmus sortiert nach geringstem Friction-Score
-    options.sort((a, b) => actionHistory[a.id].friction - actionHistory[b.id].friction);
-    
-    currentAction = options[0]; // Wähle die Handlung mit dem wenigsten Widerstand
-    
-    document.getElementById("actionTitle").innerText = `[${currentAction.isMicro ? 'MICRO' : currentDimension.toUpperCase()}] ${currentAction.title}`;
-    document.getElementById("actionDesc").innerText = `${currentAction.desc} (-${currentAction.energy} NRG, -${currentAction.duration}m Time) | Friction: ${actionHistory[currentAction.id].friction.toFixed(1)}`;
-}
-
-// --- 4. EXECUTION (Kausalität) ---
-function executeAction() {
-    // Belohnung & Ressourcen-Kosten
-    state[currentDimension] = Math.min(100, state[currentDimension] + (currentAction.isMicro ? 2 : 10));
-    context.energy = Math.max(0, context.energy - currentAction.energy);
-    context.timeAvailable = Math.max(0, context.timeAvailable - currentAction.duration);
-
-    // RL-Lernen: Erfolgreiche Ausführung senkt den Reibungswert
-    actionHistory[currentAction.id].completions++;
-    actionHistory[currentAction.id].friction = Math.max(0, actionHistory[currentAction.id].friction - 0.5);
-
-    // Kausale Brücke (Bewegung erzeugt neue Energie)
-    if (currentDimension === 'body' && !currentAction.isMicro) context.energy = Math.min(100, context.energy + 20);
-
-    resetShadowWork();
-    calculateOODALoop();
-    updateUI();
-    saveSystem();
-}
-
-// --- 5. CBT & SHADOW WORK (Der Beobachter-Knoten) ---
-function openShadowWork() {
-    document.getElementById("shadowModal").style.display = "block";
-}
-
-function logShadow(reason) {
-    // RL-Lernen: Abbruch erhöht den Reibungswert für diese spezifische Aufgabe
-    actionHistory[currentAction.id].skips++;
-    actionHistory[currentAction.id].friction += 1.5;
-
-    alert(`Schatten erkannt: "${reason}".\nDas System hat diesen Widerstand gelernt und passt sich an. Kein Druck.`);
-    
-    // Entropie strafen (Widerstand kostet mentale Energie)
-    context.energy = Math.max(0, context.energy - 5);
-
-    resetShadowWork();
-    calculateOODALoop(); // Neu berechnen, System wählt nun wahrsch. leichtere Aufgabe
-    updateUI();
-    saveSystem();
-}
-
-function resetShadowWork() {
-    document.getElementById("shadowModal").style.display = "none";
-}
-
-function saveReflection() {
-    let text = document.getElementById("reflection").value.trim();
-    if (text.length > 20) {
-        state.meaning = Math.min(100, state.meaning + 8);
-        alert("Qualia integriert: Beobachter-Effekt hat Systembedeutung gestärkt.");
-        document.getElementById("reflection").value = "";
-        updateUI();
-        saveSystem();
+        btn.disabled = true;
+        hint.style.color = 'var(--coral)';
+        hint.innerText = 'Bitte beschreibe eine physische oder emotionale Empfindung...';
     }
 }
 
-// --- 6. ENTROPY (Der universelle Verfall) ---
-function applyEntropy() {
-    for (let key in state) state[key] = Math.max(0, state[key] - 5);
-    context.energy = 100; // Neuer Tag = neue Energie
-    context.timeAvailable = 60;
-    calculateOODALoop();
-    updateUI();
-    saveSystem();
-}
-
-// --- 7. RENDER UI ---
-function updateUI() {
-    let html = "";
-    let values = Object.values(state);
-    let avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
-    let variance = Math.max(...values) - Math.min(...values);
-
-    // Logos / Flow-State Berechnung
-    let card = document.getElementById("harmonyCard");
-    if (variance <= 15 && avg > 40) {
-        card.classList.add("flow-state");
-        document.getElementById("harmony").innerText = `${avg}% Balance | ✦ LOGOS ACHIEVED`;
-        document.getElementById("harmonyDesc").innerText = "Strukturelle Resonanz. Reibungsverlust minimiert.";
-    } else {
-        card.classList.remove("flow-state");
-        document.getElementById("harmony").innerText = `${avg}% Balance`;
-        document.getElementById("harmonyDesc").innerText = `Variance: ${variance} (Ziel < 15 zur Resonanz)`;
-    }
-
-    // Dimensionen rendern
-    for (let key in state) {
-        let isCrit = state[key] < 30;
-        html += `
-        <div class="dimension">
-            <div style="text-transform: capitalize; ${isCrit ? 'color: #ff5555;' : ''}">${key}</div>
-            <div>${state[key]}</div>
-        </div>
-        <div class="bar"><div class="fill ${isCrit ? 'critical' : ''}" style="width:${state[key]}%"></div></div>
-        `;
-    }
-    document.getElementById("dimensions").innerHTML = html;
-    document.getElementById("sysEnergy").innerText = `Energy: ${context.energy}`;
-    document.getElementById("sysTime").innerText = `Time: ${context.timeAvailable}m`;
-}
-
-initSystem();
+goPhase(0);
 </script>
 </body>
 </html>
