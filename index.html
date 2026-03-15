@@ -1,401 +1,322 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="auto-theme">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Humaneed · Ontological Loop</title>
+  <title>HUMANEED v32 – Smart Life Coach</title>
+  <meta name="description" content="HUMANEED – dein intelligenter Life-Coach. Täglicher geführter Loop in 6 Dimensionen.">
+  <meta name="theme-color" content="#0f1012">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
+    /* ── THEME VARIABLEN ── */
     :root {
-      --bg:          #1a1b1e;
-      --bg-card:     #222427;
-      --bg-elevated: #2a2c30;
-      --bg-surface:  #32353a;
-      --teal:        #4ECCA3;
-      --amber:       #F5A623;
-      --coral:       #FF6B7A;
-      --purple:      #A78BFA;
-      --text-primary:   #e2e8f0;
+      --bg: #1a1b1e;
+      --bg-card: #222427;
+      --bg-surface: #32353a;
+      --teal: #4ECCA3;
+      --amber: #F5A623;
+      --coral: #FF6B7A;
+      --text-primary: #e2e8f0;
       --text-secondary: #9ba3af;
-      --text-muted:     #6b7280;
-      --border:         rgba(255,255,255,0.08);
-      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
-      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --text-muted: #9ca3af; /* Verbessert für besseren Kontrast */
+      --border: rgba(255,255,255,0.08);
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-xl: 20px;
     }
+
+    /* Light Theme Override */
+    html.light-theme {
+      --bg: #f0f2f5;
+      --bg-card: #ffffff;
+      --bg-surface: #eef0f5;
+      --teal: #0d9488;
+      --amber: #d97706;
+      --coral: #e85d6b;
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --border: rgba(0,0,0,0.09);
+    }
+
+    /* Auto Theme via System */
+    @media (prefers-color-scheme: light) {
+      html.auto-theme {
+        --bg: #f0f2f5; --bg-card: #ffffff; --bg-surface: #eef0f5;
+        --teal: #0d9488; --amber: #d97706; --coral: #e85d6b;
+        --text-primary: #111827; --text-secondary: #4b5563; --text-muted: #6b7280;
+        --border: rgba(0,0,0,0.09);
+      }
+    }
+
+    /* ── GRUNDLAGEN & BARRIEREFREIHEIT ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
-    #app { max-width: 480px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+    
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center; /* Zentriert die App auf dem Desktop */
+      align-items: center;
+    }
+
+    /* Sichtbarer Fokus für Tastatur-Navigation */
+    *:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Reduzierte Animationen für Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ── APP CONTAINER (Optimiert für Desktop) ── */
+    #app {
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      max-height: 900px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 481px) {
+      #app {
+        height: 90vh;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        border: 8px solid var(--bg-surface); /* Mockup-Look */
+      }
+    }
+
+    /* ── HEADER / THEME TOGGLE ── */
+    header {
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+    .theme-toggle {
+      background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-primary);
+    }
 
     /* ── LOOP BAR ── */
-    .loop-bar { flex-shrink: 0; padding: 10px 16px 10px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; position: relative; z-index: 10; }
-    .loop-bar::before { content: ''; position: absolute; left: 28px; right: 28px; top: 20px; height: 1.5px; background: var(--bg-surface); z-index: 0; }
-    .loop-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; z-index: 1; }
-    .loop-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg-surface); border: 2px solid var(--text-muted); transition: all 0.35s var(--ease); }
-    .loop-step.active .loop-dot { background: var(--teal); border-color: var(--teal); box-shadow: 0 0 0 4px rgba(78,204,163,0.18); }
-    .loop-step.done .loop-dot { background: rgba(78,204,163,0.45); border-color: var(--teal); }
-    .loop-label { font-size: 0.48rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-    .loop-step.active .loop-label { color: var(--teal); font-weight: 700; }
+    .loop-bar {
+      display: flex; padding: 10px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+      position: relative; justify-content: space-between;
+    }
+    .loop-step { display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 1; }
+    .loop-dot {
+      width: 12px; height: 12px; border-radius: 50%; background: var(--bg-surface); border: 2px solid var(--text-muted); transition: 0.3s;
+    }
+    .loop-step.active .loop-dot { background: var(--teal); border-color: var(--teal); box-shadow: 0 0 0 4px rgba(78,204,163,0.2); }
+    .loop-step.done .loop-dot { background: rgba(78,204,163,0.5); border-color: var(--teal); }
+    .loop-label { font-size: 0.5rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .loop-step.active .loop-label { color: var(--teal); }
 
     /* ── SCREENS ── */
-    .screen { flex: 1; overflow-y: auto; display: none; flex-direction: column; }
+    .screen {
+      flex: 1; padding: 1.5rem; display: none; flex-direction: column; gap: 1rem; overflow-y: auto;
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     .screen.active { display: flex; }
-    .screen-inner { padding: 1.5rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; animation: slideIn 0.32s var(--ease); }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-    .screen-tag { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--teal); font-weight: 700; margin-bottom: 0.3rem; }
-    .screen-title { font-size: 1.55rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.4rem; }
-    .screen-subtitle { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 1.5rem; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── BUTTONS ── */
-    .btn { width: 100%; padding: 0.95rem; border: none; border-radius: var(--r-lg); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.15s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: #111; }
-    .btn-primary { background: var(--teal); }
-    .btn-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border); }
-    .btn:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
-    .cta-area { flex-shrink: 0; padding: 0.75rem 1rem 1.5rem; background: linear-gradient(to top, var(--bg) 80%, transparent); display: flex; flex-direction: column; gap: 0.5rem; }
+    h1 { font-size: 1.6rem; font-weight: 800; }
+    p.subtitle { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
 
-    /* ── BIO STATE (S0) ── */
-    .stat-grid { display: flex; gap: 0.6rem; margin-bottom: 1.25rem; }
-    .stat-card { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.7rem 0.5rem; text-align: center; cursor: pointer; transition: transform 0.2s;}
-    .stat-card:active { transform: scale(0.95); }
-    .stat-value { font-size: 1.25rem; font-weight: 800; color: var(--teal); transition: color 0.3s;}
-    .stat-label { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; }
-
-    /* ── ALGO & SKILLS (S1, S2) ── */
-    .algo-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
-    .algo-orbit { position: relative; width: 96px; height: 96px; }
-    .algo-orbit-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(78,204,163,0.18); border-top-color: var(--teal); animation: spin 1.2s linear infinite; }
-    .algo-orbit-ring.r2 { inset: 8px; border-top-color: transparent; border-right-color: var(--teal); animation-duration: 1.8s; animation-direction: reverse; }
-    .algo-brain { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .algo-orbit.done .algo-orbit-ring { animation: none; border-color: var(--teal); }
-    .algo-status { font-size: 0.82rem; color: var(--text-muted); text-align: center; min-height: 1.4em; }
+    /* ── UI KOMPONENTEN ── */
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.2rem; }
     
-    .skill-card { background: linear-gradient(140deg, var(--bg-card) 0%, var(--bg-elevated) 100%); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 1.4rem; margin-bottom: 1rem; text-align: center;}
-    .skill-emoji { font-size: 2.8rem; display: block; margin-bottom: 0.6rem; }
-    .skill-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.55rem; }
-    .why-box { background: rgba(78,204,163,0.05); border: 1px solid rgba(78,204,163,0.14); border-radius: var(--r-md); padding: 0.85rem 1rem; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.65; }
+    .btn {
+      width: 100%; padding: 1rem; border: none; border-radius: var(--r-md); font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn-primary { background: var(--teal); color: #000; }
+    .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
 
-    /* ── EXECUTION & TIMER (S3) ── */
-    .timer-wrap { position: relative; display: flex; align-items: center; justify-content: center; margin: 2rem 0; }
-    .timer-svg { transform: rotate(-90deg); }
-    .timer-bg-c { fill: none; stroke: var(--bg-surface); stroke-width: 10; }
-    .timer-arc  { fill: none; stroke: var(--teal); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
-    .timer-center { position: absolute; text-align: center; }
-    .timer-mm { font-size: 2.6rem; font-weight: 800; color: var(--text-primary); line-height: 1; }
+    /* Spezifische Screen-Styles */
+    .dim-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+    .progress-bar { width: 100%; height: 6px; background: var(--bg-surface); border-radius: 3px; overflow: hidden; margin-bottom: 1rem; }
+    .progress-fill { height: 100%; background: var(--teal); width: 0%; transition: 1s ease-out; }
 
-    /* ── QUALIA FILTER (S4) ── */
-    .emotion-row { display: flex; gap: 0.35rem; margin-bottom: 15px;}
-    .emotion-btn { flex: 1; aspect-ratio: 1; border: 2px solid var(--border); border-radius: var(--r-md); background: var(--bg-card); font-size: 1.35rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s;}
-    .emotion-btn.selected { border-color: var(--teal); background: rgba(78,204,163,0.09); }
-    textarea { width: 100%; height: 90px; margin-top: 10px; padding: 12px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--bg-elevated); color: white; resize: none; font-family: inherit; font-size: 0.85rem;}
-    textarea:focus { outline: none; border-color: var(--teal); }
-    .qualia-hint { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 5px; transition: color 0.3s;}
+    .algo-spinner { font-size: 3rem; animation: spin 2s linear infinite; margin: 2rem auto; display: block; text-align: center; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* ── INSIGHT (S5) ── */
-    .insight-hero { text-align: center; padding: 1rem 0; }
-    .insight-card { background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.18); border-radius: var(--r-lg); padding: 1.5rem; margin-top: 10px; font-style: italic; font-size: 0.95rem; line-height: 1.6; color: var(--text-primary);}
+    .emotion-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    .emotion-btn {
+      background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--r-md);
+      padding: 1rem 0; font-size: 1.5rem; cursor: pointer; transition: 0.2s;
+    }
+    .emotion-btn:hover, .emotion-btn:focus-visible { border-color: var(--teal); }
+
+    .cta-area { padding: 1rem; background: var(--bg); border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
+
 <div id="app">
+  <header>
+    <div style="font-weight: 800; letter-spacing: 1px;">HUMANEED</div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">🌓</button>
+  </header>
 
   <div class="loop-bar" id="loopBar">
-    <div class="loop-step active" data-p="0"><div class="loop-dot"></div><span class="loop-label">System</span></div>
-    <div class="loop-step"        data-p="1"><div class="loop-dot"></div><span class="loop-label">Logos</span></div>
-    <div class="loop-step"        data-p="2"><div class="loop-dot"></div><span class="loop-label">Aktion</span></div>
-    <div class="loop-step"        data-p="3"><div class="loop-dot"></div><span class="loop-label">Kausalität</span></div>
-    <div class="loop-step"        data-p="4"><div class="loop-dot"></div><span class="loop-label">Beobachter</span></div>
-    <div class="loop-step"        data-p="5"><div class="loop-dot"></div><span class="loop-label">Erkenntnis</span></div>
+    <div class="loop-step active" data-step="0"><div class="loop-dot"></div><div class="loop-label">Status</div></div>
+    <div class="loop-step" data-step="1"><div class="loop-dot"></div><div class="loop-label">Algo</div></div>
+    <div class="loop-step" data-step="2"><div class="loop-dot"></div><div class="loop-label">Aktion</div></div>
+    <div class="loop-step" data-step="3"><div class="loop-dot"></div><div class="loop-label">Fokus</div></div>
+    <div class="loop-step" data-step="4"><div class="loop-dot"></div><div class="loop-label">Review</div></div>
   </div>
 
   <div class="screen active" id="s0">
-    <div class="screen-inner">
-      <span class="screen-tag">Physisches Fundament</span>
-      <h1 class="screen-title" id="greeting">System Check</h1>
-      <p class="screen-subtitle">Biologische Sensoren (Wearables) synchronisiert. Der Körper determiniert den Geist.</p>
-
-      <div class="stat-grid">
-        <div class="stat-card" onclick="toggleBioState()" title="Klicken für Test: Bio-Veto vs Peak State">
-          <div class="stat-value" id="hrvDisplay">42ms</div>
-          <div class="stat-label" id="hrvLabel">HRV (Normal)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="sleepDisplay">6.5h</div>
-          <div class="stat-label">Schlaf</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" style="color: var(--purple)">78%</div>
-          <div class="stat-label">Resonanz</div>
-        </div>
-      </div>
-      
-      <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; font-style: italic;">
-        (Tipp: Klicke auf die HRV-Box, um Entropie / Bio-Veto zu simulieren)
-      </div>
+    <div>
+      <h1>Guten Morgen!</h1>
+      <p class="subtitle">Lass uns deinen aktuellen Zustand synchronisieren.</p>
     </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" onclick="goPhase(1)">Algorithmus starten →</button>
+    <div class="card">
+      <div class="dim-row"><span>Energie</span><span>60%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 60%;"></div></div>
+      <div class="dim-row"><span>Fokus</span><span>40%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 40%; background: var(--amber);"></div></div>
+      <div class="dim-row"><span>Stimmung</span><span>80%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 80%; background: var(--coral);"></div></div>
     </div>
   </div>
 
   <div class="screen" id="s1">
-    <div class="screen-inner">
-      <span class="screen-tag">Der Logos</span>
-      <h1 class="screen-title">Ontologische Analyse</h1>
-      <p class="screen-subtitle">Berechnung der kausalen Exklusion und biologischen Grenzen läuft...</p>
-
-      <div class="algo-center">
-        <div class="algo-orbit" id="algoOrbit">
-          <div class="algo-orbit-ring"></div>
-          <div class="algo-orbit-ring r2"></div>
-          <div class="algo-brain">👁️</div>
-        </div>
-        <div class="algo-status" id="algoStatus">Lese Wearable-Daten…</div>
-      </div>
-    </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" id="algoNextBtn" onclick="goPhase(2)" disabled>Kausalität herstellen →</button>
+    <div style="text-align: center; margin-top: 2rem;">
+      <div class="algo-spinner">🧠</div>
+      <h2>Analysiere Biosignale...</h2>
+      <p class="subtitle" style="margin-top: 1rem;">Berechne den optimalen nächsten Schritt für dein System.</p>
     </div>
   </div>
 
   <div class="screen" id="s2">
-    <div class="screen-inner">
-      <span class="screen-tag" id="routingTag">Ontologische Intervention</span>
-      <h1 class="screen-title" id="routingTitle">System-Empfehlung</h1>
-      <p class="screen-subtitle" id="routingSub">Dies ist aktuell die wirksamste physische Übersetzung deines Ziels.</p>
-
-      <div class="skill-card">
-        <span class="skill-emoji" id="skillEmoji">🌬️</span>
-        <div class="skill-title" id="skillName">—</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;" id="skillTime"></div>
-      </div>
-
-      <div class="why-box" id="whyBox"></div>
+    <div>
+      <div style="color: var(--teal); font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Empfehlung</div>
+      <h1>Deep Breathing</h1>
+      <p class="subtitle">Dein Fokus ist niedrig. 3 Minuten Box-Breathing resetten dein Nervensystem.</p>
     </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" onclick="goPhase(3)">Ich bin bereit →</button>
+    <div class="card" style="text-align: center; font-size: 4rem;">
+      🌬️
     </div>
   </div>
 
   <div class="screen" id="s3">
-    <div class="exec-wrap">
-      <span class="screen-tag">Physischer Vollzug</span>
-      <div class="screen-title" id="execName" style="text-align: center;">—</div>
-
-      <div class="timer-wrap">
-        <svg class="timer-svg" width="168" height="168" viewBox="0 0 168 168">
-          <circle class="timer-bg-c" cx="84" cy="84" r="70"/>
-          <circle class="timer-arc" cx="84" cy="84" r="70" stroke-dasharray="439.82" stroke-dashoffset="0" id="timerArc"/>
-        </svg>
-        <div class="timer-center">
-          <div class="timer-mm" id="timerMM">05</div>
-          <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);" id="timerSS">:00</div>
-        </div>
-      </div>
-      <p class="screen-subtitle" style="text-align: center;">Das System wartet auf die Erfahrung.</p>
+    <div style="text-align: center;">
+      <h1>Fokus Modus</h1>
+      <p class="subtitle">Atme im Quadrat: 4s ein, 4s halten, 4s aus, 4s halten.</p>
     </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" onclick="goPhase(4)">✓ Aktion beendet</button>
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center; font-size: 4rem; font-weight: 800;">
+      03:00
     </div>
   </div>
 
   <div class="screen" id="s4">
-    <div class="screen-inner">
-      <span class="screen-tag">Der Beobachter</span>
-      <h1 class="screen-title">Integriere die Qualia</h1>
-      <p class="screen-subtitle">Die Struktur ist bedeutungslos ohne dein Erleben.</p>
-
-      <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.65rem;">Energie-Niveau danach</div>
-      <div class="emotion-row">
-        <button class="emotion-btn" data-val="1" onclick="selectEmotion(this)">🔋<span style="font-size: 0.48rem; color: var(--text-muted);">Leer</span></button>
-        <button class="emotion-btn" data-val="3" onclick="selectEmotion(this)">⚖️<span style="font-size: 0.48rem; color: var(--text-muted);">Neutral</span></button>
-        <button class="emotion-btn" data-val="5" onclick="selectEmotion(this)">⚡<span style="font-size: 0.48rem; color: var(--text-muted);">Geladen</span></button>
-      </div>
-
-      <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin-top: 10px;">Physische Lokalisierung</div>
-      <textarea id="qualiaText" placeholder="Wo genau im Körper spürst du das? (z.B. Druck im Bauch, weiter Atem, Pochen...)" oninput="checkQualia()"></textarea>
-      <div id="qualiaHint" class="qualia-hint">Der Algorithmus wartet auf ein echtes Gefühl...</div>
-      
+    <div>
+      <h1>Wie fühlst du dich jetzt?</h1>
+      <p class="subtitle">Dein Feedback kalibriert den Algorithmus für morgen.</p>
     </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" id="feedbackBtn" onclick="goPhase(5)" disabled>Erkenntnis generieren →</button>
+    <div class="emotion-grid">
+      <button class="emotion-btn" aria-label="Sehr gut">🤩</button>
+      <button class="emotion-btn" aria-label="Gut">🙂</button>
+      <button class="emotion-btn" aria-label="Neutral">😐</button>
+      <button class="emotion-btn" aria-label="Erschöpft">😮‍💨</button>
     </div>
   </div>
 
-  <div class="screen" id="s5">
-    <div class="screen-inner">
-      <span class="screen-tag">Philosophische Einsicht</span>
-
-      <div class="insight-hero">
-        <span class="insight-icon">👁️</span>
-        <h1 class="screen-title">Logos aktualisiert</h1>
-      </div>
-
-      <div class="insight-card" id="philosophicalInsight">
-        </div>
-      
-    </div>
-    <div class="cta-area">
-      <button class="btn btn-primary" onclick="goPhase(0)">Zurück ins Sein</button>
-    </div>
+  <div class="cta-area">
+    <button class="btn btn-primary" id="nextBtn">Loop Starten 🚀</button>
   </div>
-
 </div>
 
 <script>
-// ════════════════════════════════════════════
-//  DATA & SKILLS (Kurzfassung für den Test)
-// ════════════════════════════════════════════
-const SKILLS_DB = {
-  dim0: { id: 'bio_6', emoji: '🫁', name: '4-7-8 Atmung', time: '3 Min', desc: 'Parasympathikus-Aktivierung. Zwingt das Herz in Kohärenz.' },
-  dim3: { id: 'cog_6', emoji: '🎯', name: 'Deep Work', time: '25 Min', desc: 'Maximale kognitive Ressourcenallokation.' },
-  dim2: { id: 'soc_1', emoji: '💬', name: 'Aktives Zuhören', time: '15 Min', desc: 'Oxytocin-Freisetzung durch echte Präsenz.' }
-};
-
-// Ontologische Erkenntnisse
-const INSIGHTS = {
-  CRITICAL: '"Wer seinen Körper ignoriert, kämpft gegen die Schwerkraft. Das Bio-Veto hat dich heute davor bewahrt, Entropie mit falschem Ehrgeiz zu bekämpfen. Die größte Leistung war heute die radikale Akzeptanz."',
-  PEAK: '"Der Verstand ist ein Werkzeug, keine Identität. Dein physisches Fundament war heute stark genug, um den Geist wie ein Skalpell zu nutzen, ohne dich davon beherrschen zu lassen."',
-  MAINTENANCE: '"Wir existieren nur in Relation. Die heutige Wartung deines Systems beweist, dass Stabilität keine Stagnation ist, sondern das Fundament für zukünftige Kausalität."'
-};
-
-// ════════════════════════════════════════════
-//  STATE & ROUTING LOGIC
-// ════════════════════════════════════════════
-let bioState = { hrv: 42, sleepHours: 6.5 }; // Default Maintenance
-let currentRouting = null;
-let fbEmotion = null;
-let timerIv = null, timerRem = 0, timerTot = 0, timerOn = false;
-
-// DEBUG FUNCTION: Toggles between Critical (Bio-Veto) and Peak State
-function toggleBioState() {
-    const hrvEl = document.getElementById('hrvDisplay');
-    const labelEl = document.getElementById('hrvLabel');
-    const sleepEl = document.getElementById('sleepDisplay');
+  /**
+   * STATE MANAGEMENT
+   * Eine einfache State-Machine steuert die App-Übergänge
+   */
+  const AppState = {
+    currentStep: 0,
+    maxSteps: 4,
     
-    if(bioState.hrv === 42) {
-        // Switch to CRITICAL
-        bioState = { hrv: 26, sleepHours: 4.5 };
-        hrvEl.innerText = "26ms"; hrvEl.style.color = "var(--coral)"; labelEl.innerText = "HRV (Kritisch)";
-        sleepEl.innerText = "4.5h"; sleepEl.style.color = "var(--coral)";
-    } else if (bioState.hrv === 26) {
-        // Switch to PEAK
-        bioState = { hrv: 75, sleepHours: 8.2 };
-        hrvEl.innerText = "75ms"; hrvEl.style.color = "var(--teal)"; labelEl.innerText = "HRV (Peak)";
-        sleepEl.innerText = "8.2h"; sleepEl.style.color = "var(--teal)";
-    } else {
-        // Back to normal
-        bioState = { hrv: 42, sleepHours: 6.5 };
-        hrvEl.innerText = "42ms"; hrvEl.style.color = "var(--teal)"; labelEl.innerText = "HRV (Normal)";
-        sleepEl.innerText = "6.5h"; sleepEl.style.color = "var(--text-primary)";
+    screens: [
+      { id: 's0', btnText: 'Loop Starten 🚀' },
+      { id: 's1', btnText: 'Berechne...', autoAdvance: 2500 }, // S1 skippt automatisch
+      { id: 's2', btnText: 'Aktion Ausführen ⚡' },
+      { id: 's3', btnText: 'Abschließen ✅' },
+      { id: 's4', btnText: 'Loop Beenden 🎉' }
+    ],
+
+    init() {
+      this.btn = document.getElementById('nextBtn');
+      this.btn.addEventListener('click', () => this.next());
+      
+      // Theme Toggle Logic
+      document.getElementById('themeToggle').addEventListener('click', () => {
+        const html = document.documentElement;
+        html.classList.remove('auto-theme');
+        html.classList.toggle('light-theme');
+      });
+
+      this.render();
+    },
+
+    next() {
+      if (this.currentStep >= this.maxSteps) {
+        alert("Loop erfolgreich abgeschlossen! +50 XP");
+        this.currentStep = 0; // Reset
+      } else {
+        this.currentStep++;
+      }
+      this.render();
+    },
+
+    render() {
+      const config = this.screens[this.currentStep];
+
+      // 1. Alle Screens ausblenden, aktiven einblenden
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(config.id).classList.add('active');
+
+      // 2. Loop Bar updaten (Klassen "done" und "active" setzen)
+      document.querySelectorAll('.loop-step').forEach((stepEl, index) => {
+        stepEl.classList.remove('active', 'done');
+        if (index < this.currentStep) stepEl.classList.add('done');
+        if (index === this.currentStep) stepEl.classList.add('active');
+      });
+
+      // 3. Button Status updaten
+      this.btn.innerText = config.btnText;
+      this.btn.disabled = !!config.autoAdvance;
+
+      // 4. Auto-Advance für Algorithmus Ladebildschirm (S1)
+      if (config.autoAdvance) {
+        setTimeout(() => this.next(), config.autoAdvance);
+      }
     }
-}
+  };
 
-function calculateSystemState(bio) {
-    if (bio.hrv < 35 || bio.sleepHours < 5.5) {
-        return { state: "CRITICAL", dim: "dim0", skill: SKILLS_DB.dim0, msg: "Bio-Veto aktiv. Willenskraft-Ressourcen erschöpft. Kognition gesperrt." };
-    }
-    if (bio.hrv > 60 && bio.sleepHours >= 7) {
-        return { state: "PEAK", dim: "dim3", skill: SKILLS_DB.dim3, msg: "Nervensystem hochgradig kohärent. Fokus-Fenster offen für Wachstum." };
-    }
-    return { state: "MAINTENANCE", dim: "dim2", skill: SKILLS_DB.dim2, msg: "System stabil. Soziale oder physische Wartung empfohlen." };
-}
-
-// ════════════════════════════════════════════
-//  NAVIGATION & FLOW
-// ════════════════════════════════════════════
-function goPhase(n) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('s'+n).classList.add('active');
-  document.querySelectorAll('.loop-step').forEach((el,i) => {
-    el.classList.toggle('done',   i < n);
-    el.classList.toggle('active', i === n);
-  });
-  
-  if(n === 1) runAlgorithm();
-  if(n === 2) setupAction();
-  if(n === 3) startExecution();
-  if(n === 4) initFeedback();
-  if(n === 5) showInsight();
-}
-
-function runAlgorithm() {
-  currentRouting = calculateSystemState(bioState); // Dynamic Routing!
-  
-  const orbit = document.getElementById('algoOrbit'), status = document.getElementById('algoStatus'), btn = document.getElementById('algoNextBtn');
-  orbit.classList.remove('done'); btn.disabled = true;
-
-  const steps = [[400, 'Analysiere HRV und Schlaf-Architektur...'], [1200, 'Berechne kausale Exklusion...'], [2000, 'Strukturelle Resonanz gefunden.']];
-  steps.forEach(([t,txt]) => setTimeout(() => status.textContent = txt, t));
-
-  setTimeout(() => {
-    orbit.classList.add('done');
-    status.textContent = 'Algorithmus abgeschlossen.';
-    if(currentRouting.state === "CRITICAL") status.style.color = "var(--coral)";
-    else status.style.color = "var(--teal)";
-    btn.disabled = false;
-  }, 2600);
-}
-
-function setupAction() {
-  document.getElementById('routingTag').innerText = currentRouting.state === "CRITICAL" ? "Bio-Veto greift" : "Ontologische Intervention";
-  document.getElementById('routingTitle').innerText = currentRouting.state === "CRITICAL" ? "Regulation Erzwungen" : "System-Empfehlung";
-  
-  document.getElementById('skillEmoji').innerText = currentRouting.skill.emoji;
-  document.getElementById('skillName').innerText = currentRouting.skill.name;
-  document.getElementById('skillTime').innerText = `⏱ ${currentRouting.skill.time} · ${currentRouting.skill.desc}`;
-  
-  document.getElementById('whyBox').innerHTML = `💡 <b>Kausaler Hebel:</b> ${currentRouting.msg}`;
-}
-
-function startExecution() {
-  document.getElementById('execName').innerText = currentRouting.skill.emoji + ' ' + currentRouting.skill.name;
-  timerTot = parseInt(currentRouting.skill.time.match(/\d+/)[0]) * 60; 
-  if(timerTot > 1800) timerTot = 180; // Für den Test verkürzen
-  timerRem = timerTot; timerOn = true;
-  clearInterval(timerIv); renderTimer(); timerIv = setInterval(tickTimer, 1000);
-}
-
-function tickTimer() { if(!timerOn) return; timerRem--; renderTimer(); if(timerRem<=0) clearInterval(timerIv); }
-function renderTimer() { const m = Math.floor(timerRem/60), s = timerRem%60; document.getElementById('timerMM').textContent = String(m).padStart(2,'0'); document.getElementById('timerSS').textContent = ':'+String(s).padStart(2,'0'); document.getElementById('timerArc').style.strokeDashoffset = 439.82 * (timerTot > 0 ? (1 - timerRem/timerTot) : 0); }
-function toggleTimer() { timerOn = !timerOn; }
-
-// THE QUALIA FILTER
-function initFeedback() {
-  clearInterval(timerIv); fbEmotion = null;
-  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('qualiaText').value = '';
-  document.getElementById('qualiaHint').innerText = "Der Algorithmus wartet auf ein echtes Gefühl...";
-  document.getElementById('qualiaHint').style.color = "var(--text-muted)";
-  document.getElementById('feedbackBtn').disabled = true;
-}
-
-function selectEmotion(btn) {
-  document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected'); fbEmotion = btn.dataset.val; checkQualia();
-}
-
-function checkQualia() {
-  const text = document.getElementById('qualiaText').value.toLowerCase();
-  // Qualia Markers ( NLP Filter )
-  const markers = ['spüre', 'fühle', 'druck', 'angst', 'wut', 'erschöpft', 'leer', 'schwer', 'leicht', 'puls', 'ruhe', 'weite', 'herz', 'bauch', 'brust', 'entspannt', 'kalt', 'warm', 'gedanken', 'klar'];
-  let score = markers.reduce((acc, val) => text.includes(val) ? acc + 1 : acc, 0);
-  
-  const btn = document.getElementById('feedbackBtn'), hint = document.getElementById('qualiaHint');
-  
-  if(text.length > 15 && score >= 1 && fbEmotion) {
-      btn.disabled = false; hint.style.color = 'var(--teal)'; hint.innerText = 'Qualia validiert. Kausalität geschlossen.';
-  } else {
-      btn.disabled = true; hint.style.color = 'var(--text-muted)';
-      if(!fbEmotion) hint.innerText = "Wähle das Energie-Niveau.";
-      else hint.innerText = "Bitte beschreibe eine physische Empfindung oder Emotion im Textfeld.";
-  }
-}
-
-function showInsight() {
-    // Generate philosophical text based on the routing state
-    document.getElementById('philosophicalInsight').innerText = INSIGHTS[currentRouting.state];
-}
-
-goPhase(0);
+  // App starten sobald DOM geladen ist
+  document.addEventListener('DOMContentLoaded', () => AppState.init());
 </script>
+
 </body>
 </html>
