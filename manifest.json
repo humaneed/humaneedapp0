@@ -1,0 +1,13 @@
+{
+  "name": "HUMANEED",
+  "short_name": "HUMANEED",
+  "description": "Biologische Abstimmung — 6 Dimensionen des Lebens",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0f0b",
+  "theme_color": "#4ECCA3",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%230a0f0b'/><text x='96' y='130' font-size='120' text-anchor='middle'>🫀</text></svg>", "sizes": "192x192", "type": "image/svg+xml" }
+  ]
+}
